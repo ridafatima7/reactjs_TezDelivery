@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import TNavbar from './TNavbar'
 import { FaLocationDot } from "react-icons/fa6";
 import { FiShoppingBag } from "react-icons/fi";
@@ -9,8 +9,23 @@ import { removefromCart, removefromCross } from './CartSlice';
 import { Subtotal } from './CartSlice';
 import { addtoCart } from './CartSlice';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import Calendar from './CalendarComponent';
+import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { LoadScript } from '@react-google-maps/api';
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  Pin,
+  InfoWindow,
+} from '@vis.gl/react-google-maps';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 const Checkout = () => {
+  const location = useLocation();
+  const { locationId } = location.state || {};
+  console.log(locationId);
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const [addressLoc, setAddressLoc] = useState('');
   const [additionalComment, setAdditionalComment] = useState('');
@@ -25,8 +40,7 @@ const Checkout = () => {
   const storedEmail = sessionStorage.getItem('Email') || '';
   const storedMart = sessionStorage.getItem('mart_id');
   const [showCalendar, setShowCalendar] = useState(false);
-  const [Location, setLocation] = useState("");
-  const [promo, setPromo] = useState("");
+  // const [Location, setLocation] = useState("");
   const [scheduledTime, setScheduledTime] = useState('Now');
   const [schedualeOrder, setSchedualeOrder] = useState('Now');
   const [isEditing, setIsEditing] = useState(false);
@@ -36,8 +50,9 @@ const Checkout = () => {
   const [martInfo, setMartInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [latitude,setLatitude]=useState('');
-  const [longitude,setLongitude]=useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+  const [newLocation, setNewLocation] = useState('');
   let formattedDate = '';
   const [formData, setFormData] = useState({
     name: storedUserName || '',
@@ -292,7 +307,7 @@ const Checkout = () => {
         const data = await response.json();
         if (data.results && data.results.length > 0) {
           const address = data.results[0].formatted_address;
-          setAddressLoc(address); 
+          setAddressLoc(address);
           return address;
         } else {
           throw new Error('No address found for the provided coordinates');
@@ -489,7 +504,13 @@ const Checkout = () => {
             <div className='cart-container'>
               <div className='checkout-items'>
                 <h5>Deliver to</h5>
-                <span>Edit</span>
+                <Link to={{
+                  pathname: '/edit-location',
+                  state:
+                  {
+                    any: setNewLocation
+                  }
+                }}><span>Edit</span></Link>
               </div>
               <div className='main'>
                 <div className='checkout-icons'>
@@ -497,7 +518,7 @@ const Checkout = () => {
                 </div>
                 <div className='main-div'>
                   <p>{storedUserName}</p>
-                  <p> {addressLoc}</p>
+                  <p> {locationId ? locationId : addressLoc}</p>
                 </div>
               </div>
             </div>
@@ -593,3 +614,118 @@ const Checkout = () => {
   )
 }
 export default Checkout
+export const Location = () => {
+  const navigate = useNavigate();
+  const autocompleteInputRef = useRef(null);
+  const [currentPosition, setCurrentPosition] = useState(null);
+  const [open, setopen] = useState(false);
+  const [searchLocation, setSearchLocation] = useState('');
+  const [markerPosition, setMarkerPosition] = useState(null);
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+  const [confirmedAddress, setConfirmedAddress] = useState('');
+  useEffect(() => {
+    const getLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setCurrentPosition
+              ({
+                lat: latitude,
+                lng: longitude
+              });
+            setLatitude(latitude.toFixed(6));
+            setLongitude(longitude.toFixed(6))
+          },
+          (error) => {
+            console.error('Error getting user location:', error);
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+      }
+    };
+    getLocation();
+  }, []);
+  const handleConfirmAddress = () => {
+    setConfirmedAddress(searchLocation);
+    console.log(confirmedAddress);
+    setSearchLocation(searchLocation);
+    navigate('/checkout', { state: { locationId: searchLocation } });
+  };
+  const handleSearch = async () => {
+    try {
+      let api = 'AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU';
+      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchLocation)}&key=${api}`);
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        const { lat, lng } = data.results[0].geometry.location;
+        // const formattedAddress = data.results[0].formatted_address;
+        setMarkerPosition({ lat, lng });
+        setCurrentPosition({ lat, lng });
+        setLatitude(lat.toFixed(6));
+        setLongitude(lng.toFixed(6));
+      }
+      else {
+        console.error('Location not found');
+        console.log(searchLocation);
+        console.log(data);
+        console.log(response);
+        console.log(currentPosition);
+      }
+    } catch (error) {
+      console.error('Error searching location:', error);
+    }
+  };
+  const handleSelect = async (address) => {
+    try {
+      const results = await geocodeByAddress(address);
+      const latLng = await getLatLng(results[0]);
+      setCurrentPosition(latLng);
+      setSearchLocation(address);
+      setLatitude(latLng.lat.toFixed(6));
+      setLongitude(latLng.lng.toFixed(6));
+    } catch (error) {
+      console.error('Error selecting location:', error);
+    }
+  };
+  const apiKey = process.env.REACT_APP_API_KEY;
+  const apiId = process.env.REACT_APP_API_URL;
+  return (
+    <div>
+      <TNavbar />
+      <div className='pt' >
+        <APIProvider apiKey='AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU' className='pt' >
+          <div style={{ height: '100vh', width: '100%' }}>
+            <Map zoom={14} center={currentPosition} mapId='f354a7d216f1686c'>
+              {currentPosition && (
+                <AdvancedMarker position={currentPosition} onClick={() => setopen(true)}>
+                  <Pin
+                    background={'grey'}
+                    borderColor={'green'}
+                    glyphColor={'purple'} />
+                </AdvancedMarker>
+              )}
+              <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1000 }}>
+                <input
+                  type="text"
+                  value={searchLocation}
+                  onChange={(e) => setSearchLocation(e.target.value)}
+                  placeholder="Enter location"
+                  className='map-search'
+                />
+                <button onClick={handleSearch} className='map-search-button'>Search</button>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative', height: '74vh' }}>
+                <div style={{ alignSelf: 'flex-end', zIndex: 1001 }}>
+                  <button onClick={handleConfirmAddress} className='confirm-adress'>Confirm Address</button>
+                </div>
+              </div>
+            </Map>
+          </div>
+        </APIProvider>
+      </div>
+    </div>
+  );
+};

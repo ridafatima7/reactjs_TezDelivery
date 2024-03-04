@@ -16,7 +16,7 @@ const Gmaps = () => {
   const [markerPosition, setMarkerPosition] = useState(null);
   const [latitude, setLatitude] = useState(''); 
   const [longitude, setLongitude] = useState('');
-    const [distance, setDistance] = useState('');
+  const [distance, setDistance] = useState('');
 
   useEffect(() => {
     const getLocation = () => {
@@ -107,6 +107,8 @@ const Gmaps = () => {
   const apiId = process.env.REACT_APP_API_URL;
   return (
     <div>
+          <LoadScript googleMapsApiKey="AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU" libraries={['places']}>
+
       <APIProvider apiKey='AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU' >
         <div style={{ height: '100vh', width: '100%' }}>
           <Map zoom={14} center={currentPosition} mapId='f354a7d216f1686c'>
@@ -168,6 +170,7 @@ const Gmaps = () => {
           </InfoWindow>
         )}
       </APIProvider>
+      </LoadScript>
     </div>
   )
 }

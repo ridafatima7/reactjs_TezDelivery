@@ -19,27 +19,29 @@ const Categories = () => {
   const [hasMore, setHasMore] = useState(true);
   const [limit, setLimit] = useState(15);
   const [skip, setSkip] = useState(0);
-  const get_Products = async (cid, sid) => {
-    console.log(cid, sid);
+  const [effectiveSkip,setEffectiveSkip]=useState([]);
+  const get_Products = async (cid, sid,skipValue) => {
+    console.log(cid, sid,skipValue);
     try {
-      const get_mart_product_url = `${api}/get_martProducts?mart_id=1&cid=${cid}&${sid ? `&sid=${sid}` : ''}&limit=${limit}&skip=${skip}`;
+     const updatedSkipValue = skipValue !== null && skipValue !== undefined ? skipValue : skip;
+      console.log(updatedSkipValue);
+      const get_mart_product_url = `${api}/get_martProducts?mart_id=${mart_id}&cid=${cid}&${sid ? `&sid=${sid}` : ''}&limit=${limit}&skip=${updatedSkipValue}`;
       const products = await fetch(get_mart_product_url);
+      console.log(products);
       if (!products.ok) {
         throw new Error(`HTTP error! Status: ${products.status}`);
       }
       const resultProducts = await products.json();
-      // if (resultProducts.data && resultProducts.data.length > 0) {
-      //   setProducts([...Products, ...resultProducts.data]);
-      //   setSkip(skip + limit);
       if (resultProducts.data && resultProducts.data.length > 0) {
         if (sid) {
-          // When fetching for a specific subcategory, reset the products list
-          setProducts(resultProducts.data);
+          setProducts(prevProducts => [...prevProducts, ...resultProducts.data]);
+          console.log(resultProducts.data);
         } else {
-          // Append to the products list when loading more
+          console.log(resultProducts);
           setProducts(prevProducts => [...prevProducts, ...resultProducts.data]);
         }
-        setSkip(prevSkip => prevSkip + limit);
+        setEffectiveSkip(prevSkip => prevSkip + limit);
+        setSkip(prevSkip => prevSkip + limit)
       } else {
         setHasMore(false);
       }
@@ -50,7 +52,7 @@ const Categories = () => {
   const fetchData = async () => {
     try {
       const responseCategories = await fetch(
-        `${api}/get_martCategories?mart_id=${mart_id}&cid=${cid}`
+        `${api}/get_martCategories?mart_id=${mart_id}&cid=${cid}&limit=${limit}&skip=${skip}`
       );
       if (!responseCategories.ok) {
         throw new Error(`HTTP error! Status: ${responseCategories.status}`);
@@ -58,10 +60,7 @@ const Categories = () => {
       const resultCategories = await responseCategories.json();
       setData(resultCategories.data[0]);
       console.log(resultCategories.data[0]);
-      // get_Products(cid, resultCategories.data[0].sub_categories[0]["sid"]);
-      get_Products(cid); // Fetch all products without specifying subcategory
-
-      // fetchScrollData(cid, resultCategories.data[0].sub_categories[0]["sid"]);
+      get_Products(cid);   
     } catch (error) 
     {
       console.log(error);
@@ -71,25 +70,19 @@ const Categories = () => {
     fetchData();
   }, [cid, mart_id]);
   const FilterCat = (id) => {
-    // get_Products(cid, id);
-    // sid=id;
-    // setSelectedSubcategory((prev) => (prev === id ? prev : id));
     setSelectedSubcategory(id); 
-    setProducts([]); // Reset products list
-    setSkip(0); // Reset skip for pagination
+    setProducts([]);
+    setEffectiveSkip(0);
     setHasMore(true);
-    get_Products(cid, id);
+    get_Products(cid, id,0);
   };
   const loadMore = () => {
-    // fetchData();
     if(selectedSubcategory){
-      get_Products(cid,selectedSubcategory);
-
+      get_Products(cid,selectedSubcategory,effectiveSkip);
+      console.log(selectedSubcategory);
     }else{
       get_Products(cid);
     }
-  
-
   };
   // const fetchScrollData= async (cid,sid)=>{
   //   setPageNo(page+5);

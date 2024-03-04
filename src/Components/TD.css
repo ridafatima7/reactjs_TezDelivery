@@ -676,6 +676,23 @@
   margin-left: 25px;
   color: #414141;
 }
+.confirm-adress{
+  justify-content: center;
+  align-items: flex-end;
+  background-color:#F17E2A;
+  border-radius: 13px;
+  outline: none;
+  color:white;
+  border: none;
+  padding-top:18px;
+  padding-bottom: 18px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size:15px;
+  width:27rem;
+  font-weight: bold;
+  display: flex;
+}
 .product_grid div :nth-child(2)
 {
   background: #E3E2EA;

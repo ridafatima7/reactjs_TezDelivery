@@ -4,7 +4,7 @@ import AboutUs from "./Components/AboutUs";
 import Cart from "./Components/Cart";
 import Categories from "./Components/Categories";
 import Category from "./Components/Category";
-import Checkout from "./Components/Checkout";
+import Checkout, { Location } from "./Components/Checkout";
 import ExclusiveScreen from "./Components/ExclusiveScreen";
 import Gmaps from "./Components/Gmaps";
 import Loader from "./Components/Loader";
@@ -40,8 +40,10 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/home" element={<Sidebar/>} />
+            <Route path="/edit-location" element={<Location/>} />
             <Route path="/cart" element={<Cart/>} />
             <Route path="/sidebar" element={<Sidebar/>} />
+            <Route path="/maps" element={<Gmaps/>} />
             <Route path="/categories" element={<Category />}></Route>
             <Route path="/categories_page" element={<Categories />} />
             <Route path="/product_detail" element={<Product />}></Route>
