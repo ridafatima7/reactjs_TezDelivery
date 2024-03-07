@@ -13,18 +13,18 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import 'swiper/css/autoplay';
+import { getSliders } from "../../../my-app/src/Server";
 const TDSlider = () => {
   const [slider, setSlider] = useState(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${api}/get_sliders`);
-        console.log('Response Status:', response.status);
+        const response = await getSliders();
+        console.log('Sliders Response Status:', response.status);
         if (response.status === 200) {
-          console.log('Request successful!', response.data);
-          console.log(response.data);
-          setSlider(response.data.data);
+          console.log('Request successful (Sliders are...)!', response.data);
+          setSlider(response.data);
         }
         else {
           console.error('Request failed.', response.data);

@@ -11,6 +11,7 @@ import { getMessaging, getToken } from 'firebase/messaging';
 import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
 import { LoginSocialFacebook, LoginSocialGoogle } from 'reactjs-social-login';
 import axios from 'axios';
+import { login } from '../Server';
 // import { GoogleLogin } from 'react-google-login';
 const firebaseConfig = {
   apiKey: "AIzaSyAxANdP0jWz27EOJvZt11_-kB_y4ebposU",
@@ -69,10 +70,7 @@ const Login = () => {
     sessionStorage.setItem('phoneNumber', phoneNumber);
     await setDoc(newCityRef, data);
     try {
-      const response = await axios.post(
-        `${api}/create_customers`,
-        JSON.stringify(data),
-      );
+      const response = await login(data);
       console.log('Response Status:', response.status);
       if (response.status === 200) {
         console.log('Login successful!', response.data);
@@ -84,7 +82,6 @@ const Login = () => {
     }
   };
   const clientId = '761542653895-mmbupt9quf3g1399n3mdcfphbrud2pta.apps.googleusercontent.com';
-
   const handleSuccess = (response) => {
     console.log('Google login success:', response);
     // onSuccess(response);

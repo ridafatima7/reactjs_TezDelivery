@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { BsList } from "react-icons/bs";
 import { BsShop } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
@@ -11,6 +10,8 @@ import { MdModeEditOutline } from "react-icons/md";
 import { RiMapPin2Fill } from "react-icons/ri";
 import { SlWallet } from "react-icons/sl";
 import { Link, useNavigate } from "react-router-dom";
+import { GoSignOut } from "react-icons/go";
+import { MdOutlinePrivacyTip } from "react-icons/md";
 import {
   Button,
   Col,
@@ -27,15 +28,26 @@ import {
 } from "reactstrap";
 
 import api from "./apis";
-
 import "./TDnavbar.css";
+import { Update_customer } from "../Server";
 
 const NavSection = ({
   search_Query = null,
   set_SearchQuery = null,
 }) => {
+  const storedUserName = sessionStorage.getItem('userName');
+  const storedPhoneNumber = sessionStorage.getItem('phoneNumber');
+  const [phoneNumber, setPhoneNumber] = useState(storedPhoneNumber);
+  const [editUserName, setEditUserName] = useState(storedUserName);
+  const handleChange = (event) => {
+    setPhoneNumber(event.target.value);
+  };
+  const handleNameChange = (event) => {
+    setEditUserName(event.target.value);
+  };
   const [sidebar, setSidebar] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
+  // const formData = new FormData();
   const [errorMessage, setErrorMessage] = useState("");
   const [error, setError] = useState(false);
   const onDismissError = () => setError(false);
@@ -55,93 +67,78 @@ const NavSection = ({
     console.log("search=>", search_Query);
     set_SearchQuery && set_SearchQuery(event.target.value);
   };
-  function EditInformation(e) {
-    // e.preventDefault();
-    // const disasterType=e.target.DisasterType.value;
-    // const title=e.target.Title.value;
-    // const Description=e.target.Description.value;
-    // const area=e.target.area.value;
-    // // const xcoordinates=e.target.xcoordinates.value;
-    // // const ycoordinates=e.target.ycoordinates.value;
-    // const population=parseInt(e.target.Population.value);
-    // const survivors=parseInt(e.target.survivors.value);
-    // const deaths=parseInt(e.target.deaths.value);
-    // const date=e.target.date.value;
-    // const shelters=parseInt(e.target.shelters.value);
-    // const food=parseInt(e.target.food.value);
-    // const medicine=parseInt(e.target.medicine.value);
-    // // const gallery=e.target.gallery.value;
-    // if( (survivors + deaths) > population || shelters>population )
-    //  {
-    //      if((survivors+population)> population){
-    //        setIsCustomError(true);
-    //       setErrorMessage("Survivors/deaths should not be greater than population !");
-    //       setError(true);
-    //       console.log("Survivors should not be greater than population !")
-    //      }
-    //     //  else if(deaths>population ){
-    //     //   setIsCustomError(true);
-    //     //   setErrorMessage("Deaths should not be greater than population !");
-    //     //   setError(true);
-    //     //  }
-    //      else if(shelters>population)
-    //      {
-    //       setIsCustomError(true);
-    //       setErrorMessage("Shelters should not be greater than population !");
-    //       setError(true);
-    //      }
-    //     return;
-    //  }
-    // if(selectedFiles){
-    //   selectedFiles.forEach((file) => {
-    //   formData.append('files', file);
-    //   });
-    // }
-    // else
-    // {
-    //   formData.append('files', []);
-    // }
-    // formData.append('disasterType', disasterType);
-    // // formData.append('xcoordinates',xcoordinates );
-    // // formData.append('ycoordinates',ycoordinates );
-    // formData.append('Description',Description);
-    // formData.append('population',population);
-    // formData.append('title',title);
-    // formData.append('id',id);
-    // formData.append('area',area);
-    // formData.append('date',date);
-    // formData.append('survivors',survivors);
-    // formData.append('deaths',deaths);
-    // formData.append('shelters',shelters);
-    // formData.append('food',food);
-    // formData.append('medicine',medicine);
-    // axios({
-    //   withCredentials: true,
-    //   method:'post',
-    //   url:"http://localhost:8000/Information/EditInformation",
-    //   // data:{id:id,disasterType:disasterType, title:title ,Description:Description, area:area, xcoordinates:xcoordinates,ycoordinates:ycoordinates,population:population
-    //   //   ,survivors:survivors,deaths:deaths,date:date,shelters:shelters,food:food,medicine:medicine,gallery:gallery},
-    //   data:formData,
-    // })
-    // .then(res=>{
-    //   if(res.data == "success")
-    //   {
-    //     seteditSuccess(true);
-    //     GetInformation();
-    //     setRerender(!rerender);
-    //   }
-    //   else
-    //   {
-    //     setErrorMessage(res.data);
-    //     setError(true);
-    //   }
-    //   setEditModal(!editmodal);
-    // })
-    // .catch(error=>{
-    //   setErrorMessage("Failed to connect to backend");
-    //   setError(true);
-    //   console.log(error);
-    // })
+  const EditInformation = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("form is submitted.");
+    const formData = new FormData();
+    const staticData = {
+      "myCode": "E707",
+      "wallet": 300,
+      "code": "E&h&",
+      "promosAvailed": "",
+      "customerNotes": "Rida Notes",
+      "deviceToken": "dhvgbelejhe",
+      "points": 20,
+      "firebase_id": "250e47a3c949d3f0960f9d3e40ed14",
+      "mobile": "03008304930",
+      "address": "H9, Islamabad",
+      "name": "Dashbaord Tester",
+      "id": 9,
+      "email": "rida-testing8@gmail.com",
+      "status": "",
+      "addedOn": "09/09/2023",
+      "uniqueId": ""
+    };
+    const { myCode, wallet, code, promosAvailed, customerNotes, deviceToken, points, firebase_id, addedOn, uniqueId, status } = staticData;
+    const user_name = editUserName;
+    const user_mob = phoneNumber;
+    const user_email = e.target.email.value;
+    const user_HouseNo = e.target.house.value;
+    const user_StreetNo = e.target.Street.value;
+    const user_FloorNo = e.target.Floor.value;
+    const address = user_HouseNo + ' ' + user_StreetNo + ' ' + user_FloorNo;
+    formData.append('name', user_name);
+    formData.append('mobile', user_mob);
+    formData.append('email', user_email);
+    formData.append('address', address);
+    formData.append('id', 9);
+    formData.append('myCode', myCode);
+    formData.append('wallet', wallet);
+    formData.append('code', code);
+    formData.append('promosAvailed', promosAvailed);
+    formData.append('customerNotes', customerNotes);
+    formData.append('deviceToken', deviceToken);
+    formData.append('points', points);
+    formData.append('firebase_id', firebase_id);
+    formData.append('email', user_email);
+    formData.append('addedOn', addedOn);
+    formData.append('uniqueId', uniqueId);
+    formData.append('status', status);
+    console.log(formData);
+    const dataToSend = {
+      ...staticData,
+      name: user_name,
+      mobile: user_mob,
+      email: user_email,
+      address: address,
+      id: 9
+    };
+    console.log(dataToSend);
+    try {
+      const response = await Update_customer(dataToSend);
+      console.log('Response Status:', response.status);
+      if (response.status === 200) {
+        console.log('Update successful!', response.data);
+        sessionStorage.setItem('userName', user_name);
+        sessionStorage.setItem('email', user_email);
+        sessionStorage.setItem('phoneNumber', user_mob);
+      } else {
+        console.log('Update failed with status:', response.status, 'and data:', response.data);
+      }
+    } catch (error) {
+      console.error('Error during update:', error.response ? error.response.data : error.message);
+    }
   }
   const edittoggle1 = (event) => {
     setEditModal(!editmodal);
@@ -167,13 +164,6 @@ const NavSection = ({
 
     fetchData();
   }, [searchQuery]);
-
-  // useEffect(() => {
-  //   const filteredProducts = DataProduct.filter((product) =>
-  //     product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  //   );
-  //   setSearchedProducts(filteredProducts);
-  // }, [DataProduct, searchQuery]);
   const handleInputClick = () => {
     navigate(`/searchProduct?martId=${Martid}`);
   };
@@ -233,12 +223,12 @@ const NavSection = ({
                     />
                     <Input
                       id="u_phone"
-                      className="editpopup-input"
+                      className='editpopup-input'
                       name="u_phone"
-                      placeholder="Phone Num"
+                      placeholder="Phone Number"
                       type="Num"
-                      maxLength="50"
-                      minLength="30"
+                      value={phoneNumber}
+                      onChange={handleChange}
                     />
                   </FormGroup>
                 </Col>
@@ -246,20 +236,22 @@ const NavSection = ({
                   <FormGroup>
                     <Input
                       id="u_name"
-                      className="editpopup-input"
+                      className='editpopup-input'
                       name="u_name"
                       placeholder="Name"
                       type="text"
-                      style={{ color: "black" }}
+                      value={editUserName}
+                      onChange={handleNameChange}
+                      style={{ color: 'black' }}
                     />
                   </FormGroup>
                 </Col>
                 <Col md={6}>
                   <FormGroup>
                     <Input
-                      id="Area"
+                      id="email"
                       name="email"
-                      className="editpopup-input"
+                      className='editpopup-input'
                       placeholder="Email"
                       type="text"
                     />
@@ -267,14 +259,14 @@ const NavSection = ({
                 </Col>
                 <Col md={6}>
                   <FormGroup>
+
                     <Input
                       id="Description"
                       name="house"
-                      className="editpopup-input"
+                      className='editpopup-input'
                       placeholder="House No"
                       type="text"
-                      minLength="50"
-                      style={{ color: "black" }}
+                      style={{ color: 'black' }}
                     />
                   </FormGroup>
                 </Col>
@@ -304,7 +296,7 @@ const NavSection = ({
                       type="number"
                       min="0"
                       max="1000000"
-                      //  style={{ color: 'black' }}
+                    //  style={{ color: 'black' }}
                     />
                   </FormGroup>
                 </Col>
@@ -335,14 +327,25 @@ const NavSection = ({
                   alt="Avatar Image"
                   onError={(e) => console.error("Image Error", e)}
                 />
-                <Button>Login to Earn Rewards</Button>
-                <div onClick={edittoggle1}>
+                {storedUserName ? (
+                  <div className="user_name">{storedUserName}</div>
+                ) : (
+                  <Link to='/login'><Button>Login to Earn Rewards</Button></Link>
+                )}
+                {storedUserName ? (
+                  <>
+                  <div onClick={edittoggle1} style={{display:'flex',alignItems:"center"}}>
                   <MdModeEditOutline
                     className="MdOutlineModeEdit-icon"
                     onClick={() => setEditProfile(true)}
                     size={18}
                   />
                 </div>
+                  </>
+                ):
+                (
+                <></>
+                )}             
               </div>
             </div>
             <div className="sidebar-items pt">
@@ -358,8 +361,10 @@ const NavSection = ({
               </div>
               <hr />
               <div>
+                {/* <Link to='/my-orders'> */}
                 <FiShoppingBag size={28} />
                 <span>My Orders</span>
+                {/* </Link>             */}
               </div>
               <hr />
               <div>
@@ -368,10 +373,26 @@ const NavSection = ({
               </div>
               <hr />
               <div>
-                <FiAlertCircle size={28} />
-                <span>AboutUs</span>
-              </div>
+                {/* <Link to='/aboutus'> */}
+                  <FiAlertCircle size={28} />
+                  <span>AboutUs</span>
+                {/* </Link>              */}
+              </div>          
               <hr />
+              <div>
+                {/* <Link to='/aboutus'> */}
+                  <MdOutlinePrivacyTip size={28} />
+                  <span>Privacy Policy</span>
+                {/* </Link>              */}
+              </div> 
+              <hr />
+              {storedUserName ? (
+                // <Link to='/login' >
+                  <Button className="logout-btn"><GoSignOut size={25} style={{marginRight:'5px'}}/> Logout</Button>
+                // </Link>
+                ) : (
+                  <div ></div>
+                )}
             </div>
           </div>
         </section>

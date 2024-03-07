@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Input, Container, Navbar, Nav, Button, NavItem, NavLink, NavbarBrand, Image } from 'reactstrap';
 import Logo from './Images/Logo.jpg';
 import { BsShop } from "react-icons/bs";
 import {Link} from "react-router-dom";
@@ -11,7 +10,7 @@ import { RxCross2 } from "react-icons/rx";
 import { slide as Menu } from 'react-burger-menu';
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useSelector } from 'react-redux';
-
+// import './font/Gilroy-Bold.ttf';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import './TDnavbar.css';
 const TNavbar = () => {

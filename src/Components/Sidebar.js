@@ -28,7 +28,6 @@ const Sidebar = (args) => {
   const storedPhoneNumber = sessionStorage.getItem('phoneNumber');
   console.log(storedUserName);
   console.log(storedPhoneNumber);
-  alert('here');
   const edittoggle1 = (event) => {
     setEditModal(!editmodal);
   };

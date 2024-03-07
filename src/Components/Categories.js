@@ -7,6 +7,7 @@ import Items from "./Items";
 import NavSection from "./NavSection";
 import TNavbar from "./TNavbar";
 import api from "./apis";
+import { getMartProducts,getMartCategories } from "../Server";
 const Categories = () => {
   let sid=0;
   const search = window.location.search;
@@ -20,25 +21,23 @@ const Categories = () => {
   const [limit, setLimit] = useState(15);
   const [skip, setSkip] = useState(0);
   const [effectiveSkip,setEffectiveSkip]=useState([]);
+  // Get Mart Products
   const get_Products = async (cid, sid,skipValue) => {
     console.log(cid, sid,skipValue);
     try {
      const updatedSkipValue = skipValue !== null && skipValue !== undefined ? skipValue : skip;
       console.log(updatedSkipValue);
-      const get_mart_product_url = `${api}/get_martProducts?mart_id=${mart_id}&cid=${cid}&${sid ? `&sid=${sid}` : ''}&limit=${limit}&skip=${updatedSkipValue}`;
-      const products = await fetch(get_mart_product_url);
-      console.log(products);
-      if (!products.ok) {
-        throw new Error(`HTTP error! Status: ${products.status}`);
-      }
-      const resultProducts = await products.json();
-      if (resultProducts.data && resultProducts.data.length > 0) {
+      // const get_mart_product_url = `${api}/get_martProducts?mart_id=${mart_id}&cid=${cid}&${sid ? `&sid=${sid}` : ''}&limit=${limit}&skip=${updatedSkipValue}`;
+      const products = await getMartProducts(mart_id,cid,sid,limit,updatedSkipValue);
+      console.log('products are',products.data);
+      const resultProducts =  products.data;
+      if (resultProducts && resultProducts.length > 0) {
         if (sid) {
-          setProducts(prevProducts => [...prevProducts, ...resultProducts.data]);
-          console.log(resultProducts.data);
+          setProducts(prevProducts => [...prevProducts, ...resultProducts]);
+          console.log(resultProducts);
         } else {
           console.log(resultProducts);
-          setProducts(prevProducts => [...prevProducts, ...resultProducts.data]);
+          setProducts(prevProducts => [...prevProducts, ...resultProducts]);
         }
         setEffectiveSkip(prevSkip => prevSkip + limit);
         setSkip(prevSkip => prevSkip + limit)
@@ -49,17 +48,14 @@ const Categories = () => {
       console.log(err);
     }
   };
+  // Get Mart Categories
   const fetchData = async () => {
     try {
-      const responseCategories = await fetch(
-        `${api}/get_martCategories?mart_id=${mart_id}&cid=${cid}&limit=${limit}&skip=${skip}`
-      );
-      if (!responseCategories.ok) {
-        throw new Error(`HTTP error! Status: ${responseCategories.status}`);
-      }
-      const resultCategories = await responseCategories.json();
-      setData(resultCategories.data[0]);
-      console.log(resultCategories.data[0]);
+      const responseCategories = await  getMartCategories(mart_id,cid,limit,skip);
+      const resultCategories =  responseCategories.data;
+      console.log(responseCategories)
+      setData(resultCategories[0]);
+      // console.log(resultCategories[0]);
       get_Products(cid);   
     } catch (error) 
     {

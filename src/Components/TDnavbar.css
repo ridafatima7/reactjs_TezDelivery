@@ -253,7 +253,25 @@
       height: 8rem;
     }
   } */
-  
+  .user_name{
+    color:#F28F47;
+    font-size: 25px;
+    width: 12rem;
+  }
+  .logout-btn{
+    background-color: #F17E2A;
+    color: white;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 19px;
+    border: none;
+    width: 94%;
+    height: 60px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   @media (max-width: 1024px) {
     .navdiv a, .Item-Link{
       flex-direction: row;

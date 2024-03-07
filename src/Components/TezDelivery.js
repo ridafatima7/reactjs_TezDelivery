@@ -8,6 +8,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { getMartCategories,getExclusiveProducts,getMostSellingProducts,getMarts } from "../../../my-app/src/Server";
 import 'swiper/css/scrollbar';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navigation, Pagination, Autoplay, Scrollbar, A11y, EffectCoverflow } from 'swiper/modules';
@@ -31,54 +32,59 @@ const TezDelivery = () => {
   const [mostSellingOffers, setSelling] = useState([])
   const [Ticker, setTicker] = useState([])
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${api}/get_martCategories?mart_id=${Martid}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-        console.log(result);
-        setData(result.data);
-      } catch (error) {
-        console.log(error);
-      }
-      try {
-        const response = await fetch(`${api}/get_martProducts?mart_id=${Martid}&exclusive=true`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-        console.log(result);
-        setExclusive(result.data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-      }
-      try {
-        const response = await fetch(`${api}/get_martProducts?mart_id=${Martid}&most_selling=true&limit=10`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-        console.log(result);
-        setSelling(result.data);
-      } catch (error) {
-        console.log(error);
-      }
-      try {
-        const response = await fetch(`${api}/get_marts?mart_id=${Martid}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-        console.log(result);
-        setTicker(result.data[0]);
-        // console.log(result.data[0].ticker);
-      } catch (error) {
-        console.log(error);
-      }
 
+    const fetchData = async () => {
+      // Getting mart categories
+      try {
+        const response = await getMartCategories(Martid);
+        if (response.status === 200) {
+          console.log("Categories=>", response.data);
+          setData(response.data);
+        } else {
+          console.log('Error:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+      // Getting Exclusive products
+      try {
+        const response = await getExclusiveProducts(Martid);       
+        if (response.status === 200) {
+          console.log("ExclusiveProducts=>", response.data);
+          setExclusive(response.data);
+        }
+        else {
+          console.log('Error:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+      // Getting most Selling  products
+      try {
+        const response = await getMostSellingProducts(Martid);
+        if (response.status === 200) {
+          console.log("most Selling Products=>", response.data);
+          setSelling(response.data);
+        }
+        else {
+          console.log('Error:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+     // Getting Mart Data
+      try {
+        const response = await getMarts(Martid);
+        if (response.status === 200) {
+          console.log("Mart Data=>", response.data);
+          setTicker(response.data[0]);
+        }
+        else {
+          console.log('Error:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
     };
 
     fetchData();

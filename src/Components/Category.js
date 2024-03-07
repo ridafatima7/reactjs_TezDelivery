@@ -7,6 +7,7 @@ import TNavbar from "./TNavbar";
 import LazyLoad from 'react-lazy-load';
 import { ClipLoader } from 'react-spinners';
 import api from "./apis";
+import { getMartCategories } from "../../../my-app/src/Server";
 const Category = () => {
   const [DataProduct, setData] = useState([]);
   const [imageLoading, setImageLoading] = useState(true);
@@ -15,21 +16,19 @@ const Category = () => {
   const mart_id = sessionStorage.getItem('mart_id');
   const fetchData = async () => {
     try {
-      const response = await fetch(
-        `${api}/get_martCategories?mart_id=${mart_id}`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      const response = await getMartCategories(mart_id);
+      if (response.status === 200) {
+        console.log("Categories=>", response.data);
+        setData(response.data);
+      } else {
+        console.log('Error:', response.statusText);
       }
-      const result = await response.json();
-      console.log("Categories=>", result);
-      setData(result.data);
     } catch (error) {
-      console.log(error);
-    } finally {
+      console.error('Error:', error.message);
     }
-  };
-  useEffect(() => {
+    
+    };
+    useEffect(() => {
     fetchData();
   }, []);
 

@@ -6,6 +6,7 @@ import NavSection from "./NavSection";
 import TNavbar from "./TNavbar";
 import api from "./apis";
 import "react-loading-skeleton/dist/skeleton.css";
+import { getMartProducts, getSearchProducts } from "../Server";
 const SearchProducts = () => {
   const [search_Query, set_SearchQuery] = useState("");
   const [filteredProducts, setFilteredProduct] = useState([]);
@@ -17,17 +18,20 @@ const SearchProducts = () => {
   const mart_id = params.get("martId");
   const searched_products = async () => {
     try {
-      let url;
+      let result;
       if (search_Query) {
-        url = `${api}/get_searched_Products?mart_id=${mart_id}&key=${search_Query}&limit=${limit}&skip=${skip}`;
+        // url = `${api}/get_searched_Products?mart_id=${mart_id}&key=${search_Query}&limit=${limit}&skip=${skip}`;
+        result=await getSearchProducts(mart_id,search_Query,limit,skip);
       } else {
-        url = `${api}/get_martProducts?mart_id=${mart_id}&limit=${limit}&skip=${skip}`;
+        // url = `${api}/get_martProducts?mart_id=${mart_id}&limit=${limit}&skip=${skip}`;
+        result=await getMartProducts(mart_id,0,0,limit,skip);
       }
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const result = await response.json();
+      // const response = await fetch(url);
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error! Status: ${response.status}`);
+      // }
+      // const result = await response.json();
+      console.log(result.data)
       if (result.data && result.data.length > 0) {
         setFilteredProduct([...filteredProducts, ...result.data]);
         setSkip(skip + limit); 

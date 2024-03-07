@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { MdPinDrop } from "react-icons/md";
-
 import Exclusive from "./Exclusive";
 import Footer from "./Footer";
 import Items from "./Items";
 import TNavbar from "./TNavbar";
-
 import api from "./apis";
-
+import { getMartProducts, getMostSellingProducts } from "../Server";
 const Product = ({ key = "" }) => {
   const search = window.location.search;
   const params = new URLSearchParams(search);
@@ -19,29 +17,24 @@ const Product = ({ key = "" }) => {
   const [quantity, setQuantity] = useState(1);
   const get_Products = async () => {
     try {
-      const get_mart_product_url = key
-        ? `${api}/get_searched_Products?mart_id=${martid}&key=${key}`
-        : `${api}/get_martProducts?mart_id=${martid}&pid=${pid}`;
-      const products = await fetch(get_mart_product_url);
-      if (!products.ok) {
-        throw new Error(`HTTP error! Status: ${products.status}`);
-      }
-      const resultProducts = await products.json();
-      console.log(resultProducts);
+      // const get_mart_product_url = key
+      //   ? `${api}/get_searched_Products?mart_id=${martid}&key=${key}`
+      //   : `${api}/get_martProducts?mart_id=${martid}&pid=${pid}`;
+      const resultProducts = await getMartProducts(martid,0,0,0,0,pid);
+      // fetch(get_mart_product_url);
+      // if (!products.ok) {
+      //   throw new Error(`HTTP error! Status: ${products.status}`);
+      // }
+      // const resultProducts = await products.json();
+      console.log(resultProducts.data);
       setProducts(resultProducts.data ? resultProducts.data : []);
     } catch (err) {
       console.log(err);
     }
     try {
-      const response = await fetch(
-        `${api}/get_martProducts?mart_id=1&most_selling=true&limit=5`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const result = await response.json();
-      console.log(result);
-      setExclusive(result.data);
+      const response = await getMostSellingProducts(martid);
+      console.log(response);
+      setExclusive(response.data);
     } catch (error) {
       console.log(error);
     } finally {

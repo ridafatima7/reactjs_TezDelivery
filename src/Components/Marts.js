@@ -10,17 +10,18 @@ import { FaSearch } from "react-icons/fa";
 import { RiMapPin2Fill } from 'react-icons/ri';
 import { BsList } from "react-icons/bs";
 import { Input,Button} from 'reactstrap';
+import { getMarts } from "../../../my-app/src/Server";
 const Marts = () => {
     const [martData, setMartData] = useState(null);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${api}/get_marts`);
+                const response = await getMarts();
                 console.log('Response Status:', response.status);
                 if (response.status === 200) {
                     console.log('Request successful!', response.data);
-                    setMartData(response.data.data);
+                    setMartData(response.data);
                 } 
                 else
                  {

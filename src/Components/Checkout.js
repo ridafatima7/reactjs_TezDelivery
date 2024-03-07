@@ -22,6 +22,7 @@ import {
 } from '@vis.gl/react-google-maps';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import { createOrder } from '../Server';
 const Checkout = () => {
   const location = useLocation();
   const { locationId } = location.state || {};
@@ -247,7 +248,6 @@ const Checkout = () => {
         JSON.stringify(data),
       );
       console.log('Response Status:', response.status);
-
       if (response.status === 200) {
         console.log('Checkout successful!', response.data);
       } else {
@@ -262,6 +262,7 @@ const Checkout = () => {
     // });
   };
   useEffect(() => {
+    // Fetching Mart info for timings
     const fetchMartInfo = async () => {
       try {
         const response = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);

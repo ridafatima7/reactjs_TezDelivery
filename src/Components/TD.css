@@ -120,7 +120,7 @@
 
 .popular-exclusive {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 20px;
 }
 
@@ -1305,14 +1305,26 @@
   display: flex;
   justify-content:center;
 }
+.promo-tick-btn{
+  background-color:#4FAD56;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 60px;
+  position: absolute;
+  z-index: 2000;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  font-size: 60px;
+  color:#FFFFFF;
+  border-radius: 50%;
+}
 .promo-close-btn {
   text-align: center;
   vertical-align: middle;
   line-height: 60px;
   position: absolute;
   z-index: 2000;
-  /* top: 20px;
-  right: 77px; */
   width: 60px;
   height: 60px;
   cursor: pointer;
