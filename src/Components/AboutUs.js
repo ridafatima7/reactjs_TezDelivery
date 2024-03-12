@@ -4,12 +4,11 @@ import Footer from './Footer';
 import { IoCall } from "react-icons/io5";
 import { RiWhatsappFill } from "react-icons/ri";
 import { ImFacebook2 } from "react-icons/im";
-import { FaSquareInstagram } from "react-icons/fa6";
 const AboutUs = () => {
   return (
     <div>
       <TNavbar />
-       <section className='container pt'>
+       <section className='container' style={{marginTop:'3rem'}}>
          <div className='aboutus'>
            <p><span className='about-span1'><b>Tezz Delivery</b></span> is a one-step solution for your daily shopping needs.</p>
            <p>Frustrated with disruptive deliveries  and unrelieble delivery times?We came up with a solution
@@ -19,13 +18,15 @@ const AboutUs = () => {
             fingers crossed for a smooth delivery experiencem you have come  to the right place!
            </p>
            <p>Dont hesitate to call us on <span className='about-span2'>0333 4878399</span></p>
-           <p><span className='about-span2'>(0333 ITS TEZZ)</span>for further information.</p>
+           <p><span className='about-span2'>(0333 ITS TEZZ) </span> for further information.</p>
          </div>
          <div className='about-icons pb'>
            <IoCall  size={28} className='call'/>
-           <RiWhatsappFill size={28} className='whatsapp'/>
+           <RiWhatsappFill size={30} className='whatsapp'/>
            <ImFacebook2 size={29} className='fb' />
-           <FaSquareInstagram className='insta' size={28} />
+           <div className='instagram'>
+           <img src='/Images/instagram.png' alt=""  />
+           </div>
          </div>
        </section>
       <Footer />

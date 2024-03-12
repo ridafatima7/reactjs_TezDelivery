@@ -116,16 +116,22 @@
 
 .call {
     margin-top: 2px;
-    color: #FFFFFF;
-    margin-right: 3px;
+    color: #2D307A;
+    margin-right: 7px;
     /* font-weight: bold; */
 }
-
 .Row3 {
     background-color: #4D5882;
     color: #FFFFFF;
 }
-
+.copyright{
+    font-size: 14px;
+    font-weight: 600;
+    color:#FFFFFF;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0px;
+}
 @media screen and (max-width: 768px) {
     .ml{
         margin-left: 25%;

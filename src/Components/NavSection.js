@@ -12,6 +12,7 @@ import { SlWallet } from "react-icons/sl";
 import { Link, useNavigate } from "react-router-dom";
 import { GoSignOut } from "react-icons/go";
 import { MdOutlinePrivacyTip } from "react-icons/md";
+import { MdModeEdit } from "react-icons/md";
 import {
   Button,
   Col,
@@ -30,7 +31,6 @@ import {
 import api from "./apis";
 import "./TDnavbar.css";
 import { Update_customer } from "../Server";
-
 const NavSection = ({
   search_Query = null,
   set_SearchQuery = null,
@@ -47,8 +47,8 @@ const NavSection = ({
   };
   const [sidebar, setSidebar] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
-  // const formData = new FormData();
   const [errorMessage, setErrorMessage] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState('/Images/Avatar.png');
   const [error, setError] = useState(false);
   const onDismissError = () => setError(false);
   const [id, setInformationid] = useState(null);
@@ -83,21 +83,21 @@ const NavSection = ({
       "firebase_id": "250e47a3c949d3f0960f9d3e40ed14",
       "mobile": "03008304930",
       "address": "H9, Islamabad",
-      "name": "Dashbaord Tester",
+      // "name": "Dashbaord Tester",
       "id": 9,
-      "email": "rida-testing8@gmail.com",
+      // "email": "rida-testing8@gmail.com",
       "status": "",
       "addedOn": "09/09/2023",
       "uniqueId": ""
     };
-    const { myCode, wallet, code, promosAvailed, customerNotes, deviceToken, points, firebase_id, addedOn, uniqueId, status } = staticData;
+    const { myCode, wallet, code, promosAvailed,address, customerNotes, deviceToken, points, firebase_id, addedOn, uniqueId, status } = staticData;
     const user_name = editUserName;
     const user_mob = phoneNumber;
     const user_email = e.target.email.value;
     const user_HouseNo = e.target.house.value;
     const user_StreetNo = e.target.Street.value;
     const user_FloorNo = e.target.Floor.value;
-    const address = user_HouseNo + ' ' + user_StreetNo + ' ' + user_FloorNo;
+    // const address = user_HouseNo + ' ' + user_StreetNo + ' ' + user_FloorNo;
     formData.append('name', user_name);
     formData.append('mobile', user_mob);
     formData.append('email', user_email);
@@ -105,7 +105,11 @@ const NavSection = ({
     formData.append('id', 9);
     formData.append('myCode', myCode);
     formData.append('wallet', wallet);
-    formData.append('code', code);
+    formData.append('code',code );
+     formData.append('houseNum', user_HouseNo);
+      formData.append('streetNum', user_StreetNo); 
+     formData.append('floorNum', user_FloorNo);
+     console.log(formData.get('floorNum'));
     formData.append('promosAvailed', promosAvailed);
     formData.append('customerNotes', customerNotes);
     formData.append('deviceToken', deviceToken);
@@ -115,18 +119,23 @@ const NavSection = ({
     formData.append('addedOn', addedOn);
     formData.append('uniqueId', uniqueId);
     formData.append('status', status);
-    console.log(formData);
-    const dataToSend = {
-      ...staticData,
-      name: user_name,
-      mobile: user_mob,
-      email: user_email,
-      address: address,
-      id: 9
+    const profilePhotoFile = profilePhoto; 
+    if (profilePhotoFile) {
+      formData.append('image', profilePhotoFile); 
+    }
+    console.log(formData.get('image'));
+    const formDataToJSON = async (formData) => {
+      const json = {};
+      for (let [key, value] of formData.entries()) {
+        json[key] = value;
+      }
+      return json;
     };
-    console.log(dataToSend);
+    const data=await formDataToJSON(formData);
+
+  console.log(formData);
     try {
-      const response = await Update_customer(dataToSend);
+      const response = await Update_customer(data);
       console.log('Response Status:', response.status);
       if (response.status === 200) {
         console.log('Update successful!', response.data);
@@ -180,7 +189,14 @@ const NavSection = ({
       console.log(error);
     }
   };
-
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    uploadProfilePhoto(file);
+  };
+  const uploadProfilePhoto = (file) => {
+    const imageUrl = URL.createObjectURL(file);
+    setProfilePhoto(imageUrl);
+  };
   return (
     <>
       {editProfile && (
@@ -203,12 +219,26 @@ const NavSection = ({
               <div className="editRow">
                 <Col md={6}>
                   <FormGroup className="avatar">
-                    <img
-                      className="edit-img"
-                      src="/Images/Avatar.png"
-                      alt="Avatar Image"
-                      onError={(e) => console.error("Image Error", e)}
-                    ></img>
+                    <div className="profile-photo-container">
+                      <img
+                        className="profile-photo"
+                        src={profilePhoto}
+                        alt="Avatar Image"
+                        onError={(e) => console.error("Image Error", e)}
+                      />
+                      <label htmlFor="photo-input" >
+                        <div className="edit-icon">
+                           <MdModeEdit size={14} />
+                        </div>
+                      </label>
+                      <input
+                        id="photo-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                        style={{ display: 'none' }}
+                      />
+                    </div>
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -334,65 +364,71 @@ const NavSection = ({
                 )}
                 {storedUserName ? (
                   <>
-                  <div onClick={edittoggle1} style={{display:'flex',alignItems:"center"}}>
-                  <MdModeEditOutline
-                    className="MdOutlineModeEdit-icon"
-                    onClick={() => setEditProfile(true)}
-                    size={18}
-                  />
-                </div>
+                    <div onClick={edittoggle1} style={{ display: 'flex', alignItems: "center" }}>
+                      <MdModeEditOutline
+                        className="MdOutlineModeEdit-icon"
+                        onClick={() => setEditProfile(true)}
+                        size={18}
+                      />
+                    </div>
                   </>
-                ):
-                (
-                <></>
-                )}             
+                ) :
+                  (
+                    <></>
+                  )}
               </div>
             </div>
             <div className="sidebar-items pt">
               <hr />
               <div>
+                  <Link to='/' className="nav-linkstyle">
                 <BsShop size={28} />
                 <span>Shop</span>
+               </Link>
               </div>
               <hr />
-              <div>
-                <MdShoppingCartCheckout size={28} />
+              {/* <div>
+                 <Link to='/' className="nav-linkstyle">
+                <MdShoppingCartCheckout size={28}  />
                 <span>Additional Products</span>
+                </Link>
               </div>
-              <hr />
+              <hr /> */}
               <div>
-                {/* <Link to='/my-orders'> */}
+                <Link to='/my-orders' className="nav-linkstyle">
                 <FiShoppingBag size={28} />
                 <span>My Orders</span>
-                {/* </Link>             */}
+                </Link>            
               </div>
-              <hr />
-              <div>
-                <SlWallet size={28} />
+              {/* <hr /> */}
+              {/* <div>
+                <Link to='/' className="nav-linkstyle">
+                 <SlWallet size={28} />
                 <span>Wallet & promos</span>
+                </Link>               
+              </div> */}
+              <hr />
+              <div>
+                <Link to='/aboutus' className="nav-linkstyle">
+                <FiAlertCircle size={28} />
+                <span>AboutUs</span>
+                </Link>             
               </div>
               <hr />
               <div>
-                {/* <Link to='/aboutus'> */}
-                  <FiAlertCircle size={28} />
-                  <span>AboutUs</span>
-                {/* </Link>              */}
-              </div>          
-              <hr />
-              <div>
-                {/* <Link to='/aboutus'> */}
-                  <MdOutlinePrivacyTip size={28} />
-                  <span>Privacy Policy</span>
-                {/* </Link>              */}
-              </div> 
+                <Link to='/aboutus' className="nav-linkstyle">
+                <MdOutlinePrivacyTip size={28} />
+                <span>Privacy Policy</span>
+                </Link>             
+              </div>
               <hr />
               {storedUserName ? (
                 // <Link to='/login' >
-                  <Button className="logout-btn"><GoSignOut size={25} style={{marginRight:'5px'}}/> Logout</Button>
+                <Button className="logout-btn"><GoSignOut size={25} style={{ marginRight: '5px' }} /> Logout</Button>
                 // </Link>
-                ) : (
-                  <div ></div>
-                )}
+              ) : (
+                <div ></div>
+              )}
             </div>
           </div>
         </section>

@@ -7,7 +7,6 @@ import { MdShoppingCartCheckout } from "react-icons/md";
 import { MdOutlineFeaturedPlayList } from "react-icons/md";
 import { FiShoppingBag } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
-import { slide as Menu } from 'react-burger-menu';
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useSelector } from 'react-redux';
 // import './font/Gilroy-Bold.ttf';
@@ -35,7 +34,7 @@ const TNavbar = () => {
               showMediaIcons ? "menu-link mobile-menu-link" : "navdiv menu-link"
             }>
               <div>
-              <Link to={`/TezDelivery?martId=${storedMart}`} className='Item-Link' >
+              <Link to={`/TezDelivery?martId=${storedMart}`} className='Item-Link' activeClassName='active' >
                 <BsShop />
                 <span className='Item-Link'>Shop</span>
               </Link>

@@ -58,6 +58,9 @@ const Footer = () => {
           </div>
         </section>
       </Container>
+      <Container style={{ backgroundColor: '#434F7B' }} fluid>
+      <span className='copyright'>Copyright 2024 &copy; Tezz Delivery. All rights reserved</span>
+      </Container>
     </>
   )
 }

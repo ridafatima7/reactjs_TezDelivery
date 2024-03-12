@@ -18,6 +18,7 @@ import SellingScreen from "./Components/SellingScreen";
 import Sidebar from "./Components/Sidebar";
 import TezDelivery from "./Components/TezDelivery";
 import "./App.css";
+import LandingPage from "./Components/LandingPageFiles/LandingPage";
 function App() {
   const [loading,setLoading]=useState(false);
   useEffect(()=>{
@@ -34,7 +35,7 @@ function App() {
           <>
          <BrowserRouter>
           <Routes>
-          <Route path="/" element={<Marts />} />
+          <Route path="/" element={<LandingPage />} />
             <Route path="/TezDelivery" element={<TezDelivery />} />
             <Route path="/order" element={<Order />} />
             <Route path="/login" element={<Login />} />
@@ -44,6 +45,7 @@ function App() {
             <Route path="/cart" element={<Cart/>} />
             <Route path="/sidebar" element={<Sidebar/>} />
             <Route path="/maps" element={<Gmaps/>} />
+            <Route path="/landing-page" element={<LandingPage/>} />
             <Route path="/categories" element={<Category />}></Route>
             <Route path="/categories_page" element={<Categories />} />
             <Route path="/product_detail" element={<Product />}></Route>

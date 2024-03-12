@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import TNavbar from './TNavbar';
-import api from "./apis";
 import { BsShop } from "react-icons/bs";
 import axios from 'axios';
 import { Link } from 'react-router-dom';

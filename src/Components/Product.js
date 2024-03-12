@@ -6,6 +6,10 @@ import Items from "./Items";
 import TNavbar from "./TNavbar";
 import api from "./apis";
 import { getMartProducts, getMostSellingProducts } from "../Server";
+import { useSelector, useDispatch } from 'react-redux';
+import { removefromCart} from './CartSlice';
+import {  Subtotal } from './CartSlice';
+import { addtoCart } from './CartSlice';
 const Product = ({ key = "" }) => {
   const search = window.location.search;
   const params = new URLSearchParams(search);
@@ -15,6 +19,7 @@ const Product = ({ key = "" }) => {
   const [ExclusiveOffers, setExclusive] = useState([]);
   const [showQuantityButtons, setShowQuantityButtons] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
   const get_Products = async () => {
     try {
       // const get_mart_product_url = key
@@ -43,19 +48,24 @@ const Product = ({ key = "" }) => {
   useEffect(() => {
     get_Products();
   }, []);
-  const addToCart = () => {
+  const addToCart = (item) => {
     setShowQuantityButtons(true);
+    dispatch(addtoCart(item));
   };
-  const decreaseQuantity = () => {
-    if (quantity > 0) {
+  const decreaseQuantity = (item) => {
+    if (quantity > 1) {
       setQuantity((prevQuantity) => prevQuantity - 1);
+      dispatch(removefromCart(item));
     } else {
       setShowQuantityButtons(false);
+      dispatch(removefromCart(item));
     }
-  };
-  const increaseQuantity = () => {
+  }; 
+  const increaseQuantity = (item) => {
     setQuantity((prevQuantity) => prevQuantity + 1);
     setShowQuantityButtons(true);
+    dispatch(addtoCart(item));
+
   };
 
   return (
@@ -77,11 +87,11 @@ const Product = ({ key = "" }) => {
                         <p>{item.description}</p>
                       </div>
                       <div className=" productDetail product-buttons">
-                        <button className="button-1" onClick={decreaseQuantity}>
+                        <button className="button-1" onClick={(e) =>decreaseQuantity(item)} >
                           -
                         </button>
                         <span>{quantity}</span>
-                        <button className="button-2" onClick={increaseQuantity}>
+                        <button className="button-2" onClick={(e) => increaseQuantity(item)} >
                           +
                         </button>
                       </div>
@@ -91,7 +101,7 @@ const Product = ({ key = "" }) => {
                       <p className="productDetailp">Rs.{item.price}</p>
                       <h3>{item.name}</h3>
                       <p>{item.description}</p>
-                      <p className="cart" onClick={addToCart}>
+                      <p className="cart" onClick={(e) => addToCart(item)}>
                         +
                       </p>
                     </div>

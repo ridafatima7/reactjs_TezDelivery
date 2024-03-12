@@ -60,7 +60,7 @@ export async function getMostSellingProducts(Martid, limit, skip) {
 // Fetching Marts
 export async function getMarts(Martid) {
   try {
-    let url = `${API_BASE_URL}/get_marts`;
+    let url = `${API_BASE_URL}/get_marts?active=true`;
     if (Martid) {
       url += `?mart_id=${Martid}`;
     }
@@ -166,11 +166,8 @@ export async function createOrder(data) {
 export async function ReOrder(orderId) {
   try {
     const url = `${API_BASE_URL}/re_order_details`;
-    const response = await axios.post(url, {orderId: orderId }, {
-      headers: {
-        'Content-Type': 'application/json' 
-      }
-    });
+    const response = await axios.post(url, JSON.stringify({'orderId': orderId }));
+  
     return response.data;
   } catch (error) {
     throw error;

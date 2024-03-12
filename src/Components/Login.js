@@ -4,7 +4,6 @@ import { FaFacebook } from "react-icons/fa";
 import { GoogleLogin } from 'react-google-login';
 import { initializeApp } from 'firebase/app';
 import 'firebase/messaging';
-import api from "./apis";
 import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 import { getMessaging, getToken } from 'firebase/messaging';

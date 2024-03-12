@@ -6,7 +6,6 @@ import { Spinner } from "reactstrap";
 import Items from "./Items";
 import NavSection from "./NavSection";
 import TNavbar from "./TNavbar";
-import api from "./apis";
 import { getMartProducts,getMartCategories } from "../Server";
 const Categories = () => {
   let sid=0;
@@ -20,6 +19,8 @@ const Categories = () => {
   const [hasMore, setHasMore] = useState(true);
   const [limit, setLimit] = useState(15);
   const [skip, setSkip] = useState(0);
+  const [SIDi, setSid] = useState(null); 
+
   const [effectiveSkip,setEffectiveSkip]=useState([]);
   // Get Mart Products
   const get_Products = async (cid, sid,skipValue) => {
@@ -67,6 +68,7 @@ const Categories = () => {
   }, [cid, mart_id]);
   const FilterCat = (id) => {
     setSelectedSubcategory(id); 
+    setSid(id);
     setProducts([]);
     setEffectiveSkip(0);
     setHasMore(true);
@@ -111,7 +113,7 @@ const Categories = () => {
               {DataProduct.sub_categories.map((subcategory) => (
 
                 <button
-                  className={`subcategory pl ${sid === subcategory.sid ? 'subcat' : ''}`}
+                  className={`subcategory pl ${SIDi === subcategory.sid ? 'subcat' : ''}`}
                   onClick={() => {
                     FilterCat(subcategory.sid);
                   }}

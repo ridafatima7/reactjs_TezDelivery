@@ -206,7 +206,7 @@ const Checkout = () => {
     //     }
     //     console.log(addressLoc);
     const data = {
-      placedOn: formattedDate,
+      placedOn: "09/07/2023 02:51 PM",
       scheduledFor: "",
       paymentMethod: paymentMethod,
       additionalComments: additionalComment,
@@ -359,13 +359,13 @@ const Checkout = () => {
       } else {
         console.log("Mart is currently closed.");
         // formattedDate = 'Mart Closed';
-        setOrderScheduale(true);
+        // setOrderScheduale(true);
       }
     } else {
       console.log("Could not find timings for today.");
     }
   }
-  console.log(addressLoc);
+  // console.log(addressLoc);
   return (
     <div>
       <TNavbar />
