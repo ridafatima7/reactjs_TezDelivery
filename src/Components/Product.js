@@ -80,13 +80,12 @@ const Product = ({ key = "" }) => {
                     <img src={item.image} alt="image" />
                   </div>
                   {showQuantityButtons ? (
-                    <div>
-                      <div className="productDetail">
+                    <>
+                    <div className="productDetail">
                         <p className="productDetailp">Rs.{item.price}</p>
                         <h3>{item.name}</h3>
                         <p>{item.description}</p>
-                      </div>
-                      <div className=" productDetail product-buttons">
+                      <div className="product-buttons">
                         <button className="button-1" onClick={(e) =>decreaseQuantity(item)} >
                           -
                         </button>
@@ -96,6 +95,8 @@ const Product = ({ key = "" }) => {
                         </button>
                       </div>
                     </div>
+
+                    </>
                   ) : (
                     <div className="productDetail">
                       <p className="productDetailp">Rs.{item.price}</p>
@@ -104,6 +105,7 @@ const Product = ({ key = "" }) => {
                       <p className="cart" onClick={(e) => addToCart(item)}>
                         +
                       </p>
+
                     </div>
                   )}
                 </div>

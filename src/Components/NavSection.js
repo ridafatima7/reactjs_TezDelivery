@@ -142,6 +142,7 @@ const NavSection = ({
         sessionStorage.setItem('userName', user_name);
         sessionStorage.setItem('email', user_email);
         sessionStorage.setItem('phoneNumber', user_mob);
+        setEditProfile(false);
       } else {
         console.log('Update failed with status:', response.status, 'and data:', response.data);
       }
@@ -387,26 +388,26 @@ const NavSection = ({
                </Link>
               </div>
               <hr />
-              {/* <div>
+              <div>
                  <Link to='/' className="nav-linkstyle">
                 <MdShoppingCartCheckout size={28}  />
                 <span>Additional Products</span>
                 </Link>
               </div>
-              <hr /> */}
+              <hr />
               <div>
                 <Link to='/my-orders' className="nav-linkstyle">
                 <FiShoppingBag size={28} />
                 <span>My Orders</span>
                 </Link>            
               </div>
-              {/* <hr /> */}
-              {/* <div>
+              <hr />
+              <div>
                 <Link to='/' className="nav-linkstyle">
                  <SlWallet size={28} />
                 <span>Wallet & promos</span>
                 </Link>               
-              </div> */}
+              </div>
               <hr />
               <div>
                 <Link to='/aboutus' className="nav-linkstyle">

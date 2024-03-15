@@ -35,6 +35,7 @@ const Checkout = () => {
   const [martTimings, setTimingsArray] = useState('');
   const [schedule, setScheduale] = useState(false);
   const [OrderScheduale, setOrderScheduale] = useState(false);
+  const [showOrderScheduale, setShowOrderScheduale] = useState(false);
   const storedUserName = sessionStorage.getItem('userName') || 'Guest User';
   const storedFirebaseId = sessionStorage.getItem('fire_baseid') || '';
   const storedPhoneNo = sessionStorage.getItem('phoneNumber') || '';
@@ -66,6 +67,7 @@ const Checkout = () => {
     if (value === 'S') {
       setShowCalendar(true);
       setEditPopup(false);
+      setOrderScheduale(false);
     }
     else if (value === 'N') {
       setEditPopup(false);
@@ -88,10 +90,12 @@ const Checkout = () => {
     else if (input == 'Schedualefor') {
       setScheduale(true);
       // setEditPopup(true);
+      setOrderScheduale(true);
     }
     else if (input == 'SchedualeDate') {
       setScheduale(false);
       setEditPopup(false);
+      setOrderScheduale(false);
     }
     else {
 
@@ -114,9 +118,10 @@ const Checkout = () => {
       minute: 'numeric',
       hour12: true
     };
-    const formattedDate = selectedDate.toLocaleString('en-US', options);
+    formattedDate = selectedDate.toLocaleString('en-US', options);
     setSchedualeOrder(formattedDate);
     console.log(schedualeOrder);
+    console.log(formattedDate);
   };
   const handleOptionClick = (option) => {
     if (option === 'Now') {
@@ -206,7 +211,7 @@ const Checkout = () => {
     //     }
     //     console.log(addressLoc);
     const data = {
-      placedOn: "09/07/2023 02:51 PM",
+      placedOn:  formattedDate,
       scheduledFor: "",
       paymentMethod: paymentMethod,
       additionalComments: additionalComment,
@@ -327,44 +332,101 @@ const Checkout = () => {
         console.error('Error:', error);
       }
     };
+    // if (martTimings && Array.isArray(martTimings)) {
+    //   const currentDate = new Date();
+    //   const currentDayOfWeek = currentDate.getDay();
+    //   const currentTime = currentDate.getHours() * 60 + currentDate.getMinutes();
+    //   const apiDayOfWeek = currentDayOfWeek === 0 ? 7 : currentDayOfWeek;
+    //   const todaysTimings = martTimings.find(timing => timing.day === apiDayOfWeek);
+
+    //   if (todaysTimings) {
+    //     const checkInTime = parseInt(todaysTimings.checkIn.split(':')[0]) * 60 + parseInt(todaysTimings.checkIn.split(':')[1]);
+    //     const checkOutTime = parseInt(todaysTimings.checkOut.split(':')[0]) * 60 + (todaysTimings.checkOut.includes('PM') ? 12 * 60 : 0) + parseInt(todaysTimings.checkOut.split(':')[1]);
+        
+    //     if (currentTime >= checkInTime && currentTime <= checkOutTime) {
+    //       console.log("Mart is currently open.");
+    //     } else {
+    //       console.log("Mart is currently closed.");
+    //       setShowOrderScheduale(false);
+    //       console.log('state is',showOrderScheduale);
+    //     }
+    //   } else {
+    //     console.log("Could not find timings for today.");
+    //   }
+    // }
 
     fetchData();
 
     fetchMartInfo();
   }, []);
-  if (martTimings && Array.isArray(martTimings)) {
-    const currentDate = new Date();
-    const currentDayOfWeek = currentDate.getDay();
-    const currentTime = currentDate.getHours() * 60 + currentDate.getMinutes();
-    console.log(currentTime);
-    console.log(martTimings);
-    const apiDayOfWeek = currentDayOfWeek === 0 ? 7 : currentDayOfWeek;
-    const todaysTimings = martTimings.find(timing => timing.day === apiDayOfWeek);
-    if (todaysTimings) {
-      const checkInTime = parseInt(todaysTimings.checkIn.split(':')[0]) * 60 + parseInt(todaysTimings.checkIn.split(':')[1]);
-      const checkOutTime = parseInt(todaysTimings.checkOut.split(':')[0]) * 60 + (todaysTimings.checkOut.includes('PM') ? 12 * 60 : 0) + parseInt(todaysTimings.checkOut.split(':')[1]);
-      if (currentTime >= checkInTime && currentTime <= checkOutTime) {
-        console.log("Mart is currently open.");
-        const currentDate = new Date();
-        const placedOnDate = currentDate.toLocaleString('en-US', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        });
-        formattedDate = placedOnDate.replace(',', '');
-        console.log(formattedDate);
+  useEffect(() => {
+    if (martTimings && Array.isArray(martTimings)) {
+      const currentDate = new Date();
+      const currentDayOfWeek = currentDate.getDay();
+      const currentTime = currentDate.getHours() * 60 + currentDate.getMinutes();
+      const apiDayOfWeek = currentDayOfWeek === 0 ? 7 : currentDayOfWeek;
+      const todaysTimings = martTimings.find(timing => timing.day === apiDayOfWeek);
+
+      if (todaysTimings) {
+        const checkInTime = parseInt(todaysTimings.checkIn.split(':')[0]) * 60 + parseInt(todaysTimings.checkIn.split(':')[1]);
+        const checkOutTime = parseInt(todaysTimings.checkOut.split(':')[0]) * 60 + (todaysTimings.checkOut.includes('PM') ? 12 * 60 : 0) + parseInt(todaysTimings.checkOut.split(':')[1]);
+        
+        if (currentTime >= checkInTime && currentTime <= checkOutTime) {
+          console.log("Mart is currently open.");
+          const currentDate = new Date();
+                const placedOnDate = currentDate.toLocaleString('en-US', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true,
+                });
+                formattedDate = placedOnDate.replace(',', '');
+                console.log(formattedDate);
+        } else {
+          console.log("Mart is currently closed.");
+          setShowOrderScheduale(false);
+          console.log('state is',showOrderScheduale);
+        }
       } else {
-        console.log("Mart is currently closed.");
-        // formattedDate = 'Mart Closed';
-        // setOrderScheduale(true);
+        console.log("Could not find timings for today.");
       }
-    } else {
-      console.log("Could not find timings for today.");
     }
-  }
+  }, [martTimings]);
+  // if (martTimings && Array.isArray(martTimings)) {
+  //   const currentDate = new Date();
+  //   const currentDayOfWeek = currentDate.getDay();
+  //   const currentTime = currentDate.getHours() * 60 + currentDate.getMinutes();
+  //   console.log(currentTime);
+  //   console.log(martTimings);
+  //   const apiDayOfWeek = currentDayOfWeek === 0 ? 7 : currentDayOfWeek;
+  //   const todaysTimings = martTimings.find(timing => timing.day === apiDayOfWeek);
+  //   if (todaysTimings) {
+  //     const checkInTime = parseInt(todaysTimings.checkIn.split(':')[0]) * 60 + parseInt(todaysTimings.checkIn.split(':')[1]);
+  //     const checkOutTime = parseInt(todaysTimings.checkOut.split(':')[0]) * 60 + (todaysTimings.checkOut.includes('PM') ? 12 * 60 : 0) + parseInt(todaysTimings.checkOut.split(':')[1]);
+  //     if (currentTime >= checkInTime && currentTime <= checkOutTime) {
+  //       console.log("Mart is currently open.");
+  //       const currentDate = new Date();
+  //       const placedOnDate = currentDate.toLocaleString('en-US', {
+  //         day: '2-digit',
+  //         month: '2-digit',
+  //         year: 'numeric',
+  //         hour: '2-digit',
+  //         minute: '2-digit',
+  //         hour12: true,
+  //       });
+  //       formattedDate = placedOnDate.replace(',', '');
+  //       console.log(formattedDate);
+  //     } else {
+  //       console.log("Mart is currently closed.");
+  //       // formattedDate = 'Mart Closed';
+  //        setOrderScheduale(true);
+  //     }
+  //   } else {
+  //     console.log("Could not find timings for today.");
+  //   }
+  // }
   // console.log(addressLoc);
   return (
     <div>
@@ -553,6 +615,7 @@ const Checkout = () => {
                 </div>
               </div>
             </div>
+            {!showOrderScheduale && (
             <div className='cart-container'>
               <div className='checkout-items'>
                 <h5>Scheduled for</h5>
@@ -577,6 +640,7 @@ const Checkout = () => {
               )}
 
             </div>
+            )}
           </section>
           <section className='container '>
             <div className='cart-container'>
@@ -590,6 +654,9 @@ const Checkout = () => {
           <section className='container '>
             <div className='cart-container' style={{ backgroundImage: 'url("/Images/Background.jpeg")', borderRadius: "15px", backgroundRepeat: 'none', backgroundSize: 'cover',objectPosition:'center',backgroundPosition:'center' }}>
               <div className='cart-checkout'>
+              <div className='cart-subtotal'>
+                  <h4 style={{textDecoration:'underline',fontSize:'16px'}}>View Cart</h4>
+                </div>
                 <div className='cart-subtotal'>
                   <h5>Sub-Total</h5>
                   <h5>Rs {subtotal}</h5>

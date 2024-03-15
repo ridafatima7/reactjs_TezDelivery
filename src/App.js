@@ -19,6 +19,7 @@ import Sidebar from "./Components/Sidebar";
 import TezDelivery from "./Components/TezDelivery";
 import "./App.css";
 import LandingPage from "./Components/LandingPageFiles/LandingPage";
+import TestNavbar from "./Components/LandingPageFiles/TestNavbar";
 function App() {
   const [loading,setLoading]=useState(false);
   useEffect(()=>{

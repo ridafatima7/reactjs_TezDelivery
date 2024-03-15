@@ -3,7 +3,7 @@ const API_BASE_URL = "https://old.tezzdelivery.com/td_api_web";
 //    Fetching mart categories
 export async function getMartCategories(mart_id, cid, limit, skip) {
   try {
-    let url = `${API_BASE_URL}/get_martCategories?mart_id=${mart_id}`;
+    let url = `https://old.tezzdelivery.com/td_api_test/get_martCategories?mart_id=${mart_id}`;
     if (cid) {
       url += `&cid=${cid}`;
     }
@@ -22,7 +22,7 @@ export async function getMartCategories(mart_id, cid, limit, skip) {
 // Fetching Eclusive Products
 export async function getExclusiveProducts(Martid, limit, skip) {
   try {
-    let url = `${API_BASE_URL}/get_martProducts?mart_id=${Martid}&exclusive=true`;
+    let url = `https://old.tezzdelivery.com/td_api_test/get_martProducts?mart_id=${Martid}&exclusive=true`;
     if (typeof limit !== 'undefined') {
       url += `&limit=${limit}`
     }
@@ -51,6 +51,7 @@ export async function getMostSellingProducts(Martid, limit, skip) {
     if (typeof skip !== 'undefined') {
       url += `&skip=${skip}`;
     }
+    console.log(url);
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
@@ -60,7 +61,7 @@ export async function getMostSellingProducts(Martid, limit, skip) {
 // Fetching Marts
 export async function getMarts(Martid) {
   try {
-    let url = `${API_BASE_URL}/get_marts?active=true`;
+    let url = `https://old.tezzdelivery.com/td_api_test/get_marts?active=true`;
     if (Martid) {
       url += `?mart_id=${Martid}`;
     }

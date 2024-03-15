@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Footer from "../Footer";
 import TDSlider from "../TDSlider";
+import { FiMenu } from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import { GiHamburgerMenu } from "react-icons/gi";
 import LazyLoad from 'react-lazy-load';
@@ -28,16 +29,21 @@ const LandingPage = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [selectedMartName, setSelectedMartName] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
-    const [Martid,setMartid]=useState(1);
+    const [Martid, setMartid] = useState(1);
+    const text = "We pick up your goods from our partner marts and never charge above the store price.";
+    const [isCollapsed, setIsCollapsed] = useState(true);
+    const toggleNavbar = () => setIsCollapsed(!isCollapsed);
+    const truncatedText = text.length > 127 ? text.substring(0, 127) + '...' : text;
     const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
     const handleItemClick = (e) => {
         console.log('Clicked item:', e.target.textContent);
     };
-    // let Martid = '1';
+    let storedMart = '';
     useEffect(() => {
 
         const fetchData = async () => {
             // Getting mart categories
+            storedMart = sessionStorage.setItem('mart_id', Martid);
             try {
                 const response = await getMartCategories(Martid);
                 if (response.status === 200) {
@@ -84,13 +90,13 @@ const LandingPage = () => {
             } finally {
                 setLoading(false);
             }
-           
+
         };
-        
+
         fetchData();
     }, [Martid]);
     const breakpoints = {
-         300: {
+        300: {
             spaceBetween: 20,
             slidesPerView: 1.5
         },
@@ -125,7 +131,7 @@ const LandingPage = () => {
         <div>
             {/* Navbar */}
             <div className='container'>
-                <section className='section1'>
+                {/* <section className='section1'>
                     <div className="navbar" >
                         <div style={{ width: '35%' }}>
                             <a href="/">
@@ -142,7 +148,7 @@ const LandingPage = () => {
                                     {showDropdown && (
                                         <div className="dropdown-content">
                                             {martData && martData.map((mart, index) => (
-                                                <a key={index}  onClick={(e) => handleSelectMart(e, mart.name, mart.inventory_id)}>
+                                                <a key={index} onClick={(e) => handleSelectMart(e, mart.name, mart.inventory_id)}>
                                                     {mart.name}
                                                 </a>
                                             ))}
@@ -151,10 +157,9 @@ const LandingPage = () => {
                                 </div>
                             </div>
                             <div>
-                                <Link to='/' ><img src='/Images/image.png' alt='' className='img-navbar' /> </Link>
+                                <Link to='https://play.google.com/store/apps/details?id=app.grocery.tezz' ><img src='/Images/image.png' alt='' className='img-navbar' /> </Link>
                             </div>
                         </div>
-                        {/* Over Flow menu */}
                         <div className="overflow-menu">
                             <div className="over-menu" onClick={() => setShowMobileMenu(!showMobileMenu)}>
                                 <GiHamburgerMenu size={30} />
@@ -169,7 +174,44 @@ const LandingPage = () => {
                             )}
                         </div>
                     </div>
-                </section >
+                </section > */}
+                <nav className="navbar-n">
+                    <img className='navbar-brand' src='/Images/Logo.png' alt="Logo" />
+                    <button className="navbar-toggler" onClick={toggleNavbar}>
+                        <span className="toggler-icon"><GiHamburgerMenu /></span>
+                    </button>
+                    <div className={`navbar-menu ${isCollapsed ? 'collapsed' : 'expanded'}`}>
+                        <div className="additional-links">
+                            <div className='expanded-container'>
+                                <Link to='' className="nav-link">All Categories</Link>
+                                <Link to='' className="nav-link">Tezz Discounts & Offers</Link>
+                                <Link to='' className="nav-link">Exclusive Offers</Link>
+                                <Link to='' className="nav-link">Breakfast & Diary</Link>
+                            </div>
+                        </div>
+                    </div>                   
+                    <div className={`navbar-menu ${isCollapsed ? 'collapsed' : 'expanded'}`}>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <div className="dropdown1" onClick={() => setShowDropdown(!showDropdown)}>
+                                <button className="dropbtn1">{selectedMartName}<span className="arrow">&#9660;</span></button>
+                                {showDropdown && (
+                                    <div className="dropdown-content1">
+                                        {martData && martData.map((mart, index) => (
+                                            <a key={index} onClick={(e) => handleSelectMart(e, mart.name, mart.inventory_id)}>
+                                                {mart.name}
+                                            </a>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <Link to="https://play.google.com/store/apps/details?id=app.grocery.tezz">
+                                    <img src="/Images/image.png" alt="" className="img-navbar" />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
                 <section className='section1'>
                     <div className='mob-dropdown'>
                         <div className="dropdown" onClick={() => setShowDropdown(!showDropdown)}>
@@ -186,7 +228,7 @@ const LandingPage = () => {
                         </div>
                     </div>
                 </section>
-            </div >
+            </div>
             <Container style={{ backgroundColor: '#4D5882' }} fluid >
                 <section className='container'>
                     <div className='con-comp'>
@@ -229,15 +271,84 @@ const LandingPage = () => {
                     </div>
                 </div>
             </section>
+            {/* Exclusive Offers */}
+            <section className="container pt pb">
+                <div className="pb heading-box">
+                    <h5 className="main_heading">Exclusive Offers</h5>
+
+                    {/* <Link to="/Exclusive-offers"><Button className="see-all">See all</Button></Link> */}
+                </div>
+                {/* <div className="popular-exclusive"> */}
+                <Swiper
+                    modules={[Navigation, Pagination, A11y]}
+                    // spaceBetween={230}
+                    // slidesPerView={1.5}
+                    grabCursor={true}
+                    breakpoints={breakpoints}
+                    // centeredSlides={true}
+                    // loop={true}
+                    navigation={false}
+                    pagination={{ clickable: true, el: '' }}
+                    className='swiper-container'
+                    onSwiper={(swiper) => console.log(swiper)}
+                    onSlideChange={() => console.log('slide change')}
+                >
+                    {ExclusiveOffers && ExclusiveOffers.map((item, i) => (
+                        <SwiperSlide key={i} className="swiperslide" >
+                            <Link to={`https://tezzdelivery.com/#/product_detail?martId=${storedMart}&productId=${item.pid}`} className='linkstyle'>
+                                <ExclusivePro
+                                    key={i}
+                                    id={item.id}
+                                    name={item.name}
+                                    image={item.image}
+                                    exclusivePrice={item.exclusivePrice}
+                                    price={item.price}
+                                />
+                            </Link>
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+                {/* </div> */}
+            </section>
+            {/* Why you Choose Us (images section ) */}
+            <Container fluid className='ChooseUs-SectionImg'>
+                <section className="container " style={{ padding: '2rem 0' }} >
+                    <div className='chooseusImg'>
+                        <div class="choose-us-heading">
+                            <h2>Why Choose Us?</h2>
+                        </div>
+                        <div class="choose-us-tagline pb">
+                            <p style={{ color: '#7c8081' }}>Thousands of healthy, fresh and delicious products delivered to your kitchen everyday</p>
+                        </div>
+                        <div className="features">
+                            <div className="feature-item">
+                                <img src="/Images/freeDelivery.jpeg" alt="" />
+                                <h6>Free Shipping</h6>
+                                <p>We provide free deliver in less than 2 hours to our service </p>
+                            </div>
+                            <div className="feature-item">
+                                <img src="/Images/save.jpeg" alt="" />
+                                <h6>Simplify your Life </h6>
+                                <p>Never visit a store again because we provide all your favourite brands, at store prices and with free delivery.</p>
+                            </div>
+                            <div className="feature-item">
+                                <img src="/Images/FreshVeges.jpeg" alt="" />
+                                <h6>Competitive Prices</h6>
+                                <p>{truncatedText}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </Container>
             {/* Categories */}
-            <section className="products_section container pt pb" style={{paddingBottom:'6rem'}}>
+            <section className="products_section container pt pb" style={{ paddingBottom: '6rem' }}>
                 <div className="pb heading-box">
                     <h5 className="main_heading ">Shop by Category</h5>
                     {/* <Link to={`/categories?martId=${Martid}`}><Button className="see-all">See all</Button></Link> */}
                 </div>
                 <div className="products_grid">
                     {DataProduct.slice(0, 10).map((item, index) => (
-                        <Link to={`/TezDelivery?martId=1`} className="linkstyle" key={index}>
+                        <Link to={`https://tezzdelivery.com/#/categories_page?martId=${storedMart}&categoryId=${item.cid}`} className="linkstyle" key={index}>
                             <div className={`products_grid_item ${item.index === 0 || item.index === 4 ? 'special_bg' : ''}`}>
                                 {/* <img src={item.image} alt="img" /> */}
                                 {imageLoading && <ClipLoader color={'#F17E2A'} loading={imageLoading} size={35} />}
@@ -249,7 +360,7 @@ const LandingPage = () => {
                                         style={{ display: imageLoading ? 'none' : 'block' }}
                                     />
                                 </LazyLoad>
-                                <p>{item.name}</p>
+                                <span>{item.name}</span>
                             </div>
                         </Link>
                     ))}
@@ -291,51 +402,13 @@ const LandingPage = () => {
                     <div className='download-comp'>
                         <h4>For Better Experience Download the App Now !</h4>
                         <div className='download-btns'>
-                          <a href='https://apps.apple.com/eg/app/tezz-delivery/id1632938996'><img src='/Images/Appstore.png' alt='' className="img"  /></a>
-                          <a href='https://play.google.com/store/apps/details?id=app.grocery.tezz'><img src='/Images/Playstore.png' alt='' className="img"  /></a>
-                     </div>
+                            <a href='https://apps.apple.com/eg/app/tezz-delivery/id1632938996'><img src='/Images/Appstore.png' alt='' className="img" /></a>
+                            <a href='https://play.google.com/store/apps/details?id=app.grocery.tezz'><img src='/Images/Playstore.png' alt='' className="img" /></a>
+                        </div>
                     </div>
                 </section>
             </Container>
-            {/* Exclusive Offers */}
-            <section className="container pt pb">
-                <div className="pb heading-box">
-                    <h5 className="main_heading">Exclusive Offers</h5>
 
-                    {/* <Link to="/Exclusive-offers"><Button className="see-all">See all</Button></Link> */}
-                </div>
-                {/* <div className="popular-exclusive"> */}
-                <Swiper
-                    modules={[Navigation, Pagination, A11y]}
-                    // spaceBetween={230}
-                    // slidesPerView={1.5}
-                    grabCursor={true}
-                    breakpoints={breakpoints}
-                    // centeredSlides={true}
-                    // loop={true}
-                    navigation={false}
-                    pagination={{ clickable: true, el: '' }}
-                    className='swiper-container'
-                    onSwiper={(swiper) => console.log(swiper)}
-                    onSlideChange={() => console.log('slide change')}
-                >
-                    {ExclusiveOffers && ExclusiveOffers.map((item, i) => (
-                        <SwiperSlide key={i} className="swiperslide" >
-                            {/* <Link to={`/TezDelivery?martId=1`} className="linkstyle"> */}
-                            <ExclusivePro
-                                key={i}
-                                id={item.id}
-                                name={item.name}
-                                image={item.image}
-                                exclusivePrice={item.exclusivePrice}
-                                price={item.price}
-                            />
-                            {/* </Link> */}
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
-                {/* </div> */}
-            </section>
             <Footer />
         </div >
     )
@@ -343,53 +416,53 @@ const LandingPage = () => {
 
 export default LandingPage
 
- 
+
 export const ExclusivePro = (props) => {
-  return (
-    <>
-      <div className='Exclusive'>
-        <div className='Exclusive_item'>
-        <Link to={`/TezDelivery?martId=1`} className='linkstyle'>
-          <div style={{display:'flex',justifyContent:'center'}}>
-          <img src={props.image} alt='img' /> 
-          </div>  
-          <p className='Exclusive_itemp'>{props.name}</p>      
-          </Link>
-          {/* {showQuantityButtons ? (
+    return (
+        <>
+            <div className='Exclusive'>
+                <div className='Exclusive_item'>
+                    {/* <Link to={`https://tezzdelivery.com/#/product_detail?martId=${storedMart}&productId=${props.pid}`} className='linkstyle'> */}
+                    <div style={{ display: 'flex', justifyContent: 'center', width: '120px' }}>
+                        <img src={props.image} alt='img' />
+                    </div>
+                    <p className='Exclusive_itemp'>{props.name}</p>
+                    {/* </Link> */}
+                    {/* {showQuantityButtons ? (
             <div className='quantity-buttons'>
               <button className='button-1' onClick={decreaseQuantity}>-</button>
               <span>{quantity}</span>
               <button className='button-2' onClick={increaseQuantity}>+</button>
             </div>
           ) : ( */}
-            <div className='prices'>
-              <div className='Exclusive_old' style={{
-                textDecoration: props.exclusivePrice ? 'line-through red' : 'none',
-                fontSize: props.exclusivePrice ? '11px' : '14px',
-                paddingBottom:props.exclusivePrice ? '0px':'10px'
+                    <div className='prices'>
+                        <div className='Exclusive_old' style={{
+                            textDecoration: props.exclusivePrice ? 'line-through red' : 'none',
+                            fontSize: props.exclusivePrice ? '11px' : '14px',
+                            paddingBottom: props.exclusivePrice ? '0px' : '10px'
 
-              }}>
-                Rs {props.price}
-              </div>
-              <div className='d-flex'>
-                {props.exclusivePrice > 0 && (
-                  <>
-                    <div className='Exclusive_price-new'>
-                      Rs {props.exclusivePrice}
+                        }}>
+                            Rs {props.price}
+                        </div>
+                        <div className='d-flex'>
+                            {props.exclusivePrice > 0 && (
+                                <>
+                                    <div className='Exclusive_price-new'>
+                                        Rs {props.exclusivePrice}
+                                    </div>
+                                </>
+                            )}
+                            <div className='addtocard-LP' >
+                                {/* <Link to={`/TezDelivery?martId=1`} style={{textDecoration:'none',color:'white'}} > */}
+                                <p className='addtocard-LP-p'>BUY NOW</p>
+                                {/* </Link> */}
+                            </div>
+                        </div>
                     </div>
-                  </>
-                )}
-                <div className='addtocard-LP' >
-                <Link to={`/TezDelivery?martId=1`} style={{textDecoration:'none',color:'white'}} >
-                    <p className='addtocard-LP-p'>BUY NOW</p>
-                </Link>
+                    {/* )} */}
                 </div>
-              </div>
             </div>
-          {/* )} */}
-        </div>
-      </div>
-    </>
-  )
+        </>
+    )
 }
 

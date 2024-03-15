@@ -301,6 +301,7 @@
     color:#F28F47;
     font-size: 25px;
     width: 12rem;
+    text-align: center;
   }
   .logout-btn{
     background-color: #F17E2A;
@@ -311,7 +312,6 @@
     border: none;
     width: 94%;
     height: 60px;
-    margin-top: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -395,6 +395,7 @@
   .section1{
     display: flex;
     flex-direction: row;
+    padding-top: 15px;
   }
   @media (max-width: 768px) 
   {
