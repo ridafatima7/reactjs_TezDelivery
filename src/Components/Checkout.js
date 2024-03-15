@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import TNavbar from './TNavbar'
+import TNavbar from './TNavbar';
+import Footer from "./Footer";
 import { FaLocationDot } from "react-icons/fa6";
 import { FiShoppingBag } from "react-icons/fi";
 import { useSelector, useDispatch } from 'react-redux';
@@ -798,3 +799,104 @@ export const Location = () => {
     </div>
   );
 };
+export const WalletandPromos= () => {
+  const [EditPopup, setEditPopup] = useState(false);
+  const [paymentMethodpopup, setPaymentMethodpopup] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+  const handleClick = (input) => {
+     if (input == 'paymentMethod') {
+      setPaymentMethodpopup(false);
+      setEditPopup(false);
+      setPaymentMethod("Cash on Delivery");
+    }
+    else if (input == 'COD') {
+      setPaymentMethodpopup(true);
+      setEditPopup(true);
+      // setPaymentMethod("Cash on Delivery");
+    }
+    else {
+
+    }
+  };
+  return (
+    <>
+   <TNavbar />
+   <section className='container'>
+   {EditPopup && (
+            <div className='payment-container'>
+              <div className='payment-popup'>
+                {paymentMethodpopup && (
+                  <>
+                    <div className='payment-close'>
+                      <span className='payment-close-btn' onClick={() => handleClick('paymentMethod')}>
+                        &times;
+                      </span>
+                    </div>
+                    <h3 className='payment-label' onClick={() => handleClick('paymentMethod')}>Cash on Delivery</h3>
+                    <hr className='line-after' />
+                  </>
+                )}
+
+              </div>
+            </div>
+          )}
+            <div className='cart-container'>
+              <div className='checkout-items'>
+                <h5>Funds Available</h5>
+                {/* <Link to={{
+                  pathname: '/edit-location',
+                  state:
+                  {
+                    any: setNewLocation
+                  }
+                }} style={{textDecoration:'none'}}>
+                  <span style={{}}>Edit</span></Link> */}
+              </div>
+              <div className='main'>
+                <div className='checkout-icons'>
+                  <FaLocationDot size={20} style={{ color: '#434F7B' }} />
+                </div>
+                <div className='main-div'>
+                  <p>Rs 0</p>
+                </div>
+              </div>
+            </div>
+            <div className='cart-container'>
+              <div className='checkout-items'>
+                <h5>Points Available</h5>
+                {/* <span >Applicable</span> */}
+              </div>
+              <div className='main'>
+                <div className='checkout-icons'>
+                  <FaLocationDot style={{ color: '#434F7B' }} size={20} />
+                </div>
+                <div className='promo'>
+                  <p style={{ marginTop: '5px' }}>0</p>
+                  {/* <h5 onClick={() => setPromoCode(true)}>Apply</h5> */}
+                </div>
+              </div>
+            </div>
+            <div className='cart-container'>
+              <div className='checkout-items'>
+                <h5>Payment Method</h5>
+                <span onClick={() => handleClick('COD')}>Edit</span>
+              </div>
+              <div className='main'>
+                <div >
+                  <img src='/Images/card.png' size={20} />
+                </div>
+                <div className='main-div'>
+                  <p style={{ marginTop: '5px' }}>{paymentMethod}</p>
+                </div>
+              </div>
+              
+            </div>    
+            <div className='cart-container' style={{fontSize:'17px',borderBottom:'0px'}}>
+            <br /><h5>Promo Code</h5>
+              <h5>Promo Code not Available.Please come back later</h5> 
+            </div>   
+          </section>
+   <Footer />
+    </>
+  )
+}

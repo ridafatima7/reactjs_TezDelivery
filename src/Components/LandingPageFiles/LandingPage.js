@@ -341,7 +341,7 @@ const LandingPage = () => {
                 </section>
             </Container>
             {/* Categories */}
-            <section className="products_section container pt pb" style={{ paddingBottom: '6rem' }}>
+            <section className="products_section container pt pb">
                 <div className="pb heading-box">
                     <h5 className="main_heading ">Shop by Category</h5>
                     {/* <Link to={`/categories?martId=${Martid}`}><Button className="see-all">See all</Button></Link> */}
@@ -373,7 +373,7 @@ const LandingPage = () => {
                         <div class="choose-us-heading">
                             <h2>Why Choose Us?</h2>
                         </div>
-                        <div class="choose-us-items pb">
+                        {/* <div class="choose-us-items pb">
                             <div class="item" >
                                 <h6>Free Shipping</h6>
                                 <span>Delivered in 60 minutes</span>
@@ -392,6 +392,27 @@ const LandingPage = () => {
                         </div>
                         <div class="choose-us-heading">
                             <h1 >Get it TEZZ Now !</h1>
+                        </div> */}
+                        
+                        <div class="choose-us-tagline pb">
+                            <p style={{ color: '#7c8081' }}>Thousands of healthy, fresh and delicious products delivered to your kitchen everyday</p>
+                        </div>
+                        <div className="features">
+                            <div className="feature-item">
+                                <img src="/Images/freeDelivery.jpeg" alt="" />
+                                <h6>Free Shipping</h6>
+                                <p>We provide free deliver in less than 2 hours to our service </p>
+                            </div>
+                            <div className="feature-item">
+                                <img src="/Images/save.jpeg" alt="" />
+                                <h6>Simplify your Life </h6>
+                                <p>Never visit a store again because we provide all your favourite brands, at store prices and with free delivery.</p>
+                            </div>
+                            <div className="feature-item">
+                                <img src="/Images/FreshVeges.jpeg" alt="" />
+                                <h6>Competitive Prices</h6>
+                                <p>{truncatedText}</p>
+                            </div>
                         </div>
                     </div>
                 </section>

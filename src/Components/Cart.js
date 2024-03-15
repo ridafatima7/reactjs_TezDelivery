@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removefromCart,removefromCross} from './CartSlice';
 import {  Subtotal } from './CartSlice';
+import Footer from './Footer';
 import { addtoCart } from './CartSlice';
 import { RxCross2 } from "react-icons/rx";
 import {Link} from 'react-router-dom';
@@ -112,3 +113,12 @@ const Cart = (props) => {
 }
 
 export default Cart
+export const AdditionalProducts = () => {
+  return (
+    <>
+   <TNavbar />
+
+   <Footer />
+    </>
+  )
+}

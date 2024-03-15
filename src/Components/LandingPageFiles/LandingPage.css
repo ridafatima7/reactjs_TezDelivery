@@ -29,7 +29,7 @@
   left: 0;
   right: 0;
   background-color: #FAFAFA;
-  overflow: hidden;
+  /* overflow: hidden; */
   transition: max-height 0.3s ease-out;
   max-height: 0;
 }
@@ -109,6 +109,7 @@
    color:#F9851C;
    font-size: 13px;
    margin-left: 13px; 
+   font-weight:600;
   }
   .mart{
       color:#5C5772;
@@ -346,19 +347,19 @@
 .chooseus{
   /* justify-content: center; */
   height: auto;
-  position: absolute;
+  /* position: absolute;
   top:-80px;
-  width:85%;
+  width:85%; */
 }
 .ChooseUs-Section{
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
+    /* position: relative;
     height: 15rem;
     background-image: url(/public/Images/Group.svg);
     background-size: cover;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat; */
 }
 .choose-us-heading{
   display: flex;
@@ -367,6 +368,7 @@
 .choose-us-heading h2 {
   margin-bottom: 20px;
   font-family: GilroyExtraBold;
+  color:green;
 }
 .download-comp h4{
   font-family: GilroyExtraBold;
@@ -479,7 +481,8 @@
 }
 .feature-item h6 {
   margin-bottom: 0.5rem;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  color:green;
 }
 .feature-item p {
   font-size: 0.875rem;
@@ -515,7 +518,7 @@
       width: 100%;
 }
 .ChooseUs-Section{
-      height: 80vh;
+      /* height: 80vh; */
  }
 
 }
@@ -641,7 +644,7 @@
   width: 100%;
 }
 .ChooseUs-Section{
-  height: 85vh;
+  /* height: 85vh; */
  }
  .feature-item img {
   height: 150px;

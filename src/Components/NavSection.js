@@ -7,7 +7,6 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoIosArrowBack } from "react-icons/io";
 import { MdShoppingCartCheckout } from "react-icons/md";
 import { MdModeEditOutline } from "react-icons/md";
-import { RiMapPin2Fill } from "react-icons/ri";
 import { SlWallet } from "react-icons/sl";
 import { Link, useNavigate } from "react-router-dom";
 import { GoSignOut } from "react-icons/go";
@@ -16,21 +15,16 @@ import { MdModeEdit } from "react-icons/md";
 import {
   Button,
   Col,
-  Row,
   ModalHeader,
-  Modal,
-  ModalBody,
-  ModalFooter,
   Input,
   FormGroup,
-  Label,
   Form,
-  Alert,
 } from "reactstrap";
-
 import api from "./apis";
 import "./TDnavbar.css";
 import { Update_customer } from "../Server";
+import TNavbar from "./TNavbar";
+import Footer from "./Footer";
 const NavSection = ({
   search_Query = null,
   set_SearchQuery = null,
@@ -389,7 +383,7 @@ const NavSection = ({
               </div>
               <hr />
               <div>
-                 <Link to='/' className="nav-linkstyle">
+                 <Link to='/additionalproducts' className="nav-linkstyle">
                 <MdShoppingCartCheckout size={28}  />
                 <span>Additional Products</span>
                 </Link>
@@ -403,7 +397,7 @@ const NavSection = ({
               </div>
               <hr />
               <div>
-                <Link to='/' className="nav-linkstyle">
+                <Link to='/walletandpromos' className="nav-linkstyle">
                  <SlWallet size={28} />
                 <span>Wallet & promos</span>
                 </Link>               
@@ -466,3 +460,4 @@ const NavSection = ({
 };
 
 export default NavSection;
+

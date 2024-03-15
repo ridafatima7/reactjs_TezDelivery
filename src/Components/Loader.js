@@ -7,8 +7,10 @@ const Loader = () => {
   return (
     <div className='loader'>
        <div className='image-loader'>
-         <img src="/Images/icon.png" alt='' />
+         <img src="/Images/icon.png" alt='' />   
+         <h5>Opening App ...</h5>  
        </div>
+      
     </div>
   )
 }

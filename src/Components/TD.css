@@ -1049,17 +1049,21 @@
 }
 
 .payment-close {
-  /* display: flex;
+  display: flex;
   justify-content:center;
   align-items: center;
-  width: 16px; */
-  /* height: 20px; */
+  /* width: 16px; 
+  height: 20px; */
 }
 
 .payment-close-btn {
-  text-align: center;
+  /* text-align: center;
   vertical-align: middle;
-  line-height: 20px;
+  line-height: 20px; */
+  padding-top:3px;
+  display: flex; 
+  align-items: center;
+  justify-content: center;
   position: absolute;
   z-index: 2000;
   top: 20px;

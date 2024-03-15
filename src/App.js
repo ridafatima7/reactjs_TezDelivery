@@ -20,6 +20,9 @@ import TezDelivery from "./Components/TezDelivery";
 import "./App.css";
 import LandingPage from "./Components/LandingPageFiles/LandingPage";
 import TestNavbar from "./Components/LandingPageFiles/TestNavbar";
+import { WalletandPromos} from "./Components/Checkout";
+import {AdditionalProducts} from "./Components/Cart";
+
 function App() {
   const [loading,setLoading]=useState(false);
   useEffect(()=>{
@@ -40,6 +43,8 @@ function App() {
             <Route path="/TezDelivery" element={<TezDelivery />} />
             <Route path="/order" element={<Order />} />
             <Route path="/login" element={<Login />} />
+            <Route path='/walletandpromos' element={<WalletandPromos />} />
+            <Route path="/additionalproducts" element={<AdditionalProducts />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/home" element={<Sidebar/>} />
             <Route path="/edit-location" element={<Location/>} />
