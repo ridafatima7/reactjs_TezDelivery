@@ -511,7 +511,8 @@ const Checkout = () => {
                   {
                     any: setNewLocation
                   }
-                }}><span>Edit</span></Link>
+                }} style={{textDecoration:'none'}}>
+                  <span style={{}}>Edit</span></Link>
               </div>
               <div className='main'>
                 <div className='checkout-icons'>
@@ -587,7 +588,7 @@ const Checkout = () => {
             </div>
           </section>
           <section className='container '>
-            <div className='cart-container' style={{ backgroundImage: 'url("/Images/Background.svg")', borderRadius: "15px", backgroundRepeat: 'none', backgroundSize: 'cover' }}>
+            <div className='cart-container' style={{ backgroundImage: 'url("/Images/Background.jpeg")', borderRadius: "15px", backgroundRepeat: 'none', backgroundSize: 'cover',objectPosition:'center',backgroundPosition:'center' }}>
               <div className='cart-checkout'>
                 <div className='cart-subtotal'>
                   <h5>Sub-Total</h5>

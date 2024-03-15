@@ -131,7 +131,7 @@ const Categories = () => {
             loader={<ProductLoader />}
             endMessage={
               <div style={{ textAlign: "center", margin: "20px 10px 0px", color: "#999" }}>
-                <p style={{ fontSize: "1.2em" }}>No more products</p>
+                <p style={{ fontSize: "1.2em" }}></p>
               </div>
             }
             style={{ overflow: "hidden" }}

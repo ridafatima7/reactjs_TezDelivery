@@ -90,6 +90,10 @@ const TezDelivery = () => {
     fetchData();
   }, []);
   const breakpoints = {
+    300: {
+      spaceBetween: 20,
+      slidesPerView: 1.5
+    },
     480: {
       spaceBetween: 20,
       slidesPerView: 1.5
@@ -151,7 +155,7 @@ const TezDelivery = () => {
                     style={{ display: imageLoading ? 'none' : 'block' }}
                   />
                 </LazyLoad>
-                <p>{item.name}</p>
+                <span>{item.name}</span>
               </div>
             </Link>
           ))}

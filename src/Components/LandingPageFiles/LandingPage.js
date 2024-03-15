@@ -90,8 +90,12 @@ const LandingPage = () => {
         fetchData();
     }, [Martid]);
     const breakpoints = {
+         300: {
+            spaceBetween: 20,
+            slidesPerView: 1.5
+        },
         480: {
-            spaceBetween: 220,
+            spaceBetween: 20,
             slidesPerView: 2
         },
         768: {
@@ -213,7 +217,7 @@ const LandingPage = () => {
                                             </div>
                                             <div>
                                                 <h5 >{item.name}</h5>
-                                                <span><MdLocationPin style={{ marginBottom: '-3px' }} size={16} /> Deliveing in</span>
+                                                <span><MdLocationPin style={{ marginBottom: '-3px' }} size={16} />Delivering in</span>
                                                 <p className='mart-location'>{item.location}</p>
                                             </div>
 

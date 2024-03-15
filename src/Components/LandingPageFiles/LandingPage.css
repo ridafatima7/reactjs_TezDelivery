@@ -373,6 +373,9 @@
     gap: 20px;
     margin-bottom: 1rem; 
   }
+  /* .ChooseUs-Section{
+    width:45vh;
+  } */
 }
 @media only screen and (max-width: 654px) {
   .marts_grid {
@@ -388,7 +391,7 @@
       width: 100%;
 }
 .ChooseUs-Section{
-      height: 73vh;
+      height: 60vh;
  }
 
 }
@@ -415,6 +418,9 @@
 .con-comp{
    display: none;
 }
+/* .ChooseUs-Section{
+  height: 45vh;
+} */
 .img-navbar {
   display: none;
 }
@@ -465,7 +471,7 @@
   width: 100%;
 }
 .ChooseUs-Section{
-      height: 78vh;
+      height: 65vh;
  }
  
 }

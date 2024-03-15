@@ -35,6 +35,7 @@ const Category = () => {
   return (
     <div>
       <TNavbar />
+      <NavSection />
       {/* <NavSection
         search_Query={search_Query}
         set_SearchQuery={set_SearchQuery}
@@ -65,7 +66,7 @@ const Category = () => {
                             style={{ display: imageLoading ? 'none' : 'block' }}
                           />
                         </LazyLoad>
-                        <p>{subCategory.name}</p>
+                        <span>{subCategory.name}</span>
                       </div>
                     </Link>
                   ))}

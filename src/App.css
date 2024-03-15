@@ -21,7 +21,7 @@
  @font-face {
   font-family: GilroyRegular;
   src: url(./Components/font/Gilroy-Regular.ttf);
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 body {
   box-sizing: border-box;
