@@ -6,6 +6,9 @@
   /* background-color: #f8f9fa; */
   position: relative;
 }
+.display-class{
+  display:none;
+}
 .navbar-brand {
   margin-left: -25px;
   justify-content: flex-start;
@@ -19,18 +22,19 @@
   cursor: pointer;
   border: none;
   background: none;
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   color: #4D5882;
 }
 
 .navbar-menu {
-  position: absolute;
-  top: 100%;
+  /* position: absolute; */
+  /* top: 100%;
   left: 0;
-  right: 0;
+  right: 0; */
+  width: 100%;
   background-color: #FAFAFA;
   /* overflow: hidden; */
-  transition: max-height 0.3s ease-out;
+  transition: all 0.5s ease-out;
   max-height: 0;
 }
 
@@ -545,6 +549,9 @@
 }
 }
 @media only screen and (max-width:768px) { 
+  .display-class{
+    display:block;
+  }
   .navbar-menu.collapsed {
     display: none; 
 }

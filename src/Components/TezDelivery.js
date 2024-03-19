@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
-import { Link } from 'react-router-dom';
+import { Link,useLocation, useNavigate } from 'react-router-dom';
 import LazyLoad from 'react-lazy-load';
 import { ClipLoader } from 'react-spinners';
 import {Button} from "reactstrap";
 import 'swiper/css';
+import { FcCheckmark } from "react-icons/fc";
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -15,22 +16,25 @@ import { Navigation, Pagination, Autoplay, Scrollbar, A11y, EffectCoverflow } fr
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Exclusive from "./Exclusive";
 import Footer from "./Footer";
+import TNavbar from './TNavbar'
 import NavSection from "./NavSection";
 import TDSlider from "./TDSlider";
-import TNavbar from "./TNavbar";
-import api from "./apis";
 import "./TD.css";
 import 'swiper/swiper-bundle.css';
 const TezDelivery = () => {
-  const search = window.location.search;
-  const params = new URLSearchParams(search);
-  const Martid = params.get('martId');
-  sessionStorage.setItem('mart_id', Martid);
   const [DataProduct, setData] = useState([]);
   const [imageLoading, setImageLoading] = useState(true);
   const [ExclusiveOffers, setExclusive] = useState([])
   const [mostSellingOffers, setSelling] = useState([])
-  const [Ticker, setTicker] = useState([])
+  const [Ticker, setTicker] = useState([]);
+  const search = window.location.search;
+  const params = new URLSearchParams(search);
+  const Martid = params.get('martId');
+  sessionStorage.setItem('mart_id', Martid);
+  // if (location.state === true) {
+  //   setAdditionalPopup(true);
+  // }
+ 
   useEffect(() => {
 
     const fetchData = async () => {
@@ -113,6 +117,7 @@ const TezDelivery = () => {
   };
   return (
     <>
+    
       <TNavbar />
       <NavSection />
       {/* ======== Ticker=========== */}

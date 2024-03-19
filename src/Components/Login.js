@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Input, FormGroup } from 'reactstrap';
 import { FaFacebook } from "react-icons/fa";
 import { GoogleLogin } from 'react-google-login';
+import { GoChevronLeft } from "react-icons/go";
 import { initializeApp } from 'firebase/app';
 import 'firebase/messaging';
 import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
@@ -133,3 +134,31 @@ const Login = () => {
 }
 
 export default Login
+export const OTPScreen = () => {
+  return (
+    <>
+    <section className='container'>
+      <div className='otp-screen'>
+      <div className="back-arrow"><GoChevronLeft size={24} color='#F17E2A'/> </div>
+        <h1>Enter 6-digit Verification code</h1>
+        <span>Code  sent to 03087656554. This will expire in 2 minutes.</span>
+        <div className="otp-inputs">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <input
+              key={index}
+              maxLength="1"
+              type="text"
+              className="otp-input"
+              pattern="\d*"
+            />
+          ))}
+        </div>
+      </div>
+      <div className='otp-button'>
+      <button className="submit-btn">Submit</button>
+      </div>
+    </section>
+    </>
+  )
+
+}

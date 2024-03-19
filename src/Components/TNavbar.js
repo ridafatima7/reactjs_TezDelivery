@@ -67,7 +67,7 @@ const TNavbar = () => {
           </div>
           <div className="hamburger-menu">
         <a style={{color:"#495178"}} href="#" onClick={() => setShowMediaIcons(!showMediaIcons)}>
-        {showMediaIcons ? <RxCross2 className='cross-menu' size={24} /> : <GiHamburgerMenu />}
+        {showMediaIcons ? <RxCross2 className='cross-menu' size={24} /> : <GiHamburgerMenu size={20}/>}
         </a>
       </div>
        </div>

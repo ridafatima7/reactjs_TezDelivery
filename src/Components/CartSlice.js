@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const storedCart = localStorage.getItem('cart');
 const initialCart = storedCart ? JSON.parse(storedCart) : [];
 const initialState = {
-  carts: initialCart,
+  carts: initialCart.items || [],
+  additionalItems: initialCart.additionalItems || [],
+  // carts: initialCart,
   subtotal: 0,
 };
 const CartSlice = createSlice({
@@ -13,15 +15,13 @@ const CartSlice = createSlice({
       const existingProductIndex = state.carts.findIndex(
         (product) => product.id === action.payload.id
       );
-      if (existingProductIndex !== -1)
-       {
-        state.carts[existingProductIndex].qty += 1;
-      }
-      else
-       {
-        const product = { ...action.payload, qty: 1 };
+      if (existingProductIndex !== -1) {
+            state.carts[existingProductIndex].qty += 1;
+        // }
+    } else {
+        const product = { ...action.payload, qty: action.payload.qty || 1 };
         state.carts.push(product);
-      }
+    }
       // state.subtotal = state.carts.reduce((total, product) => {
       //   return total + product.qty * product.price;
       // }, 0);
@@ -31,6 +31,21 @@ const CartSlice = createSlice({
       // state.carts.push(product);
       localStorage.setItem('cart',JSON.stringify(state.carts));
 
+    },
+    addAdditionalProductToCart: (state, action) => {
+      const existingIndex = state.additionalItems.findIndex(item => item.id === action.payload.id);
+
+  if (existingIndex !== -1) {
+    state.additionalItems[existingIndex] = {
+      ...state.additionalItems[existingIndex],// Spread operator to copy existing properties like id
+      name: action.payload.name, 
+      qty: action.payload.qty 
+    };
+  } else {
+    const product = { ...action.payload };
+    state.additionalItems.push(product);
+  }
+      localStorage.setItem('cart', JSON.stringify({ items: state.carts, additionalItems: state.additionalItems }));
     },
     removefromCart: (state, action) => {
       const productIndex = state.carts.findIndex((x) => x.id === action.payload.id);
@@ -50,7 +65,15 @@ const CartSlice = createSlice({
     },
     removefromCross: (state, action) => {
           state.carts = state.carts.filter((x) => x.id !== action.payload.id);
+          if (state.carts.length === 0) {
+            state.additionalItems = [];
+        }
+        if (state.carts.length > 0) {
+          localStorage.setItem('cart', JSON.stringify(state.carts));
+        } else {
+          state.additionalItems = [];
           localStorage.removeItem('cart');
+       }
     },
     Subtotal: (state, action) => {
       state.subtotal = state.carts.reduce((total, product) => {
@@ -62,4 +85,4 @@ const CartSlice = createSlice({
 });
 
 export default CartSlice.reducer;
-export const { addtoCart, removefromCart, Subtotal,removefromCross} = CartSlice.actions;
+export const { addtoCart, removefromCart, Subtotal,removefromCross, addAdditionalProductToCart} = CartSlice.actions;

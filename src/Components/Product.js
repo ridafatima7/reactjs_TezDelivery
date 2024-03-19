@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { MdPinDrop } from "react-icons/md";
-import Exclusive from "./Exclusive";
 import Footer from "./Footer";
 import Items from "./Items";
 import TNavbar from "./TNavbar";
-import api from "./apis";
 import { getMartProducts, getMostSellingProducts } from "../Server";
 import { useSelector, useDispatch } from 'react-redux';
 import { removefromCart} from './CartSlice';
-import {  Subtotal } from './CartSlice';
 import { addtoCart } from './CartSlice';
 const Product = ({ key = "" }) => {
   const search = window.location.search;

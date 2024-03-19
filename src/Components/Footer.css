@@ -261,3 +261,8 @@
         /* color: white; */
     }
 }
+@media screen and (max-width: 468px) {
+  .third-div{
+    margin-top: 15px;
+  }
+}

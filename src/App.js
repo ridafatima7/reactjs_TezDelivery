@@ -8,7 +8,7 @@ import Checkout, { Location } from "./Components/Checkout";
 import ExclusiveScreen from "./Components/ExclusiveScreen";
 import Gmaps from "./Components/Gmaps";
 import Loader from "./Components/Loader";
-import Login from "./Components/Login";
+import Login, { OTPScreen } from "./Components/Login";
 import Maps from "./Components/Maps";
 import Marts from "./Components/Marts";
 import Order from "./Components/Order";

@@ -61,7 +61,7 @@ export async function getMostSellingProducts(Martid, limit, skip) {
 // Fetching Marts
 export async function getMarts(Martid) {
   try {
-    let url = `https://old.tezzdelivery.com/td_api_test/get_marts?active=true`;
+    let url = `https://old.tezzdelivery.com/td_api_test/get_marts`;
     if (Martid) {
       url += `?mart_id=${Martid}`;
     }
