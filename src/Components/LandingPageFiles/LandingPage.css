@@ -497,6 +497,22 @@
   margin-top: 2rem;
   font-size: 1.5rem;
 }
+.cancel-order-promo{
+  display:flex;
+  justify-content: flex-end;
+  gap:5px;
+
+}
+.cancel-order-label{
+   color:black;
+   font-size:18px;
+}
+.cancel-order-promo button{
+  background-color: white;
+  color:#F9851C;
+  height: 28px;
+  width: 20%;
+}
 @media only screen and (max-width: 1064px) {
   .marts_grid {
     display: grid;

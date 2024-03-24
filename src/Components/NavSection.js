@@ -40,7 +40,9 @@ const NavSection = ({
     setEditUserName(event.target.value);
   };
   const [sidebar, setSidebar] = useState(false);
+  const [logedIn, setLogedIn] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
+  const [showLoginPromo,setShowLoginPromo]=useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [profilePhoto, setProfilePhoto] = useState('/Images/Avatar.png');
   const [error, setError] = useState(false);
@@ -84,7 +86,7 @@ const NavSection = ({
       "addedOn": "09/09/2023",
       "uniqueId": ""
     };
-    const { myCode, wallet, code, promosAvailed,address, customerNotes, deviceToken, points, firebase_id, addedOn, uniqueId, status } = staticData;
+    const { myCode, wallet, code, promosAvailed, address, customerNotes, deviceToken, points, firebase_id, addedOn, uniqueId, status } = staticData;
     const user_name = editUserName;
     const user_mob = phoneNumber;
     const user_email = e.target.email.value;
@@ -99,11 +101,11 @@ const NavSection = ({
     formData.append('id', 9);
     formData.append('myCode', myCode);
     formData.append('wallet', wallet);
-    formData.append('code',code );
-     formData.append('houseNum', user_HouseNo);
-      formData.append('streetNum', user_StreetNo); 
-     formData.append('floorNum', user_FloorNo);
-     console.log(formData.get('floorNum'));
+    formData.append('code', code);
+    formData.append('houseNum', user_HouseNo);
+    formData.append('streetNum', user_StreetNo);
+    formData.append('floorNum', user_FloorNo);
+    console.log(formData.get('floorNum'));
     formData.append('promosAvailed', promosAvailed);
     formData.append('customerNotes', customerNotes);
     formData.append('deviceToken', deviceToken);
@@ -113,9 +115,9 @@ const NavSection = ({
     formData.append('addedOn', addedOn);
     formData.append('uniqueId', uniqueId);
     formData.append('status', status);
-    const profilePhotoFile = profilePhoto; 
+    const profilePhotoFile = profilePhoto;
     if (profilePhotoFile) {
-      formData.append('image', profilePhotoFile); 
+      formData.append('image', profilePhotoFile);
     }
     console.log(formData.get('image'));
     const formDataToJSON = async (formData) => {
@@ -125,9 +127,9 @@ const NavSection = ({
       }
       return json;
     };
-    const data=await formDataToJSON(formData);
+    const data = await formDataToJSON(formData);
 
-  console.log(formData);
+    console.log(formData);
     try {
       const response = await Update_customer(data);
       console.log('Response Status:', response.status);
@@ -148,6 +150,10 @@ const NavSection = ({
     setEditModal(!editmodal);
   };
   useEffect(() => {
+    const storedUserName = sessionStorage.getItem('userName');
+    if (storedUserName) {
+      setLogedIn(true);
+    }
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -192,8 +198,35 @@ const NavSection = ({
     const imageUrl = URL.createObjectURL(file);
     setProfilePhoto(imageUrl);
   };
+  const handleWalletLogin = () => {
+     setShowLoginPromo(false);
+     navigate('/login');
+  }
+  const handleLinkClick = (e) => {
+    if (!logedIn) {
+      e.preventDefault(); 
+      setSidebar(false);
+      setShowLoginPromo(true);   
+    }
+  };
   return (
     <>
+      {showLoginPromo && (
+        <>
+          <div className='promo-container'>
+            <div className='promo-popup'>
+              <div className='promo-close'>
+                <span className='promo-close-btn' onClick={() => setShowLoginPromo(!showLoginPromo)}>
+                  &times;
+                </span>
+              </div>
+              <h3 className='promo-label'>Login Required</h3>
+              <h3 className='promo-label2'>You need to login first</h3>
+              <button onClick={handleWalletLogin} className='continue'>OK</button>
+            </div>
+          </div>
+        </>
+      )}
       {editProfile && (
         <div className="editpopup-container">
           <div className="editpopup">
@@ -223,7 +256,7 @@ const NavSection = ({
                       />
                       <label htmlFor="photo-input" >
                         <div className="edit-icon">
-                           <MdModeEdit size={14} />
+                          <MdModeEdit size={14} />
                         </div>
                       </label>
                       <input
@@ -376,45 +409,45 @@ const NavSection = ({
             <div className="sidebar-items pt">
               <hr />
               <div>
-                  <Link to='/' className="nav-linkstyle">
-                <BsShop size={28} />
-                <span>Shop</span>
-               </Link>
+                <Link to='/' className="nav-linkstyle">
+                  <BsShop size={28} />
+                  <span>Shop</span>
+                </Link>
               </div>
               <hr />
               <div>
-                 <Link to='/additionalproducts' className="nav-linkstyle">
-                <MdShoppingCartCheckout size={28}  />
-                <span>Additional Products</span>
+                <Link to='/additionalproducts' className="nav-linkstyle">
+                  <MdShoppingCartCheckout size={28} />
+                  <span>Additional Products</span>
                 </Link>
               </div>
               <hr />
               <div>
                 <Link to='/my-orders' className="nav-linkstyle">
-                <FiShoppingBag size={28} />
-                <span>My Orders</span>
-                </Link>            
+                  <FiShoppingBag size={28} />
+                  <span>My Orders</span>
+                </Link>
               </div>
               <hr />
-              <div>
-                <Link to='/walletandpromos' className="nav-linkstyle">
-                 <SlWallet size={28} />
-                <span>Wallet & promos</span>
-                </Link>               
-              </div>
-              <hr />
-              <div>
-                <Link to='/aboutus' className="nav-linkstyle">
-                <FiAlertCircle size={28} />
-                <span>AboutUs</span>
-                </Link>             
+              <div onClick={handleLinkClick}>
+                <Link to={logedIn ? '/walletandpromos' : '#'} className="nav-linkstyle">
+                  <SlWallet size={28} />
+                  <span>Wallet & promos</span>
+                </Link>
               </div>
               <hr />
               <div>
                 <Link to='/aboutus' className="nav-linkstyle">
-                <MdOutlinePrivacyTip size={28} />
-                <span>Privacy Policy</span>
-                </Link>             
+                  <FiAlertCircle size={28} />
+                  <span>AboutUs</span>
+                </Link>
+              </div>
+              <hr />
+              <div>
+                <Link to='/aboutus' className="nav-linkstyle">
+                  <MdOutlinePrivacyTip size={28} />
+                  <span>Privacy Policy</span>
+                </Link>
               </div>
               <hr />
               {storedUserName ? (

@@ -4,7 +4,7 @@ import AboutUs from "./Components/AboutUs";
 import Cart from "./Components/Cart";
 import Categories from "./Components/Categories";
 import Category from "./Components/Category";
-import Checkout, { Location } from "./Components/Checkout";
+import Checkout, { Location, OrderPlaced } from "./Components/Checkout";
 import ExclusiveScreen from "./Components/ExclusiveScreen";
 import Gmaps from "./Components/Gmaps";
 import Loader from "./Components/Loader";
@@ -22,6 +22,7 @@ import LandingPage from "./Components/LandingPageFiles/LandingPage";
 import TestNavbar from "./Components/LandingPageFiles/TestNavbar";
 import { WalletandPromos} from "./Components/Checkout";
 import {AdditionalProducts} from "./Components/Cart";
+import Tracking from "./Components/Tracking";
 
 function App() {
   const [loading,setLoading]=useState(false);
@@ -42,6 +43,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
             <Route path="/TezDelivery" element={<TezDelivery />} />
             <Route path="/order" element={<Order />} />
+            <Route path="/tracking" element={<Tracking />} />
             <Route path="/login" element={<Login />} />
             <Route path='/walletandpromos' element={<WalletandPromos />} />
             <Route path="/additionalproducts" element={<AdditionalProducts />} />

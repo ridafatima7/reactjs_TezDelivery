@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
-import { Link,useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LazyLoad from 'react-lazy-load';
 import { ClipLoader } from 'react-spinners';
-import {Button} from "reactstrap";
+import { Button } from "reactstrap";
+import { RxCross2 } from "react-icons/rx";
 import 'swiper/css';
 import { FcCheckmark } from "react-icons/fc";
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { getMartCategories,getExclusiveProducts,getMostSellingProducts,getMarts } from "../../../my-app/src/Server";
+import { getMartCategories, getExclusiveProducts, getMostSellingProducts, getMarts } from "../../../my-app/src/Server";
 import 'swiper/css/scrollbar';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navigation, Pagination, Autoplay, Scrollbar, A11y, EffectCoverflow } from 'swiper/modules';
@@ -28,13 +29,16 @@ const TezDelivery = () => {
   const [mostSellingOffers, setSelling] = useState([])
   const [Ticker, setTicker] = useState([]);
   const search = window.location.search;
+  const [promoState,setPromoState]=useState(true);
   const params = new URLSearchParams(search);
   const Martid = params.get('martId');
+  const [PromoExists, setPromoExists] = useState('');
+
   sessionStorage.setItem('mart_id', Martid);
   // if (location.state === true) {
   //   setAdditionalPopup(true);
   // }
- 
+
   useEffect(() => {
 
     const fetchData = async () => {
@@ -52,7 +56,7 @@ const TezDelivery = () => {
       }
       // Getting Exclusive products
       try {
-        const response = await getExclusiveProducts(Martid);       
+        const response = await getExclusiveProducts(Martid);
         if (response.status === 200) {
           console.log("ExclusiveProducts=>", response.data);
           setExclusive(response.data);
@@ -76,12 +80,14 @@ const TezDelivery = () => {
       } catch (error) {
         console.error('Error:', error.message);
       }
-     // Getting Mart Data
+      // Getting Mart Data
       try {
         const response = await getMarts(Martid);
         if (response.status === 200) {
           console.log("Mart Data=>", response.data);
           setTicker(response.data[0]);
+          setPromoExists(response.data[0].promos);
+          console.log(response.data[0].promos);
         }
         else {
           console.log('Error:', response.statusText);
@@ -115,11 +121,38 @@ const TezDelivery = () => {
       spaceBetween: 20,
     },
   };
+  
   return (
     <>
-    
+
       <TNavbar />
       <NavSection />
+      {promoState && PromoExists.length > 0 && PromoExists.map((promo, index) => (
+        <div className='promo-container' key={index}  style={{zIndex:'3000'}}>
+          <div className='promo-popup' style={{ backgroundColor: '#f3f3f3',padding: '10px', maxWidth: '500px' }} >
+            <div className='wallet-close'>
+              <span className='wallet-close-btn' >
+                <RxCross2 size={18}  onClick={()=>setPromoState(!promoState)}/>
+              </span>
+            </div>
+            <img className='promoImg' src={promo.image} alt={`Promo ${index + 1}`} />
+            <div className="content-p" >
+              <h2>{promo.description}</h2>
+              <div className="promo-details">
+                <div>
+                  <span>Use Code</span>
+                  <span style={{ fontWeight: 'bold' }}>{promo.code}</span>
+                </div>
+                <div>
+                  <span>Valid till</span>
+                  <span style={{ fontWeight: 'bold' }}>{promo.validTill}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
       {/* ======== Ticker=========== */}
       <section className="container pt">
         <div className="anoucement">

@@ -10,13 +10,14 @@ import { Link } from 'react-router-dom';
 import { addtoCart } from './CartSlice';
 import Collapsible from 'react-collapsible';
 import TNavbar from "./TNavbar";
-import { useSelector, useDispatch } from 'react-redux';
+import {  useDispatch } from 'react-redux';
 import { ReOrder, createOrder, getMyOrders } from '../Server';
 import { ImCross } from "react-icons/im";
 const Order = () => {
   const storedMart = sessionStorage.getItem('mart_id');
   const dispatch = useDispatch();
   var martdate = '';
+  const [cancelOrder, setCancelOrder] = useState(false);
   const [martTimings, setTimingsArray] = useState('');
   const [loading, setLoading] = useState(true);
   const [martInfo, setMartInfo] = useState(null);
@@ -29,6 +30,8 @@ const Order = () => {
   const [formattedDate, setFormattedDate] = useState('');
   const [openInventoryMart, setopenInventoryMart] = useState(false);
   const [orderNo, setOrderNo] = useState('');
+  const [cancelOrderNo, setCancelOrderNo] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -57,6 +60,58 @@ const Order = () => {
     };
     fetchData();
   }, []);
+  var cancelOrderId = "";
+  const handleCancelState = (orderId) => {
+    setCancelOrderNo(orderId);
+    cancelOrderId = orderId;
+    console.log(cancelOrderId);
+    setCancelOrder(!cancelOrder);
+  }
+  const OrderCancel = async (orderId) => {
+    orderId=cancelOrderId;
+    const response = await ReOrder('3203');
+    console.log(response.data[0]);
+    const orderSummary = {
+      orderId: cancelOrderNo,
+      rating: response.data[0].rating,
+      collectedAmount: response.data[0].collectedAmount,
+      deliveredAmount: response.data[0].deliveredAmount,
+      distanceInMeters: response.data[0].distanceInMeters,
+      paymentMethod: response.data[0].paymentMethod,
+      additionalComments: response.data[0].additionalComments,
+      grandTotal: response.data[0].grandTotal,
+      discount: response.data[0].discount,
+      status: "Cancel",
+      cancelledBy: response.data[0].cancelledBy,
+      cancelledReason: response.data[0].cancelledReason,
+      // productId: pids,
+      // productQuantity: quantities,
+      additionalProducts: response.data[0].additionalProducts,
+      additionalQuantity: response.data[0].additionalQuantity,
+      riderToken: response.data[0].riderToken,
+      customerToken: response.data[0].customerToken,
+    };
+    const createorder = await axios.post(
+      `${api}/update_order`,
+      JSON.stringify(orderSummary),
+    );
+    console.log('Response Status:', createorder.status);
+    if (createorder.status === 200) {
+      console.log(" order deleted> ", createorder.data);
+      setCancelOrder(!cancelOrder);
+      try {
+        const response = await getMyOrders();
+        console.log(response.data);
+        setData(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    else {
+      console.log('Error:', response.statusText);
+    }
+
+  }
   const Re_Order = async (orderId) => {
     try {
       const response = await ReOrder(orderId);
@@ -170,14 +225,14 @@ const Order = () => {
         console.log(ReOrderDetails);
         console.log(ReOrderDetails.length);
         if (response.data[0].details.length > 0) {
-          const createorder = await axios.post(
-            `${api}/create_order`,
-            JSON.stringify(orderSummary),
-          );
-          console.log('Response Status:', createorder.status);
-          if (createorder.status === 200) {
-            console.log(" order genrated> ", createorder.data);
-            console.log(ReOrderDetails);
+          // const createorder = await axios.post(
+          //   `${api}/create_order`,
+          //   JSON.stringify(orderSummary),
+          // );
+          // console.log('Response Status:', createorder.status);
+          // if (createorder.status === 200) {
+          //   console.log(" order genrated> ", createorder.data);
+          //   console.log(ReOrderDetails);
             const itemsToDispatch = response.data[0].details.map(detail => {
               return {
                 id: detail.inventory_pid,
@@ -193,10 +248,10 @@ const Order = () => {
               dispatch(addtoCart(item));
             });
             setReorderPopup(true);
-          }
-          else {
-            console.log('Error:', response.statusText);
-          }
+          // }
+          // else {
+          //   console.log('Error:', response.statusText);
+          // }
         }
         else {
           setReOrderDetailsPopup(true);
@@ -262,6 +317,19 @@ const Order = () => {
           </div>
         </>
       )}
+      {cancelOrder && (
+        <>
+          <div className='promo-container'>
+            <div className='promo-popup' style={{ maxWidth: '385px' }}>
+              <span className='cancel-order-label' style={{ marginTop: '0px' }}>Do you really want to cancel the order?</span>
+              <div className='cancel-order-promo'>
+                <button onClick={() => setCancelOrder(false)} className='continue'>No</button>
+                <button onClick={() => OrderCancel(cancelOrderId)} className='continue'>Yes</button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
       <div style={{ marginTop: '60px' }}>
         {data.map((order, index) => (
           <div key={index} style={{ width: '80%', margin: '13px auto' }} className='pt accordion'>
@@ -302,7 +370,12 @@ const Order = () => {
                   </Link>
                   {order.status === 'pending' && (
                     <>
-                      <MdOutlineDelete size={28} style={{ marginLeft: '20px' }} />
+                   
+                      <MdOutlineDelete
+                        size={28}
+                        style={{ marginLeft: '23px' }}
+                        onClick={() => handleCancelState(order.id)}
+                      />
                     </>
                   )}
                 </div>
@@ -311,7 +384,7 @@ const Order = () => {
                   <span style={{ fontSize: '11px' }}>Invoice</span>
                   {order.status === 'pending' && (
                     <>
-                      <span style={{ fontSize: '11px' }}>Cancel Order</span>
+                      <span style={{ fontSize: '11px' }} >Cancel Order</span>
                     </>
                   )}
                 </div>

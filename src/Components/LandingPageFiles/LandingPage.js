@@ -392,45 +392,24 @@ const LandingPage = () => {
                         <div class="choose-us-heading">
                             <h2>Why Choose Us?</h2>
                         </div>
-                        {/* <div class="choose-us-items pb">
-                            <div class="item" >
-                                <h6>Free Shipping</h6>
-                                <span>Delivered in 60 minutes</span>
-                            </div>
-                            <div class="item" >
-                                <h6>Money Back</h6>
-                                <span>100% Money Back Guarentee</span>
-                            </div>
-                            <div class="item" >
-                                <h6>Secure Payments</h6>
-                                <span>100% Secure Payments</span>
-                            </div>
-                        </div>
-                        <div class="choose-us-heading pb">
-                            <h4 style={{ color: '#7c8081' }}>Thousands of healthy, fresh and delicious products delivered to your kitchen everyday</h4>
-                        </div>
-                        <div class="choose-us-heading">
-                            <h1 >Get it TEZZ Now !</h1>
-                        </div> */}
-                        
                         <div class="choose-us-tagline pb">
                             <p style={{ color: '#7c8081' }}>Thousands of healthy, fresh and delicious products delivered to your kitchen everyday</p>
                         </div>
                         <div className="features">
                             <div className="feature-item">
-                                <img src="/Images/freeDelivery.jpeg" alt="" />
+                                <img src="/Images/TDimg1.jpeg" alt="" />
                                 <h6>Free Shipping</h6>
-                                <p>We provide free deliver in less than 2 hours to our service </p>
+                                <p>The happier you are, the more you order, the more we are able to give to the community</p>
                             </div>
                             <div className="feature-item">
-                                <img src="/Images/save.jpeg" alt="" />
+                                <img src="/Images/TDimg2.jpeg" alt="" />
                                 <h6>Simplify your Life </h6>
-                                <p>Never visit a store again because we provide all your favourite brands, at store prices and with free delivery.</p>
+                                <p>We actively provide rations and cooked food to the undeserved, as well as widows and orphans development organisations</p>
                             </div>
                             <div className="feature-item">
-                                <img src="/Images/FreshVeges.jpeg" alt="" />
+                                <img src="/Images/TDimg3.jpeg" alt="" />
                                 <h6>Competitive Prices</h6>
-                                <p>{truncatedText}</p>
+                                <p>TD is an equal opportunity employer that encourages staff to upskill and elevate at work and society</p>
                             </div>
                         </div>
                     </div>

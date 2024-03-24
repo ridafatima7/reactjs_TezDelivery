@@ -1383,22 +1383,20 @@
   color: #FFFFFF;
   border-radius: 50%;
 }
-
 .promo-close-btn {
   text-align: center;
   vertical-align: middle;
-  line-height: 60px;
+  line-height: 70px;
   position: absolute;
   z-index: 2000;
   width: 60px;
   height: 60px;
   cursor: pointer;
-  font-size: 70px;
+  font-size: 80px;
   color: #FFFFFF;
   background-color: #F17E2A;
   border-radius: 50%;
 }
-
 .alert-warning {
   background-color: #F7DBC6;
   color: #F18637;
@@ -1663,7 +1661,113 @@
   padding-left: 15px;
   color: #333333;
 }
+.swiper-container-p {
+  width: 100%;
+  height: 100%;
+}
+.swiper-slide-p {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.swiper-slide-p img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+.content-p {
+  margin-top: 20px;
+  background-color: white;
+}
+.content-p h2 {
+  display:flex;
+  justify-content: center;
+  font-size: 33px;
+  color:#F28638;
+  margin-bottom: 10px;
+}
+.promo-popup .content-p {
+  background-color: #f3f3f3;
+}
+.promo-popup .promoImg {
+  height:12rem;
+}
+.wallet-close {
+  position: absolute;
+  top: 13px;
+  right: 25px;
+  padding: 10px; 
+  border-radius: 0 0 0 50%;
+}
 
+.wallet-close-btn {
+  width: 22px;
+  background-color: #a0a0a0; 
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 60px;
+  position: absolute;
+  z-index: 2000;
+  color: #FFFFFF;
+  border-radius: 50%;
+}
+.promo-popup .content-p h2 {
+  font-size: 20px;
+  font-size: 26px;
+  font-weight: bold;
+  font-family: 'GilroyBold';
+}
+.promo-popup .content-p .promo-details > div {
+  flex-direction: row;
+    gap: 4px;
+    margin-top: 10px;
+    margin-bottom:7px;
+    font-weight: 20px;
+    font-weight: bold;
+    color:#495073;
+}
+.promo-popup .content-p .promo-details > div span{
+  font-size: 20px;
+}
+.content-p span {
+  font-size: 18px;
+  /* color:black; */
+  /* color: #666; */
+}
+.description-line {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.promo-details {
+  display: flex;
+  justify-content: space-around;
+  color:black;
+}
+
+.promo-details div {
+  display: flex;
+  flex-direction: column;
+}
+.swiper-slide{
+  width:100% !important;
+}
+.promoImg{
+  height: 20rem;
+    width: 100%;
+
+}
+
+.promo-details div span {
+  margin-bottom: 5px; /* Adjust as needed */
+}
 .promo {
   justify-content: space-between;
   flex-direction: row;
@@ -2104,23 +2208,67 @@ label {
   cursor: pointer;
   text-align: center;
 }
+.order-image {
+  width: 200px; 
+  height: 200px; 
+    margin-bottom: 20px; 
+  align-self: center;
+}
 
-/* Extra Small Devices, Phones */ 
-@media only screen and (max-width: 600px) {
-  .otp-inputs {
-    flex-direction: column;
-  }
-
-  .otp-input {
-    width: 100%;
-  }
-
-  .submit-btn {
-    margin-top: 20px;
-  }
+.order-text {
+  margin-top: 20px; 
+}
+.place-order{
+ display: flex;
+ flex-direction: column;
+}
+.order-placed-btn {
+  margin-top: 20px;
+  width: 22rem;
+  padding: 20px;
+  background-color: #F28638;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 15px;
+  font-size:18px;
+  font-weight: bold;
+  align-self: center;
+}
+.center-content{
+display: flex;
+justify-content: center;
+}
+.back-btn {
+  align-self: center;
+  font-size:18px;
+  font-weight: bold;
+  border-radius: 15px;
+  margin-top: 20px; 
+  margin-bottom: 20px; 
+  width: 22rem;
+  padding: 20px;
+  background-color: white;
+  color: #F28638;
+  text-decoration: none;
+}
+.image-div-order{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
 }
 @media only screen and (max-width: 480px) {
-
+  .promoImg{
+    height: 10rem;
+      width: 100%;
+  }
+  .content-p h2 {
+    font-size: 23px;
+  }
+  .content-p span {
+    font-size: 15px;
+}
   /* .swiperslide {
     width: 65% !important; 
   } */
@@ -2351,11 +2499,16 @@ label {
   .subcategory {
     margin-bottom: 0.5rem;
   }
-
+  .promoImg{
+    height: 15rem;
+      width: 100%;
+  }
+  .content-p span {
+    font-size: 17px;
+}
   .Item-info h5 {
     white-space: pre-wrap;
   }
-
   .productDetail h3 {
     margin-bottom: 7px;
     font-size: 26px;

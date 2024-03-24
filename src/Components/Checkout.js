@@ -12,6 +12,16 @@ import { addtoCart } from './CartSlice';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Calendar from './CalendarComponent';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/navigation';
+import 'swiper/css/scrollbar';
+import "./TD.css";
+// import Swiper from 'swiper';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/swiper-bundle.css';
+import { Navigation, Pagination, Autoplay, Scrollbar, A11y, EffectCoverflow } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { LoadScript } from '@react-google-maps/api';
 import {
@@ -23,7 +33,7 @@ import {
 } from '@vis.gl/react-google-maps';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import { createOrder } from '../Server';
+import { createOrder, getMarts } from '../Server';
 const Checkout = () => {
   const location = useLocation();
   const { locationId } = location.state || {};
@@ -212,7 +222,7 @@ const Checkout = () => {
     //     }
     //     console.log(addressLoc);
     const data = {
-      placedOn:  formattedDate,
+      placedOn: formattedDate,
       scheduledFor: "",
       paymentMethod: paymentMethod,
       additionalComments: additionalComment,
@@ -343,7 +353,7 @@ const Checkout = () => {
     //   if (todaysTimings) {
     //     const checkInTime = parseInt(todaysTimings.checkIn.split(':')[0]) * 60 + parseInt(todaysTimings.checkIn.split(':')[1]);
     //     const checkOutTime = parseInt(todaysTimings.checkOut.split(':')[0]) * 60 + (todaysTimings.checkOut.includes('PM') ? 12 * 60 : 0) + parseInt(todaysTimings.checkOut.split(':')[1]);
-        
+
     //     if (currentTime >= checkInTime && currentTime <= checkOutTime) {
     //       console.log("Mart is currently open.");
     //     } else {
@@ -371,24 +381,24 @@ const Checkout = () => {
       if (todaysTimings) {
         const checkInTime = parseInt(todaysTimings.checkIn.split(':')[0]) * 60 + parseInt(todaysTimings.checkIn.split(':')[1]);
         const checkOutTime = parseInt(todaysTimings.checkOut.split(':')[0]) * 60 + (todaysTimings.checkOut.includes('PM') ? 12 * 60 : 0) + parseInt(todaysTimings.checkOut.split(':')[1]);
-        
+
         if (currentTime >= checkInTime && currentTime <= checkOutTime) {
           console.log("Mart is currently open.");
           const currentDate = new Date();
-                const placedOnDate = currentDate.toLocaleString('en-US', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true,
-                });
-                formattedDate = placedOnDate.replace(',', '');
-                console.log(formattedDate);
+          const placedOnDate = currentDate.toLocaleString('en-US', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+          });
+          formattedDate = placedOnDate.replace(',', '');
+          console.log(formattedDate);
         } else {
           console.log("Mart is currently closed.");
           setShowOrderScheduale(false);
-          console.log('state is',showOrderScheduale);
+          console.log('state is', showOrderScheduale);
         }
       } else {
         console.log("Could not find timings for today.");
@@ -574,7 +584,7 @@ const Checkout = () => {
                   {
                     any: setNewLocation
                   }
-                }} style={{textDecoration:'none'}}>
+                }} style={{ textDecoration: 'none' }}>
                   <span style={{}}>Edit</span></Link>
               </div>
               <div className='main'>
@@ -608,7 +618,7 @@ const Checkout = () => {
               </div>
               <div className='main'>
                 <div className='checkout-icons'>
-                  <FaLocationDot style={{ color: '#434F7B' }} size={20} />
+                  <img src='/Images/promo.png' alt='' />
                 </div>
                 <div className='promo'>
                   <p style={{ marginTop: '5px' }}>Enter Promo Code</p>
@@ -617,30 +627,30 @@ const Checkout = () => {
               </div>
             </div>
             {!showOrderScheduale && (
-            <div className='cart-container'>
-              <div className='checkout-items'>
-                <h5>Scheduled for</h5>
-                <span onClick={() => handleClick('Schedualefor')}>Edit</span>
-              </div>
-              <div className='main'>
-                <div className='checkout-icons'>
-                  <FiShoppingBag style={{ color: '#434F7B' }} size={20} />
+              <div className='cart-container'>
+                <div className='checkout-items'>
+                  <h5>Scheduled for</h5>
+                  <span onClick={() => handleClick('Schedualefor')}>Edit</span>
                 </div>
-                <div className='main-div'>
-                  <p style={{ marginTop: '5px' }}>{schedualeOrder}</p>
+                <div className='main'>
+                  <div className='checkout-icons'>
+                    <FiShoppingBag style={{ color: '#434F7B' }} size={20} />
+                  </div>
+                  <div className='main-div'>
+                    <p style={{ marginTop: '5px' }}>{schedualeOrder}</p>
+                  </div>
                 </div>
-              </div>
-              {isEditing && (
-                <div className='popup-options'>
-                  <button onClick={() => handleOptionClick('Now')}>Now</button>
-                  <button onClick={() => handleOptionClick('ScheduleFor')}>
-                    Schedule For
-                  </button>
-                </div>
+                {isEditing && (
+                  <div className='popup-options'>
+                    <button onClick={() => handleOptionClick('Now')}>Now</button>
+                    <button onClick={() => handleOptionClick('ScheduleFor')}>
+                      Schedule For
+                    </button>
+                  </div>
 
-              )}
+                )}
 
-            </div>
+              </div>
             )}
           </section>
           <section className='container '>
@@ -653,10 +663,10 @@ const Checkout = () => {
             </div>
           </section>
           <section className='container '>
-            <div className='cart-container' style={{ backgroundImage: 'url("/Images/Background.jpeg")', borderRadius: "15px", backgroundRepeat: 'none', backgroundSize: 'cover',objectPosition:'center',backgroundPosition:'center' }}>
+            <div className='cart-container' style={{ backgroundImage: 'url("/Images/Background.jpeg")', borderRadius: "15px", backgroundRepeat: 'none', backgroundSize: 'cover', objectPosition: 'center', backgroundPosition: 'center' }}>
               <div className='cart-checkout'>
-              <div className='cart-subtotal'>
-                  <h4 style={{textDecoration:'underline',fontSize:'16px'}}>View Cart</h4>
+                <div className='cart-subtotal'>
+                  <Link to='/cart' ><h4 style={{ textDecoration: 'underline', fontSize: '16px',color:'white' }}>View Cart</h4></Link>
                 </div>
                 <div className='cart-subtotal'>
                   <h5>Sub-Total</h5>
@@ -799,12 +809,57 @@ export const Location = () => {
     </div>
   );
 };
-export const WalletandPromos= () => {
+export const WalletandPromos = () => {
+  const storedMart = sessionStorage.getItem('mart_id');
+  const [PromoExists, setPromoExists] = useState('');
   const [EditPopup, setEditPopup] = useState(false);
   const [paymentMethodpopup, setPaymentMethodpopup] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+  useEffect(() => {
+
+    const fetchData = async () => {
+      // Getting Mart Data
+      try {
+        const response = await getMarts(storedMart);
+        if (response.status === 200) {
+          console.log("Mart Data=>", response.data);
+          setPromoExists(response.data[0].promos);
+          console.log(response.data[0].promos);
+        }
+        else {
+          console.log('Error:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    };
+
+    fetchData();
+  }, []);
+  const breakpoints = {
+    300: {
+      spaceBetween: 20,
+      slidesPerView: 1.5
+    },
+    480: {
+      // spaceBetween: 20,
+      slidesPerView: 1
+    },
+    768: {
+      spaceBetween: 30,
+      // slidesPerView: 1
+    },
+    1024: {
+      spaceBetween: 20,
+      // slidesPerView: 1
+    },
+    1200: {
+      slidesPerView: 1,
+      // spaceBetween: 20,
+    },
+  };
   const handleClick = (input) => {
-     if (input == 'paymentMethod') {
+    if (input == 'paymentMethod') {
       setPaymentMethodpopup(false);
       setEditPopup(false);
       setPaymentMethod("Cash on Delivery");
@@ -820,83 +875,140 @@ export const WalletandPromos= () => {
   };
   return (
     <>
-   <TNavbar />
-   <section className='container'>
-   {EditPopup && (
-            <div className='payment-container'>
-              <div className='payment-popup'>
-                {paymentMethodpopup && (
-                  <>
-                    <div className='payment-close'>
-                      <span className='payment-close-btn' onClick={() => handleClick('paymentMethod')}>
-                        &times;
-                      </span>
-                    </div>
-                    <h3 className='payment-label' onClick={() => handleClick('paymentMethod')}>Cash on Delivery</h3>
-                    <hr className='line-after' />
-                  </>
-                )}
+      <TNavbar />
+      <section className='container'>
+        {EditPopup && (
+          <div className='payment-container'>
+            <div className='payment-popup'>
+              {paymentMethodpopup && (
+                <>
+                  <div className='payment-close'>
+                    <span className='payment-close-btn' onClick={() => handleClick('paymentMethod')}>
+                      &times;
+                    </span>
+                  </div>
+                  <h3 className='payment-label' onClick={() => handleClick('paymentMethod')}>Cash on Delivery</h3>
+                  <hr className='line-after' />
+                </>
+              )}
 
-              </div>
             </div>
+          </div>
+        )}
+        <div className='cart-container'>
+          <div className='checkout-items'>
+            <h5>Funds Available</h5>
+          </div>
+          <div className='main'>
+            <div className='checkout-icons'>
+              <img src='Images/promo.png' alt=''  />
+            </div>
+            <div className='main-div'>
+              <p>Rs 0</p>
+            </div>
+          </div>
+        </div>
+        <div className='cart-container'>
+          <div className='checkout-items'>
+            <h5>Points Available</h5>
+            {/* <span >Applicable</span> */}
+          </div>
+          <div className='main'>
+            <div className='checkout-icons'>
+            <img src='Images/promo.png' alt=''  />
+            </div>
+            <div className='promo'>
+              <p style={{ marginTop: '5px' }}>0</p>
+              {/* <h5 onClick={() => setPromoCode(true)}>Apply</h5> */}
+            </div>
+          </div>
+        </div>
+        <div className='cart-container'>
+          <div className='checkout-items'>
+            <h5>Payment Method</h5>
+            <span onClick={() => handleClick('COD')}>Edit</span>
+          </div>
+          <div className='main'>
+            <div >
+              <img src='/Images/card.png' size={20} />
+            </div>
+            <div className='main-div'>
+              <p style={{ marginTop: '5px' }}>{paymentMethod}</p>
+            </div>
+          </div>
+
+        </div>
+        <div className='cart-container' style={{ fontSize: '17px', borderBottom: '0px' }}>
+          {/* <br /><h5>Promo Code</h5>
+          <h5>Promo Code not Available.Please come back later</h5> */}
+          {PromoExists.length > 0 ? (
+            <Swiper
+              modules={[Navigation, Pagination, A11y]}
+              // spaceBetween={30}
+              // slidesPerView={1.5}
+              grabCursor={true}
+              breakpoints={breakpoints}
+              // centeredSlides={true}
+              // loop={true}
+              navigation={false}
+              pagination={{ clickable: true}}
+              // className='swiper-container'
+              onSwiper={(swiper) => console.log(swiper)}
+              onSlideChange={() => console.log('slide change')}
+            >
+              {PromoExists.map((promo, index) => (
+                <SwiperSlide key={index} style={{backgroundColor:'white'}}>
+                  <img className='promoImg'  src={promo.image} alt={`Promo ${index + 1}`} />
+                  <div className="content-p">
+                    <h2>{promo.description}</h2>
+                    <div className="description-line"></div> {/* Line under description */}
+                    <div className="promo-details">
+                      <div>
+                        <span>Code</span>
+                        <span style={{fontWeight:'bold'}}>{promo.code}</span>
+                      </div>
+                      <div>
+                        <span>Valid till</span>
+                        <span style={{fontWeight:'bold'}}>{promo.validTill}</span>
+                      </div>
+                    </div>
+                  {/* </div> */}
+                </div>
+                </SwiperSlide>
+          ))}
+        </Swiper>
+        ) : (
+        <>
+          <br /><h5>Promo Code</h5>
+          <h5>Promo Code not Available. Please come back later</h5>
+        </>
           )}
-            <div className='cart-container'>
-              <div className='checkout-items'>
-                <h5>Funds Available</h5>
-                {/* <Link to={{
-                  pathname: '/edit-location',
-                  state:
-                  {
-                    any: setNewLocation
-                  }
-                }} style={{textDecoration:'none'}}>
-                  <span style={{}}>Edit</span></Link> */}
-              </div>
-              <div className='main'>
-                <div className='checkout-icons'>
-                  <FaLocationDot size={20} style={{ color: '#434F7B' }} />
-                </div>
-                <div className='main-div'>
-                  <p>Rs 0</p>
-                </div>
-              </div>
-            </div>
-            <div className='cart-container'>
-              <div className='checkout-items'>
-                <h5>Points Available</h5>
-                {/* <span >Applicable</span> */}
-              </div>
-              <div className='main'>
-                <div className='checkout-icons'>
-                  <FaLocationDot style={{ color: '#434F7B' }} size={20} />
-                </div>
-                <div className='promo'>
-                  <p style={{ marginTop: '5px' }}>0</p>
-                  {/* <h5 onClick={() => setPromoCode(true)}>Apply</h5> */}
-                </div>
-              </div>
-            </div>
-            <div className='cart-container'>
-              <div className='checkout-items'>
-                <h5>Payment Method</h5>
-                <span onClick={() => handleClick('COD')}>Edit</span>
-              </div>
-              <div className='main'>
-                <div >
-                  <img src='/Images/card.png' size={20} />
-                </div>
-                <div className='main-div'>
-                  <p style={{ marginTop: '5px' }}>{paymentMethod}</p>
-                </div>
-              </div>
-              
-            </div>    
-            <div className='cart-container' style={{fontSize:'17px',borderBottom:'0px'}}>
-            <br /><h5>Promo Code</h5>
-              <h5>Promo Code not Available.Please come back later</h5> 
-            </div>   
-          </section>
-   <Footer />
+      </div>
+
+    </section >
+      <Footer />
+    </>
+  )
+}
+export const OrderPlaced = () => {
+  const storedMart = sessionStorage.getItem('mart_id');
+
+  return (
+    <>
+    <section className="container pt">
+      <div className='center-content'>
+      <div className='place-order'>
+        <img src="Images/Avatar.png" alt="Order Placed" className="order-image" />
+        <div className='image-div-order'>
+        <h2>Your Order has been Placed</h2>
+      <span className="order-text">Your order has been placed and its on the way to being processed!</span>
+      <button className="order-placed-btn">TRACK ORDER</button>
+      <Link to={`/TezDelivery?martId=${storedMart}` } className="back-btn">BACK TO HOME PAGE</Link>
+        </div>      
+      </div>
+      </div>
+    </section>
+     <Footer />
     </>
   )
 }

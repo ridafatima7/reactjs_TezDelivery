@@ -25,19 +25,30 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>TezzDelivery</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU"></script>
+
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+
+
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU"></script>
+
+    <script>
+      // Define your JavaScript code that interacts with the Google Maps API
+      function initializeMap() {
+          // Access the google object here
+          var map = new window.google.maps.Map(document.getElementById('map'), {
+              center: { lat: -34.397, lng: 150.644 },
+              zoom: 8
+          });
+      }
+  </script>
+
   </body>
 </html>
