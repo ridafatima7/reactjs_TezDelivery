@@ -15,9 +15,13 @@ import './TDnavbar.css';
 const TNavbar = () => {
   const storedMart = sessionStorage.getItem('mart_id');
   const cart = useSelector((state) => state.cart.carts);
+  const [activeTab, setActiveTab] = useState('');
   const [showMediaIcons, setShowMediaIcons] = useState(false);
   const cartItemCount = cart.reduce((total, product) => total + product.qty, 0);
   console.log(cartItemCount);
+  const handleClick = (name) => {
+    setActiveTab(name);
+  };
   return (
     <>
       <div className='container'>
@@ -33,10 +37,10 @@ const TNavbar = () => {
             <div className={
               showMediaIcons ? "menu-link mobile-menu-link" : "navdiv menu-link"
             }>
-              <div>
-              <Link to={`/TezDelivery?martId=${storedMart}`} className='Item-Link' activeClassName='active' >
-                <BsShop />
-                <span className='Item-Link'>Shop</span>
+              <div onClick={() => handleClick('shop')} >
+              <Link to={`/TezDelivery?martId=${storedMart}`}  className={`Item-Link ${activeTab === 'shop' ? 'active' : ''}`} activeClassName='active' >
+                <BsShop  />
+                <span className='Item-Link' >Shop</span>
               </Link>
              </div>
              <div>

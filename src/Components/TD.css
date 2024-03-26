@@ -710,19 +710,16 @@
   width: 100%;
   outline: none;
   padding-left: 15px;
-  color: #6750A4;
+  color: #333333;
   padding-top: 10px;
   font-size: 16px;
 }
-
 .checkoutInput::placeholder {
-  color: #4A5580;
   padding-left: 5px;
-  /* padding-top: 10px; */
   color: #7C7C7C;
   font-size: 16px;
+  font-family: GilroyRegular;
 }
-
 .LoginInput {
   margin-top: 20px;
   outline: none;
@@ -1244,13 +1241,11 @@
 .selected {
   background: #03D1BE;
 }
-
 .react-calendar {
   border: none !important;
   background-color: #FDF0E7 !important;
-  font-family: poppins !important;
+  font-family: GillroyRegular !important;
 }
-
 .calendar-popup {
   background-color: #FDF0E7;
   color: #E67A34;
@@ -1269,20 +1264,29 @@
   flex-direction: column;
   display: flex;
 }
-
 .react-calendar__tile--active {
   background: #E67A34 !important;
   border-radius: 90px;
-  color: white !important;
+  color: black !important;
 }
-
+.react-calendar__tile:disabled {
+  background-color: #FDF0E7 !important;
+  color: #ababab;
+}
+.react-calendar__navigation button:disabled {
+  background-color: #FDF0E7 !important;
+}
+.react-calendar__tile--now {
+  background-color: #FDF0E7 ;
+}
 .react-calendar__tile--now {
   /* background: none !important; */
   /* color:#E67A34 !important; */
   border-radius: 25px;
   width: 40px;
+
   height: 40px;
-  border: 1px solid #E67A34 !important;
+  border: none !important;
 }
 
 .buttons-container {
@@ -1358,7 +1362,7 @@
   font-size: 22px;
   font-weight: 600;
   text-align: center;
-  text-wrap: nowrap;
+  text-wrap: wrap;
 }
 
 .promo-close {
@@ -1405,10 +1409,9 @@
   border-radius: 15px;
   padding: 15px;
   width: 100%;
-
 }
-
 .continue {
+  cursor:pointer;
   margin-bottom: 20px;
   background-color: #F17E2A;
   color: white;
@@ -1756,7 +1759,7 @@
   display: flex;
   flex-direction: column;
 }
-.swiper-slide{
+.custom-swiper-slide{
   width:100% !important;
 }
 .promoImg{
@@ -1781,17 +1784,30 @@
   color: #F28638;
   font-size: 16px;
 }
-
 .checkout-icons {
   background-color: #F4A368;
-  border-radius: 15px;
-  width: 30px;
-  height: 30px;
+  border-radius: 17px;
+  width: 35px;
+  height: 35px;
   align-items: center;
   justify-content: center;
   display: flex;
 }
-
+.promo-input{
+  outline:none;
+  border:none;
+  background-color: #FAFAFA;
+  display: block;
+  color: #333333;
+  font-size: 16px; 
+  font-family: GilroyRegular;
+  margin-bottom: 5px;
+}
+.promo-input::placeholder {
+  color: #333333;
+  font-size: 16px; 
+  font-family: GilroyRegular;
+}
 .popup-container {
   position: fixed;
   top: 0;

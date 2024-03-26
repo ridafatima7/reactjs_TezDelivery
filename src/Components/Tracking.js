@@ -188,20 +188,20 @@ const Tracking = () => {
     map.fitBounds(bounds);
   }}
 >
-  {currentPosition && (
-    <>
+  {/* {currentPosition && (
+    <> */}
       {console.log('current position  Latitude/long: is ', currentPosition)}
       <Marker position={currentPosition} />
-    </>
+    {/* </>
   )} 
   {martlatitude && martlongitude && (
-    <>
+    <> */}
       {console.log('Mart Latitude: is ', martlatitude)}
       {console.log('Mart Longitude: is ', martlongitude)}
       <Marker position={{ lat: parseFloat(martlatitude), lng: parseFloat(martlongitude) }} />
-    </>
+    {/* </>
   )}
-  {currentPosition && martlatitude && martlongitude && (
+  {currentPosition && martlatitude && martlongitude && ( */}
     <Polyline
       path={[
         { lat: parseFloat(currentPosition.lat), lng: parseFloat(currentPosition.lng) },
@@ -213,7 +213,7 @@ const Tracking = () => {
         strokeWeight: 2
       }}
     />
-  )}
+  {/* )} */}
   {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
 </GoogleMap>
 

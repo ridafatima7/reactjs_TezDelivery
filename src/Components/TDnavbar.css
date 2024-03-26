@@ -134,10 +134,10 @@
   
   /* .Item-Link:active,
   .navdiv a:active, */
-.Item-Link:focus 
+/* .Item-Link:focus 
 {
   color: #F28F47;
-}
+} */
 /* .Item-Link.active, .Item-Link.active span {
   color: #F28F47; 
 }

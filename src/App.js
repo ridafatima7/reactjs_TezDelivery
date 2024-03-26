@@ -40,7 +40,7 @@ function App() {
           <>
          <BrowserRouter>
           <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage/>} />
             <Route path="/TezDelivery" element={<TezDelivery />} />
             <Route path="/order" element={<Order />} />
             <Route path="/tracking" element={<Tracking />} />
@@ -49,6 +49,7 @@ function App() {
             <Route path="/additionalproducts" element={<AdditionalProducts />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/home" element={<Sidebar/>} />
+            <Route path="/order-placed" element={<OrderPlaced/>} />
             <Route path="/edit-location" element={<Location/>} />
             <Route path="/cart" element={<Cart/>} />
             <Route path="/sidebar" element={<Sidebar/>} />

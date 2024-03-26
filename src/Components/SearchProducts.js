@@ -10,6 +10,7 @@ import { getMartProducts, getSearchProducts } from "../Server";
 const SearchProducts = () => {
   const [search_Query, set_SearchQuery] = useState("");
   const [filteredProducts, setFilteredProduct] = useState([]);
+  const [autoReplace,setAutoReplace]=useState("");
   const [hasMore, setHasMore] = useState(true);
   const search = window.location.search;
   const [limit, setLimit] = useState(12);
@@ -21,7 +22,7 @@ const SearchProducts = () => {
       let result;
       if (search_Query) {
         // url = `${api}/get_searched_Products?mart_id=${mart_id}&key=${search_Query}&limit=${limit}&skip=${skip}`;
-        result=await getSearchProducts(mart_id,search_Query,limit,skip);
+        result=await getSearchProducts(mart_id,search_Query);
       } else {
         // url = `${api}/get_martProducts?mart_id=${mart_id}&limit=${limit}&skip=${skip}`;
         result=await getMartProducts(mart_id,0,0,limit,skip);
@@ -31,10 +32,21 @@ const SearchProducts = () => {
       //   throw new Error(`HTTP error! Status: ${response.status}`);
       // }
       // const result = await response.json();
+      console.log(result);
       console.log(result.data)
       if (result.data && result.data.length > 0) {
-        setFilteredProduct([...filteredProducts, ...result.data]);
-        setSkip(skip + limit); 
+        if(search_Query){
+          setFilteredProduct("");
+          setFilteredProduct(result.data);
+          console.log(result.data);
+          setHasMore(false);
+        }
+        else{
+          setFilteredProduct([...filteredProducts, ...result.data]);
+          setAutoReplace([...filteredProducts, ...result.data]);
+          setSkip(skip + limit); 
+        }
+        
       } else {
         setHasMore(false);
       }

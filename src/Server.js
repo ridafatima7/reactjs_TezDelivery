@@ -63,7 +63,7 @@ export async function getMarts(Martid) {
   try {
     let url = `https://old.tezzdelivery.com/td_api_test/get_marts?active=true`;
     if (Martid) {
-      url += `?mart_id=${Martid}`;
+      url += `&mart_id=${Martid}`;
     }
     const response = await axios.get(url);
     return response.data;
@@ -84,7 +84,7 @@ export async function getSliders() {
 // Fetch Mart Products
 export async function getMartProducts(Martid, cid, sid, limit, skip,pid) {
   try {
-    let url = `${API_BASE_URL}/get_martProducts?mart_id=${Martid}`;
+    let url = `https://old.tezzdelivery.com/td_api_test/get_martProducts?mart_id=${Martid}`;
     if (sid) {
       url += `&sid=${sid}`;
     }
@@ -120,13 +120,14 @@ export async function getMyOrders() {
 //Fetch Searched_Product
 export async function getSearchProducts(Martid, key, limit, skip) {
   try {
-    let url = `${API_BASE_URL}/get_searched_Products?mart_id=${Martid}&key=${key}`;
+    let url = `https://old.tezzdelivery.com/td_api_test/get_searched_Products?mart_id=${Martid}&key=${key}`;
     if (typeof limit !== 'undefined') {
       url += `&limit=${limit}`
     }
     if (typeof skip !== 'undefined') {
       url += `&skip=${skip}`;
     }
+    console.log(url);
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
@@ -169,6 +170,16 @@ export async function ReOrder(orderId) {
     const url = `${API_BASE_URL}/re_order_details`;
     const response = await axios.post(url, JSON.stringify({'orderId': orderId }));
   
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+// IsPromoValid Api
+export async function isPromoValid(inventoryId,code,customerId) {
+  try {
+    const url = `https://old.tezzdelivery.com/td_api_test/is_promo_valid`;
+    const response = await axios.post(url, JSON.stringify({'inventory_id':inventoryId,'code':code,'customer_id':customerId}));
     return response.data;
   } catch (error) {
     throw error;
