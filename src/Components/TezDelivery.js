@@ -184,7 +184,9 @@ const TezDelivery = () => {
             <Link to={`/categories_page?martId=${Martid}&categoryId=${item.cid}`} className="linkstyle" key={index}>
               <div className={`products_grid_item ${item.index === 0 || item.index === 4 ? 'special_bg' : ''}`}>
                 {/* <img src={item.image} alt="img" /> */}
-                {imageLoading && <ClipLoader color={'#F17E2A'} loading={imageLoading} size={35} />}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' ,width:'35px'}}>
+                {imageLoading && <ClipLoader color={'#F17E2A'}  className="rounded-loader"  loading={imageLoading} size={35} />}
+                </div>
                 <LazyLoad>
                   <img
                     src={item.image}

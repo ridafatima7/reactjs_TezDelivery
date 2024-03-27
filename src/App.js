@@ -10,7 +10,6 @@ import Gmaps from "./Components/Gmaps";
 import Loader from "./Components/Loader";
 import Login, { OTPScreen } from "./Components/Login";
 import Maps from "./Components/Maps";
-import Marts from "./Components/Marts";
 import Order from "./Components/Order";
 import Product from "./Components/Product";
 import SearchProducts from "./Components/SearchProducts";
@@ -19,11 +18,9 @@ import Sidebar from "./Components/Sidebar";
 import TezDelivery from "./Components/TezDelivery";
 import "./App.css";
 import LandingPage from "./Components/LandingPageFiles/LandingPage";
-import TestNavbar from "./Components/LandingPageFiles/TestNavbar";
 import { WalletandPromos} from "./Components/Checkout";
 import {AdditionalProducts} from "./Components/Cart";
 import Tracking from "./Components/Tracking";
-
 function App() {
   const [loading,setLoading]=useState(false);
   useEffect(()=>{

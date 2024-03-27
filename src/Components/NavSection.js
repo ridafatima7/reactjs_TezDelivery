@@ -423,7 +423,7 @@ const NavSection = ({
               </div>
               <hr />
               <div>
-                <Link to='/my-orders' className="nav-linkstyle">
+                <Link to='/order' className="nav-linkstyle">
                   <FiShoppingBag size={28} />
                   <span>My Orders</span>
                 </Link>

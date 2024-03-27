@@ -5,6 +5,8 @@
   background-color: #FAFAFA;
   /* background-color: #f8f9fa; */
   position: relative;
+  padding-top: 7px;
+
 }
 .display-class{
   display:none;
@@ -55,6 +57,10 @@
 
 .nav-link {
   text-decoration: none;
+  color: #495178;
+  gap:1rem;
+  display: flex;
+
 }
 
 .nav-link.disabled {
@@ -146,6 +152,7 @@
     flex-direction: column;
 }
 .mart-location{
+   line-height: 20px;
     margin-left: 15px;
     margin-top: 5px;
     font-size: 13px;
@@ -253,7 +260,7 @@
     gap:2rem;
     padding:15px 0px;
     margin-top: 10px;
-    font-size:18px;
+    font-size:19px;
 }
 
 /* Download app */
@@ -444,6 +451,7 @@
 }
 .mob-dropdown{
   display: none;
+  margin-top:10px;
 }
 /* why choose us (images section) */
 .ChooseUs-SectionImg{
@@ -465,7 +473,7 @@
   text-align: center;
 }
 .choose-us-tagline p{
-  font-size:20px;
+  font-size:18px;
 }
 .features {
   display: flex;
@@ -596,9 +604,6 @@
 .con-comp{
    display: none;
 }
-/* .ChooseUs-Section{
-  height: 45vh;
-} */
 .img-navbar {
   display: none;
 }
@@ -616,7 +621,7 @@
   width: 100%;
 }
 .feature-item img {
-  height: 220px;
+  height: auto;
 }
 .choose-us-tagline p {
   font-size: 19px;
@@ -670,7 +675,7 @@
   /* height: 85vh; */
  }
  .feature-item img {
-  height: 150px;
+  height: auto;
 }
 .choose-us-tagline p {
   font-size: 14px;

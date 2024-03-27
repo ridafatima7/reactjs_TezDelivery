@@ -320,10 +320,21 @@
   margin-top: -40px;
   margin-left: auto;
 }
-
+.rounded-loader{
+  width: 35px !important;
+    height: 40px !important;
+    border-radius: 100%;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(241, 126, 42) rgb(241, 126, 42) transparent;
+    border-image: initial;
+    display: inline-block;
+    animation: 0.75s linear 0s infinite normal both running react-spinners-ClipLoader-clip;
+}
 .addtocard_I p {
   font-size: 26px;
   font-weight: 400;
+  padding-top: 5px;
 }
 
 .Exclusive_old {
@@ -453,7 +464,7 @@
 }
 
 .swiperImg {
-  height: 19.5rem;
+  height: 16.5rem;
   width: 100%;
 }
 
@@ -461,6 +472,7 @@
   color: #F17E2A;
   background-color: #F2F3F2;
   border-radius: 2.2rem;
+  margin-bottom: 10px;
   border: none;
   height: 32px;
   font-size: 14px;
@@ -1357,14 +1369,12 @@
   font-weight: 600;
   text-align: center;
 }
-
 .promo-label2 {
   font-size: 22px;
   font-weight: 600;
   text-align: center;
   text-wrap: wrap;
 }
-
 .promo-close {
   display: flex;
   justify-content: center;
@@ -2463,7 +2473,7 @@ justify-content: center;
   } */
 
   .swiperImg {
-    height: 19rem;
+    height: 8rem;
     width: 100%;
     /* background-size: cover; */
     /* border-radius: 9px; */

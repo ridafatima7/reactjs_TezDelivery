@@ -5,6 +5,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FiShoppingBag } from "react-icons/fi";
 import { useSelector, useDispatch } from 'react-redux';
 import api from "./apis";
+import { useLoadScript, Autocomplete } from '@react-google-maps/api';
 import { FaRegFaceFrown } from "react-icons/fa6";
 import { removefromCart, removefromCross } from './CartSlice';
 import { Subtotal } from './CartSlice';
@@ -760,7 +761,6 @@ const Checkout = () => {
 export default Checkout
 export const Location = () => {
   const navigate = useNavigate();
-  const autocompleteInputRef = useRef(null);
   const [currentPosition, setCurrentPosition] = useState(null);
   const [open, setopen] = useState(false);
   const [searchLocation, setSearchLocation] = useState('');
@@ -768,6 +768,24 @@ export const Location = () => {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [confirmedAddress, setConfirmedAddress] = useState('');
+  const autocompleteInputRef = useRef(null); 
+  const [libraries] = useState(['places']);
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: "AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU", 
+    libraries: ['places'],
+  });
+  const handlePlaceSelect = (place) => {
+    if (!place || !place.geometry || !place.geometry.location) {
+      console.error('No location found for:', place);
+      return; 
+    }
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    setCurrentPosition({ lat, lng });
+    setLatitude(lat.toFixed(6));
+    setLongitude(lng.toFixed(6));
+    setSearchLocation(place.formatted_address);
+  };
   useEffect(() => {
     const getLocation = () => {
       if (navigator.geolocation) {
@@ -852,13 +870,28 @@ export const Location = () => {
                 </AdvancedMarker>
               )}
               <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1000 }}>
+              <Autocomplete
+          onLoad={(autocomplete) => {
+            autocomplete.addListener('place_changed', () => {
+              const place = autocomplete.getPlace();
+              handlePlaceSelect(place);
+            });
+          }}
+        >
                 <input
                   type="text"
-                  value={searchLocation}
-                  onChange={(e) => setSearchLocation(e.target.value)}
+                  // value={searchLocation}
+                  // onChange={(e) => setSearchLocation(e.target.value)}
                   placeholder="Enter location"
                   className='map-search'
+                  ref={autocompleteInputRef}  
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch(); 
+                    }  
+                  }}              
                 />
+                 </Autocomplete>
                 <button onClick={handleSearch} className='map-search-button'>Search</button>
               </div>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative', height: '74vh' }}>

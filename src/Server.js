@@ -1,9 +1,9 @@
 import axios from "axios";
-const API_BASE_URL = "https://old.tezzdelivery.com/td_api_web";
+const API_BASE_URL = "https://old.tezzdelivery.com/td_api_test";
 //    Fetching mart categories
 export async function getMartCategories(mart_id, cid, limit, skip) {
   try {
-    let url = `https://old.tezzdelivery.com/td_api_test/get_martCategories?mart_id=${mart_id}`;
+    let url = `${API_BASE_URL}/get_martCategories?mart_id=${mart_id}`;
     if (cid) {
       url += `&cid=${cid}`;
     }
@@ -22,7 +22,7 @@ export async function getMartCategories(mart_id, cid, limit, skip) {
 // Fetching Eclusive Products
 export async function getExclusiveProducts(Martid, limit, skip) {
   try {
-    let url = `https://old.tezzdelivery.com/td_api_test/get_martProducts?mart_id=${Martid}&exclusive=true`;
+    let url = `${API_BASE_URL}/get_martProducts?mart_id=${Martid}&exclusive=true`;
     if (typeof limit !== 'undefined') {
       url += `&limit=${limit}`
     }
@@ -61,7 +61,7 @@ export async function getMostSellingProducts(Martid, limit, skip) {
 // Fetching Marts
 export async function getMarts(Martid) {
   try {
-    let url = `https://old.tezzdelivery.com/td_api_test/get_marts?active=true`;
+    let url = `${API_BASE_URL}/get_marts?active=true`;
     if (Martid) {
       url += `&mart_id=${Martid}`;
     }
@@ -84,7 +84,7 @@ export async function getSliders() {
 // Fetch Mart Products
 export async function getMartProducts(Martid, cid, sid, limit, skip,pid) {
   try {
-    let url = `https://old.tezzdelivery.com/td_api_test/get_martProducts?mart_id=${Martid}`;
+    let url = `${API_BASE_URL}/get_martProducts?mart_id=${Martid}`;
     if (sid) {
       url += `&sid=${sid}`;
     }
@@ -120,7 +120,7 @@ export async function getMyOrders() {
 //Fetch Searched_Product
 export async function getSearchProducts(Martid, key, limit, skip) {
   try {
-    let url = `https://old.tezzdelivery.com/td_api_test/get_searched_Products?mart_id=${Martid}&key=${key}`;
+    let url = `${API_BASE_URL}/get_searched_Products?mart_id=${Martid}&key=${key}`;
     if (typeof limit !== 'undefined') {
       url += `&limit=${limit}`
     }
@@ -178,7 +178,7 @@ export async function ReOrder(orderId) {
 // IsPromoValid Api
 export async function isPromoValid(inventoryId,code,customerId) {
   try {
-    const url = `https://old.tezzdelivery.com/td_api_test/is_promo_valid`;
+    const url = `${API_BASE_URL}/is_promo_valid`;
     const response = await axios.post(url, JSON.stringify({'inventory_id':inventoryId,'code':code,'customer_id':customerId}));
     return response.data;
   } catch (error) {
