@@ -3,6 +3,7 @@ import { GoCheck, GoChevronDown } from "react-icons/go";
 import { GoChevronUp } from "react-icons/go";
 import { FaRecycle } from "react-icons/fa";
 import { MdPictureAsPdf } from "react-icons/md";
+import { FaRegFaceFrown } from "react-icons/fa6";
 import axios from 'axios';
 import api from "./apis";
 import { MdOutlineDelete } from "react-icons/md";
@@ -10,7 +11,7 @@ import { Link } from 'react-router-dom';
 import { addtoCart } from './CartSlice';
 import Collapsible from 'react-collapsible';
 import TNavbar from "./TNavbar";
-import {  useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ReOrder, createOrder, getMyOrders } from '../Server';
 import { ImCross } from "react-icons/im";
 const Order = () => {
@@ -21,6 +22,7 @@ const Order = () => {
   const [martTimings, setTimingsArray] = useState('');
   const [loading, setLoading] = useState(true);
   const [martInfo, setMartInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [ReOrderDetails, setReOrder] = useState('');
   const [ReOrderDetailsPopup, setReOrderDetailsPopup] = useState(false);
   const [data, setData] = useState([]);
@@ -34,10 +36,12 @@ const Order = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await getMyOrders();
         console.log(response.data);
         setData(response.data);
+
       } catch (error) {
         console.log(error);
       }
@@ -57,6 +61,9 @@ const Order = () => {
         setError(error.message);
         setLoading(false);
       }
+      finally {
+        setIsLoading(false);
+      }
     };
     fetchData();
   }, []);
@@ -68,7 +75,7 @@ const Order = () => {
     setCancelOrder(!cancelOrder);
   }
   const OrderCancel = async (orderId) => {
-    orderId=cancelOrderId;
+    orderId = cancelOrderId;
     const response = await ReOrder('3203');
     console.log(response.data[0]);
     const orderSummary = {
@@ -233,21 +240,21 @@ const Order = () => {
           // if (createorder.status === 200) {
           //   console.log(" order genrated> ", createorder.data);
           //   console.log(ReOrderDetails);
-            const itemsToDispatch = response.data[0].details.map(detail => {
-              return {
-                id: detail.inventory_pid,
-                name: detail.name,
-                qty: detail.quantity,
-                price: detail.price,
-                description: detail.description,
-                image: detail.image
-              };
-            });
-            console.log(itemsToDispatch);
-            itemsToDispatch.forEach(item => {
-              dispatch(addtoCart(item));
-            });
-            setReorderPopup(true);
+          const itemsToDispatch = response.data[0].details.map(detail => {
+            return {
+              id: detail.inventory_pid,
+              name: detail.name,
+              qty: detail.quantity,
+              price: detail.price,
+              description: detail.description,
+              image: detail.image
+            };
+          });
+          console.log(itemsToDispatch);
+          itemsToDispatch.forEach(item => {
+            dispatch(addtoCart(item));
+          });
+          setReorderPopup(true);
           // }
           // else {
           //   console.log('Error:', response.statusText);
@@ -330,69 +337,87 @@ const Order = () => {
           </div>
         </>
       )}
-      <div style={{ marginTop: '60px' }}>
-        {data.map((order, index) => (
-          <div key={index} style={{ width: '80%', margin: '13px auto' }} className='pt accordion'>
-            <Collapsible
-              trigger={
-                <div className='accordion-button'>
-                  <span style={{ marginRight: 'auto', marginLeft: '10px' }}><b>{order.orderNo}</b></span>
-                  <div>
-                    <span><b>{order.status.toUpperCase()}</b></span>
-                    {openIndex === index ? <GoChevronUp size={22} /> : <GoChevronDown size={22} />}
+      {isLoading ? (
+        <div className='loader-div'>
+          <div className="Order-loader"></div>
+          <>
+            <span className='loader-span'>Loading....</span>
+          </>
+        </div>
+
+      ) : data.length === 0 ? (
+        <div className='no-items' style={{ textAlign: 'center', marginTop: '50px' }}>
+          <FaRegFaceFrown size={100} color='#F17E2A' />
+          <h3>Empty Order List</h3>
+        </div>
+      ) : (
+        <div style={{ marginTop: '60px' }}>
+          <div className='order-list'>
+            {data.map((order, index) => (
+              <div key={index} style={{ width: '80%', margin: '5px auto' }} className='pt accordion'>
+                <Collapsible
+                  trigger={
+                    <div className='accordion-button'>
+                      <span style={{ marginRight: 'auto', marginLeft: '10px' }}><b>{order.orderNo}</b></span>
+                      <div>
+                        <span><b>{order.status.toUpperCase()}</b></span>
+                        {openIndex === index ? <GoChevronUp size={22} /> : <GoChevronDown size={22} />}
+                      </div>
+                    </div>
+                  }
+                  open={index === openIndex}
+                  onOpening={() => setOpenIndex(index)}
+                  onClosing={() => setOpenIndex(null)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: "20px", paddingRight: '20px', paddingBottom: '20px' }} >
+                    {order.details.map((item, i) => (
+                      <div className='panel-items' key={i}>
+                        <span>{item.name}</span>
+                        <span>{item.quantity}</span>
+                        <span>{item.price}</span>
+                      </div>
+                    ))}
+                    <div className='panel-div2'>
+                      <span>Total</span>
+                      <span>{order.grandTotal}</span>
+                    </div>
+                    <div className='panel-div2'>
+                      <span>Placed On</span>
+                      <span>{order.placedOn}</span>
+                    </div>
+                    <div className='order-icons' style={{ marginLeft: '4px' }}>
+                      <FaRecycle size={28} onClick={() => Re_Order(order.id)} />
+                      <Link style={{ color: '#4A5073' }} to={`https://admin.tezzdelivery.com/pages/phpFile/invoicePdf.php?orderNo=${order.orderNo}&id=${order.id}&type=1`}>
+                        <MdPictureAsPdf size={28} style={{ marginLeft: '10px' }} />
+                      </Link>
+                      {order.status === 'pending' && (
+                        <>
+
+                          <MdOutlineDelete
+                            size={28}
+                            style={{ marginLeft: '23px' }}
+                            onClick={() => handleCancelState(order.id)}
+                          />
+                        </>
+                      )}
+                    </div>
+                    <div className='order-icons' style={{ marginTop: '-1px' }}>
+                      <span style={{ fontSize: '11px' }}>Reorder</span>
+                      <span style={{ fontSize: '11px' }}>Invoice</span>
+                      {order.status === 'pending' && (
+                        <>
+                          <span style={{ fontSize: '11px' }} >Cancel Order</span>
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
-              }
-              open={index === openIndex}
-              onOpening={() => setOpenIndex(index)}
-              onClosing={() => setOpenIndex(null)}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: "20px", paddingRight: '20px', paddingBottom: '20px' }} >
-                {order.details.map((item, i) => (
-                  <div className='panel-items' key={i}>
-                    <span>{item.name}</span>
-                    <span>{item.quantity}</span>
-                    <span>{item.price}</span>
-                  </div>
-                ))}
-                <div className='panel-div2'>
-                  <span>Total</span>
-                  <span>{order.grandTotal}</span>
-                </div>
-                <div className='panel-div2'>
-                  <span>Placed On</span>
-                  <span>{order.placedOn}</span>
-                </div>
-                <div className='order-icons' style={{ marginLeft: '4px' }}>
-                  <FaRecycle size={28} onClick={() => Re_Order(order.id)} />
-                  <Link style={{ color: '#4A5073' }} to={`https://admin.tezzdelivery.com/pages/phpFile/invoicePdf.php?orderNo=${order.orderNo}&id=${order.id}&type=1`}>
-                    <MdPictureAsPdf size={28} style={{ marginLeft: '10px' }} />
-                  </Link>
-                  {order.status === 'pending' && (
-                    <>
-                   
-                      <MdOutlineDelete
-                        size={28}
-                        style={{ marginLeft: '23px' }}
-                        onClick={() => handleCancelState(order.id)}
-                      />
-                    </>
-                  )}
-                </div>
-                <div className='order-icons' style={{ marginTop: '-1px' }}>
-                  <span style={{ fontSize: '11px' }}>Reorder</span>
-                  <span style={{ fontSize: '11px' }}>Invoice</span>
-                  {order.status === 'pending' && (
-                    <>
-                      <span style={{ fontSize: '11px' }} >Cancel Order</span>
-                    </>
-                  )}
-                </div>
+                </Collapsible>
               </div>
-            </Collapsible>
+            ))}
           </div>
-        ))}
-      </div>
+
+        </div>
+      )}
 
     </>
   )

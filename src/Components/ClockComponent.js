@@ -27,14 +27,20 @@ const ClockComponent = ({ onClose, onTimeSelect ,selectedDate}) => {
     onClose();
   };
   const handleTimeSelect = () => {
+    // const selectedTime = new Date();
+    // selectedTime.setHours(selectedPeriod === 'PM' ? selectedHours + 12 : selectedHours);
+    // selectedTime.setMinutes(selectedMinutes);
+    // onTimeSelect(selectedTime);
+    // onClose();
+    const hours = selectedPeriod === 'PM' ? parseInt(selectedHours) % 12 + 12 : parseInt(selectedHours) % 12;
     const selectedTime = new Date();
-    selectedTime.setHours(selectedPeriod === 'PM' ? selectedHours + 12 : selectedHours);
-    selectedTime.setMinutes(selectedMinutes);
+    selectedTime.setHours(hours, parseInt(selectedMinutes), 0);
     onTimeSelect(selectedTime);
     onClose();
   };
   const handlePeriodChange = (period) => {
     setSelectedPeriod(period);
+    console.log(period);
   };
 
   return (

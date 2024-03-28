@@ -58,10 +58,18 @@ const NavSection = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedProducts, setSearchedProducts] = useState([]);
   const navigate = useNavigate();
+  const [tempSearchQuery, setTempSearchQuery] = useState("");
   const [DataProduct, setData] = useState([]);
+  // const handleSearchInputChange = (event) => {
+  //   console.log("search=>", search_Query);
+  //   set_SearchQuery && set_SearchQuery(event.target.value);
+  // };
   const handleSearchInputChange = (event) => {
-    console.log("search=>", search_Query);
-    set_SearchQuery && set_SearchQuery(event.target.value);
+    setTempSearchQuery(event.target.value);
+    console.log(tempSearchQuery);
+  };
+  const handleSearchSubmit = () => {
+    set_SearchQuery(tempSearchQuery); 
   };
   const EditInformation = async (e) => {
     e.preventDefault();
@@ -476,11 +484,17 @@ const NavSection = ({
                 className="control"
                 name="mart"
                 placeholder="Search from Mart"
-                value={search_Query}
+                // value={search_Query}
+                value={tempSearchQuery}
                 onChange={(e) => handleSearchInputChange(e)}
                 onClick={handleInputClick}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearchSubmit();
+                  }
+                }}
               ></Input>
-              <FaSearch className="icon" aria-hidden="true" />
+              <FaSearch className="icon" aria-hidden="true" onClick={handleSearchSubmit}/>
               <Link to="/login">
                 <Button className="dbtn">Login</Button>
               </Link>

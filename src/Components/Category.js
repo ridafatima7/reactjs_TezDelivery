@@ -57,7 +57,9 @@ const Category = () => {
                       className="linkstyle"
                     >
                       <div className="products_grid_item" >
-                        {imageLoading && <ClipLoader color={'#F17E2A'} loading={imageLoading} size={35}  className='lazyload' />}
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        { imageLoading && <ClipLoader color={'#F17E2A'} className=" lazyload" loading={imageLoading} size={35}   />}
+                        </div>
                         <LazyLoad>
                           <img
                             src={subCategory.image}

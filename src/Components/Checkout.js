@@ -38,7 +38,7 @@ import { useLocation } from 'react-router-dom';
 import { createOrder, getMarts } from '../Server';
 const Checkout = () => {
   const location = useLocation();
-  const { locationId, newlatitude, newlongitude } = location.state || {}; 
+  const { locationId, newlatitude, newlongitude } = location.state || {};
   console.log(locationId, newlatitude, newlongitude);
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
@@ -52,6 +52,7 @@ const Checkout = () => {
   const [martTimings, setTimingsArray] = useState('');
   const [schedule, setScheduale] = useState(false);
   const [OrderScheduale, setOrderScheduale] = useState(false);
+  const LoginUserName = sessionStorage.getItem('userName');
   const [showOrderScheduale, setShowOrderScheduale] = useState(false);
   const storedUserName = sessionStorage.getItem('userName') || 'Guest User';
   const storedFirebaseId = sessionStorage.getItem('fire_baseid') || '';
@@ -60,14 +61,14 @@ const Checkout = () => {
   const storedMart = sessionStorage.getItem('mart_id');
   const [showCalendar, setShowCalendar] = useState(false);
   const [scheduledTime, setScheduledTime] = useState('Now');
-  const [schedualeOrder, setSchedualeOrder] = useState('');
+  const [schedualeOrder, setSchedualeOrder] = useState('Now');
   const [isEditing, setIsEditing] = useState(false);
   const [EditPopup, setEditPopup] = useState(false);
   const [showCalendarPopup, setShowCalendarPopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [martInfo, setMartInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const[checkoutFailed,setCheckoutFailed]=useState(false);
+  const [checkoutFailed, setCheckoutFailed] = useState(false);
   const [error, setError] = useState(null);
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
@@ -79,7 +80,7 @@ const Checkout = () => {
   const [promoId, setPromoId] = useState('');
   const [promoName, setPromoName] = useState('');
   const [discountTotal, setDiscountTotal] = useState('');
-  const [discountValue, setDiscountValue] = useState(0);
+  const [discountValue, setDiscountValue] = useState('');
   const cartItems = useSelector(state => state.cart);
   const subtotal = useSelector(state => state.cart.subtotal);
   const [showAlert, showErrorAlert] = useState('');
@@ -152,6 +153,7 @@ const Checkout = () => {
     else if (value === 'N') {
       setEditPopup(false);
       setSchedualeOrder('Now');
+      setOrderScheduale(false);
     }
     else {
 
@@ -199,6 +201,7 @@ const Checkout = () => {
       hour12: true
     };
     const schedualeDate = selectedDate.toLocaleString('en-US', options).replace(',', ' ');
+   
     setschedualeDate(schedualeDate);
     setSchedualeOrder(schedualeDate);
     console.log(schedualeOrder);
@@ -239,18 +242,38 @@ const Checkout = () => {
   var long = 0;
   let productIds;
   let productQuantities;
+  
   const handleCheckout = async (e) => {
     e.preventDefault();
     if (subtotal < 275) {
       setIsPopupOpen(false);
       setCheckoutError('Minimum Amount to place this order is 499 !');
-
       return;
     }
     if (!formattedDate || formattedDate.trim() === '') {
       setIsPopupOpen(false);
-      setTimeError('Please schedule the order date.');
+      setCheckoutFailed(true);
+      setCheckoutError('Please schedule the order date.');
       return;
+    }
+    if (!addressLoc && !locationId) {
+      setIsPopupOpen(false);
+      setCheckoutFailed(true);
+      setCheckoutError('Please provide a valid address before proceeding.');
+      return;
+    }
+    if (schedualeDate) {
+      const scheduled_Time = new Date(schedualeDate).getHours() + (new Date(schedualeDate).getMinutes() / 60);
+      console.log(scheduled_Time)
+      if (scheduled_Time >= 12 && scheduled_Time <= 23.5) {
+        console.log("Selected time is within the valid range.");
+    } else {
+        console.log("Please select a time strictly between 12:00 PM and 11:30 PM.");
+        setIsPopupOpen(false);
+        setCheckoutFailed(true);
+        setCheckoutError('Order can only be Scheduled  between 12:00 PM - 11:30 PM.');
+        return;
+    }
     }
     console.log(subtotal);
     console.log(cartItems.carts);
@@ -265,46 +288,11 @@ const Checkout = () => {
     }
     console.log(addressLoc);
     const data = {
-      // placedOn: "09/07/2023 02:51 PM",
-      // scheduledFor: "",
-      // paymentMethod: "Cash on Delivery",
-      // additionalComments: "Test",
-      // address: "Commercial Market Rd, B-Block Block B Satellite Town, Rawalpindi, Punjab, Pakistan",
-      // latitude: 33.63599013999999698398823966272175312042236328125,
-      // longitude: 73.070465089999999008796294219791889190673828125,
-      // feedback: "Test feedback",
-      // feedback_type: "Normal",
-      // inventory_id: "7",
-      // rating: "0",
-      // deliveredAmount: 0,
-      // collectedAmount: 0,
-      // deliveryCharges: 0,
-      // walletDiscount: 0,
-      // grandTotal: 400,
-      // discount: 0,
-      // source: "Manual Order",
-      // status: "pending",
-      // cancelledBy: "",
-      // cancelledReason: "",
-      // productId: "394|395",
-      // productQuantity: "2|3",
-      // customerName: "Dashboard Tester",
-      // customerEmail: "mehwishahmed826@gmail.com",
-      // customerPhone: "03876569898",
-      // customerId: "2",
-      // customerAddress: "Commercial Market Rd, B-Block Block B Satellite Town, Rawalpindi, Punjab, Pakistan",
-      // additionalProducts: "",
-      // additionalQuantity: "",
-      // riderToken: "",
-      // customerToken: "",
-      // distanceInMeters: 0,
-      // promoId: "",
-      // promoName: ""
       placedOn: formattedDate,
       scheduledFor: schedualeDate,
       paymentMethod: paymentMethod,
       additionalComments: additionalComment,
-      address: locationId !== undefined ?locationId : addressLoc,
+      address: locationId !== undefined ? locationId : addressLoc,
       latitude: newlatitude !== undefined ? newlatitude : latitude,
       longitude: newlongitude !== undefined ? newlongitude : longitude,
       feedback: "Test feedback",
@@ -320,8 +308,8 @@ const Checkout = () => {
       status: "pending",
       cancelledBy: "",
       cancelledReason: "",
-      productId:productIds,
-      productQuantity:productQuantities,
+      productId: productIds,
+      productQuantity: productQuantities,
       customerName: formData.name,
       customerEmail: storedEmail,
       customerPhone: formData.phoneno,
@@ -334,9 +322,9 @@ const Checkout = () => {
       distanceInMeters: 0,
       promoId: promoId,
       promoName: promoName,
-      houseNum:formData.houseNo,
-      floorNum:formData.floor,
-      streetNum:formData.street,
+      houseNum: formData.houseNo,
+      floorNum: formData.floor,
+      streetNum: formData.street,
     };
     console.log(data);
     try {
@@ -360,7 +348,7 @@ const Checkout = () => {
       if (error.response) {
         console.error('Response data:', error.response.data);
         setIsPopupOpen(false);
-       setCheckoutFailed(true);
+        setCheckoutFailed(true);
       }
     }
   };
@@ -404,8 +392,8 @@ const Checkout = () => {
       });
     };
     const getAddressFromCoordinates = async (latitude, longitude) => {
-      const apiKey = 'AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU';   
-      const  url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;    
+      const apiKey = 'AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU';
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
       try {
         const response = await fetch(url);
         const data = await response.json();
@@ -423,11 +411,11 @@ const Checkout = () => {
 
     const fetchData = async () => {
       try {
-       
+
         const position = await getCurrentPosition();
         const { latitude, longitude } = position;
         await getAddressFromCoordinates(latitude, longitude);
-      
+
       } catch (error) {
         console.error('Error:', error);
       }
@@ -460,8 +448,8 @@ const Checkout = () => {
           setformattedDate(formattedDate);
         } else {
           console.log("Mart is currently closed.");
-          setShowOrderScheduale(true);
-          console.log('state is', showOrderScheduale);
+          // setShowOrderScheduale(true);
+          // console.log('state is', showOrderScheduale);
         }
       } else {
         console.log("Could not find timings for today.");
@@ -499,7 +487,7 @@ const Checkout = () => {
               </div>
             </div>
           )}
-           {checkoutFailed && (
+          {checkoutFailed && (
             <>
               <div className='promo-container'>
                 <div className='promo-popup'>
@@ -508,8 +496,8 @@ const Checkout = () => {
                       &times;
                     </span>
                   </div>
-                  <h3 className='promo-label'>Unexpected Error</h3>
-                  <h3 className='promo-label2'>Cant Place Order</h3>
+                  <h3 className='promo-label'>Error</h3>
+                  <h3 className='promo-label2'>{checkoutError}</h3>
                   <button onClick={() => setCheckoutFailed(false)} className='continue'>Continue</button>
                 </div>
               </div>
@@ -610,6 +598,8 @@ const Checkout = () => {
                         &times;
                       </span>
                     </div>
+                    <h3 className='payment-label' onClick={() => handleScheduale('N')}>Now</h3>
+                    <hr className='line-after' />
                     <h3 className='payment-label' onClick={() => handleScheduale('S')}>Scheduale Order</h3>
                     <hr className='line-after' />
                   </>
@@ -621,11 +611,11 @@ const Checkout = () => {
           <section className='container'>
 
             <div className='cart-container'>
-              {checkoutError && (
+              {/* {checkoutError && (
                 <Alert color="danger" className="alert alert-warning" role="alert" isOpen={checkoutError !== ''} toggle={() => setCheckoutError('')} style={{ marginBottom: '10px' }}>
                   {checkoutError}
                 </Alert>
-              )}
+              )} */}
               <div className='checkout-items'>
                 <h5>Deliver to</h5>
                 <Link to={{
@@ -657,11 +647,11 @@ const Checkout = () => {
                   <img src='/Images/card.png' size={20} />
                 </div>
                 <div className='main-div'>
-                  <p style={{ marginTop: '5px' }}>{paymentMethod}</p>
+                  <p style={{ marginTop: '-5px' }}>{paymentMethod}</p>
                 </div>
               </div>
             </div>
-            {showPromos.length > 0 && (
+            {showPromos.length > 0 && LoginUserName && (
               <div className='cart-container'>
                 <div className='checkout-items'>
                   <h5>Promo Code</h5>
@@ -685,37 +675,37 @@ const Checkout = () => {
                 </div>
               </div>
             )}
-            {showOrderScheduale && (
-              <div className='cart-container'>
-              {TimeError && (
+            {/* {showOrderScheduale && ( */}
+            <div className='cart-container'>
+              {/* {TimeError && (
                 <Alert color="danger" className="alert alert-warning" role="alert" isOpen={TimeError !== ''} toggle={() => setTimeError('')} style={{ marginBottom: '10px' }}>
                   {TimeError}
                 </Alert>
-              )}
-                <div className='checkout-items'>
-                  <h5>Scheduled for</h5>
-                  <span onClick={() => handleClick('Schedualefor')}>Edit</span>
-                </div>
-                <div className='main'>
-                  <div className='checkout-icons'>
-                    <FiShoppingBag style={{ color: '#434F7B' }} size={20} />
-                  </div>
-                  <div className='main-div'>
-                    <p style={{ marginTop: '5px' }}>{schedualeOrder}</p>
-                  </div>
-                </div>
-                {isEditing && (
-                  <div className='popup-options'>
-                    <button onClick={() => handleOptionClick('Now')}>Now</button>
-                    <button onClick={() => handleOptionClick('ScheduleFor')}>
-                      Schedule For
-                    </button>
-                  </div>
-
-                )}
-
+              )} */}
+              <div className='checkout-items'>
+                <h5>Scheduled for</h5>
+                <span onClick={() => handleClick('Schedualefor')}>Edit</span>
               </div>
-            )}
+              <div className='main'>
+                <div className='checkout-icons'>
+                  <FiShoppingBag style={{ color: '#434F7B' }} size={20} />
+                </div>
+                <div className='main-div'>
+                  <p style={{ marginTop: '5px' }}>{schedualeOrder}</p>
+                </div>
+              </div>
+              {isEditing && (
+                <div className='popup-options'>
+                  <button onClick={() => handleOptionClick('Now')}>Now</button>
+                  <button onClick={() => handleOptionClick('ScheduleFor')}>
+                    Schedule For
+                  </button>
+                </div>
+
+              )}
+
+            </div>
+            {/* )} */}
           </section>
           <section className='container '>
             <div className='cart-container'>
@@ -741,6 +731,12 @@ const Checkout = () => {
                     <h5>Delivery Charges</h5>
                     <h5>Free Delivery</h5>
                   </div>
+                  {discountValue !=='' && (
+                    <div className='cart-subtotal'>
+                      <h5>Discount</h5>
+                      <h5>Rs {discountValue}</h5>
+                    </div>
+                  )}
                   <div className='cart-subtotal'>
                     <h5>Total</h5>
                     <h5>Rs {discountTotal || discountTotal === 0 ? discountTotal : subtotal}</h5>
@@ -768,16 +764,16 @@ export const Location = () => {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [confirmedAddress, setConfirmedAddress] = useState('');
-  const autocompleteInputRef = useRef(null); 
+  const autocompleteInputRef = useRef(null);
   const [libraries] = useState(['places']);
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU", 
+    googleMapsApiKey: "AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU",
     libraries: ['places'],
   });
   const handlePlaceSelect = (place) => {
     if (!place || !place.geometry || !place.geometry.location) {
       console.error('No location found for:', place);
-      return; 
+      return;
     }
     const lat = place.geometry.location.lat();
     const lng = place.geometry.location.lng();
@@ -814,7 +810,7 @@ export const Location = () => {
     setConfirmedAddress(searchLocation);
     console.log(confirmedAddress);
     setSearchLocation(searchLocation);
-    navigate('/checkout', { state: { locationId: searchLocation , newlatitude: latitude, newlongitude: longitude,} });
+    navigate('/checkout', { state: { locationId: searchLocation, newlatitude: latitude, newlongitude: longitude, } });
   };
   const handleSearch = async () => {
     try {
@@ -870,28 +866,28 @@ export const Location = () => {
                 </AdvancedMarker>
               )}
               <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1000 }}>
-              <Autocomplete
-          onLoad={(autocomplete) => {
-            autocomplete.addListener('place_changed', () => {
-              const place = autocomplete.getPlace();
-              handlePlaceSelect(place);
-            });
-          }}
-        >
-                <input
-                  type="text"
-                  // value={searchLocation}
-                  // onChange={(e) => setSearchLocation(e.target.value)}
-                  placeholder="Enter location"
-                  className='map-search'
-                  ref={autocompleteInputRef}  
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSearch(); 
-                    }  
-                  }}              
-                />
-                 </Autocomplete>
+                <Autocomplete
+                  onLoad={(autocomplete) => {
+                    autocomplete.addListener('place_changed', () => {
+                      const place = autocomplete.getPlace();
+                      handlePlaceSelect(place);
+                    });
+                  }}
+                >
+                  <input
+                    type="text"
+                    // value={searchLocation}
+                    // onChange={(e) => setSearchLocation(e.target.value)}
+                    placeholder="Enter location"
+                    className='map-search'
+                    ref={autocompleteInputRef}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                  />
+                </Autocomplete>
                 <button onClick={handleSearch} className='map-search-button'>Search</button>
               </div>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative', height: '74vh' }}>
