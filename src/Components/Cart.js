@@ -16,6 +16,7 @@ import { GoCheck } from "react-icons/go";
 const Cart = (props) => {
   const location = useLocation();
   const [additionalDetails, setAdditionalDetails] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const cartItems = useSelector(state => state.cart);
   const subtotal = useSelector(state => state.cart);
   const additionalItems = useSelector((state) => state.cart.additionalItems);
@@ -26,8 +27,31 @@ const Cart = (props) => {
   const handleClick = () => {
     setAdditionalDetails(!additionalDetails);
   }
+  const canIncreaseQuantity = (item) => {
+    console.log("Max Product Limit:", item.maxProductLimit);
+    console.log(item);
+    console.log(" item quantity is ",item.qty);
+      if (item.maxProductLimit === 0) {
+      console.log("No limit, can add product.");
+      return true;
+    }
+    if (item.qty   < item.maxProductLimit) {
+      console.log("Can add product.",item.qty);
+      return true;
+    } 
+    else {
+      console.log("Cannot add product. Quantity limit reached.");
+      return false;
+    }
+  };
   const addToCart = (item) => {
+    if (!canIncreaseQuantity(item)) {
+      const message = `You can only add up to ${item.maxProductLimit} of this item.`;
+      setErrorMessage(message);
+      return;
+    }
     dispatch(addtoCart(item));
+    setErrorMessage(""); 
   };
   const handleAdditionalPopup = () => {
     setAdditionalPopup(!additionalPopup);
@@ -106,6 +130,22 @@ const Cart = (props) => {
       ) : (
         <>
           <div className='container pt'>
+          {errorMessage && (
+            <>
+              <div className='promo-container'>
+                <div className='promo-popup'>
+                  <div className='promo-close'>
+                    <span className='promo-close-btn' onClick={() => setErrorMessage('')}>
+                      &times;
+                    </span>
+                  </div>
+                  <h3 className='promo-label'>Error</h3>
+                  <h3 className='promo-label2'>Max quantity reached</h3>
+                  <button onClick={() => setErrorMessage('')} className='continue'>Continue</button>
+                </div>
+              </div>
+            </>
+      )}
             {
               cartItems.carts.map(item => {
                 return (
@@ -131,7 +171,7 @@ const Cart = (props) => {
                                   <button onClick={() => dispatch(removefromCart({ id: item.id }))} className='cart-button-3'>
                                     -
                                   </button>
-                                ) : (
+                                 ) : (
                                   <button onClick={() => dispatch(removefromCart({ id: item.id }))} className='cart-button-1'>
                                     <RiDeleteBin6Line />
                                   </button>
@@ -141,7 +181,7 @@ const Cart = (props) => {
                               </div>
                             </div>
                             <div className='cart-price'>
-                              <h6>Rs {item.price * item.qty}</h6>
+                              <h5>Rs {item.price * item.qty}</h5>
                             </div>
                           </div>
                         </div>
@@ -190,7 +230,7 @@ const Cart = (props) => {
                   </div>
                   <div className='button-Style'>
                     <Link to='/checkout'>
-                      <button className='checkout-button'>CHECKOUT</button>
+                      <button className='checkout-button'>Checkout</button>
                     </Link>
                   </div>
                 </div>
@@ -203,15 +243,13 @@ const Cart = (props) => {
     </div>
   )
 }
-
 export default Cart
 export const AdditionalProducts = () => {
   const [cartExists, setCartExists] = useState(false);
   const location = useLocation();
   const additionalItems = location.state || [];
-  const [showInputs, setShowInputs] = useState(false);
+  // const [showInputs, setShowInputs] = useState(false);
   const navigate = useNavigate();
-  // const [inputItems, setInputItems] = useState([{ id: `${Date.now()}-${Math.random().toString(16)}`, name: '', quantity: '' }]);
   const [errors, setErrors] = useState({});
   const Martid = sessionStorage.getItem('mart_id');
   const dispatch = useDispatch();

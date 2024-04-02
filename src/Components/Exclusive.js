@@ -6,16 +6,42 @@ import { addtoCart } from './CartSlice';
 import {Link} from 'react-router-dom';
 const Exclusive = (props) => {
   const dispatch = useDispatch();
-
   const [quantity, setQuantity] = useState(1);
   const [showQuantityButtons, setShowQuantityButtons] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const storedMart = sessionStorage.getItem('mart_id');
+  const canIncreaseQuantity = () => {
+    console.log("Max Product Limit:", props.maxProductLimit);
+    console.log(quantity);
+      if (props.maxProductLimit === 0) {
+      console.log("No limit, can add product.");
+      return true;
+    }
+    if (quantity   < props.maxProductLimit) {
+      console.log("Can add product.",quantity);
+      return true;
+    } 
+    else {
+      console.log("Cannot add product. Quantity limit reached.");
+      return false;
+    }
+  };
+  
   const addToCart = () => {
     setShowQuantityButtons(true);
     dispatch(addtoCart(props));
+    setErrorMessage(""); 
   };
   const increaseQuantity = () => {
+    if (!canIncreaseQuantity()) {
+      const message = `You can only add up to ${props.maxProductLimit} of this item.`;
+      setErrorMessage(message);
+      props.onErrorMessage(message);
+      return;
+    }
     setQuantity((prevQuantity) => prevQuantity + 1);
     dispatch(addtoCart(props));
+    setErrorMessage(""); 
   };
   const decreaseQuantity = () => {
     if (quantity > 1) {
@@ -31,11 +57,11 @@ const Exclusive = (props) => {
     <>
       <div className='Exclusive'>
         <div className='Exclusive_item'>
-        <Link to={`/product_detail?martId=1&productId=${props.id}`} className='linkstyle'>
+        <Link to={`/product_detail?martId=${storedMart}&productId=${props.id}`} className='linkstyle'>
           <div style={{display:'flex',justifyContent:'center'}}>
           <img src={props.image} alt='img' /> 
           </div>  
-          <p className='Exclusive_itemp'>{props.name}</p>      
+          <h6 className='Exclusive_itemp'>{props.name}</h6>      
           </Link>
           {showQuantityButtons ? (
             <div className='quantity-buttons'>

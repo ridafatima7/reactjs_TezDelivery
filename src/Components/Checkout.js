@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import TNavbar from './TNavbar';
 import Footer from "./Footer";
-import { FaLocationDot } from "react-icons/fa6";
+import { FaLocationDot, FaRegAddressCard } from "react-icons/fa6";
 import { FiShoppingBag } from "react-icons/fi";
 import { useSelector, useDispatch } from 'react-redux';
 import api from "./apis";
@@ -43,8 +43,8 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const [addressLoc, setAddressLoc] = useState('');
+  const [minAmountToOrder,setMinAmountToOrder]=useState("");
   const [showPromos, setShowPromos] = useState('');
-  const [TimeError, setTimeError] = useState('');
   const [checkoutError, setCheckoutError] = useState('');
   const [additionalComment, setAdditionalComment] = useState('');
   const [paymentMethodpopup, setPaymentMethodpopup] = useState(false);
@@ -53,7 +53,6 @@ const Checkout = () => {
   const [schedule, setScheduale] = useState(false);
   const [OrderScheduale, setOrderScheduale] = useState(false);
   const LoginUserName = sessionStorage.getItem('userName');
-  const [showOrderScheduale, setShowOrderScheduale] = useState(false);
   const storedUserName = sessionStorage.getItem('userName') || 'Guest User';
   const storedFirebaseId = sessionStorage.getItem('fire_baseid') || '';
   const storedPhoneNo = sessionStorage.getItem('phoneNumber') || '';
@@ -81,9 +80,10 @@ const Checkout = () => {
   const [promoName, setPromoName] = useState('');
   const [discountTotal, setDiscountTotal] = useState('');
   const [discountValue, setDiscountValue] = useState('');
+  const [martExist, setMartExist] = useState('');
+  const [martClose,setMartClose]=useState('');
   const cartItems = useSelector(state => state.cart);
   const subtotal = useSelector(state => state.cart.subtotal);
-  const [showAlert, showErrorAlert] = useState('');
   console.log(subtotal);
   const handlePromoCodeChange = (event) => {
     setPromoCodeNumber(event.target.value);
@@ -91,8 +91,6 @@ const Checkout = () => {
     setPromoId('');
     setPromoName('');
   };
-
-
   const applyPromoCode = async () => {
     try {
       const response = await axios.post(
@@ -102,7 +100,6 @@ const Checkout = () => {
           code: promoCodeNumber,
         }),
       );
-
       if (response.status === 200) {
         const foundPromo = response.data.data[0];
         console.log(response.data.data[0]);
@@ -135,14 +132,19 @@ const Checkout = () => {
       setPromoCode(true);
     }
   }
-  // let formattedDate = '';
-  // let schedualeDate='';
   const [formData, setFormData] = useState({
     name: storedUserName || '',
     phoneno: storedPhoneNo || '',
     houseNo: '',
     street: '',
     floor: '',
+  });
+  const [formErrors, setFormErrors] = useState({
+    name: '',
+    phoneno: '',
+    houseNo: '',
+    street: '',
+    floor: ''
   });
   const handleScheduale = (value) => {
     if (value === 'S') {
@@ -201,7 +203,7 @@ const Checkout = () => {
       hour12: true
     };
     const schedualeDate = selectedDate.toLocaleString('en-US', options).replace(',', ' ');
-   
+
     setschedualeDate(schedualeDate);
     setSchedualeOrder(schedualeDate);
     console.log(schedualeOrder);
@@ -242,38 +244,106 @@ const Checkout = () => {
   var long = 0;
   let productIds;
   let productQuantities;
-  
+
   const handleCheckout = async (e) => {
     e.preventDefault();
-    if (subtotal < 275) {
+    if(!locationId){
+      if (martExist === false) {
+        setIsPopupOpen(false);
+        setCheckoutFailed(true);
+        setCheckoutError('Mart is not operating in your current Location.Please Select another location');
+        console.log('Mart is not operating in your current Location.Please Select another location');
+        return;
+      }
+    }
+    if (subtotal < minAmountToOrder) {
       setIsPopupOpen(false);
-      setCheckoutError('Minimum Amount to place this order is 499 !');
+      setCheckoutFailed(true);
+      setCheckoutError(`Minimum Amount to place this order is ${minAmountToOrder} !`);
+      console.log(`Minimum Amount to place this order is ${minAmountToOrder} !`)
       return;
     }
     if (!formattedDate || formattedDate.trim() === '') {
       setIsPopupOpen(false);
       setCheckoutFailed(true);
       setCheckoutError('Please schedule the order date.');
+      console.log('Please schedule the order date.')
       return;
     }
+
     if (!addressLoc && !locationId) {
       setIsPopupOpen(false);
       setCheckoutFailed(true);
       setCheckoutError('Please provide a valid address before proceeding.');
       return;
     }
-    if (schedualeDate) {
-      const scheduled_Time = new Date(schedualeDate).getHours() + (new Date(schedualeDate).getMinutes() / 60);
-      console.log(scheduled_Time)
-      if (scheduled_Time >= 12 && scheduled_Time <= 23.5) {
-        console.log("Selected time is within the valid range.");
-    } else {
-        console.log("Please select a time strictly between 12:00 PM and 11:30 PM.");
-        setIsPopupOpen(false);
-        setCheckoutFailed(true);
-        setCheckoutError('Order can only be Scheduled  between 12:00 PM - 11:30 PM.');
-        return;
+
+    if (!schedualeDate && martClose===true) {
+      setIsPopupOpen(false);
+      setCheckoutFailed(true);
+      setCheckoutError('Mart is currently closed. Please schedule the order.');
+      console.log('Mart is currently closed. Please schedule the order.');
+      return;
     }
+    // if (schedualeDate) {
+    //   const scheduled_Time = new Date(schedualeDate).getHours() + (new Date(schedualeDate).getMinutes() / 60);
+    //   console.log(scheduled_Time)
+    //   if (scheduled_Time >= 12 && scheduled_Time <= 23.5) {
+    //     console.log("Selected time is within the valid range.");
+    //   } else {
+    //     console.log("Please select a time strictly between 12:00 PM and 11:30 PM.");
+    //     setIsPopupOpen(false);
+    //     setCheckoutFailed(true);
+    //     setCheckoutError('Order can only be Scheduled  between 12:00 PM - 11:30 PM.');
+    //     return;
+    //   }
+    // }
+    if (schedualeDate) {
+      const scheduledDate = new Date(schedualeDate);
+      const scheduledDayOfWeek = scheduledDate.getDay();
+      const scheduledTimeMinutes = scheduledDate.getHours() * 60 + scheduledDate.getMinutes();
+  
+      const apiDayOfWeek = scheduledDayOfWeek === 0 ? 7 : scheduledDayOfWeek;
+      const todaysTimings = martTimings.find(timing => timing.day === apiDayOfWeek);
+      
+      if (todaysTimings) {
+        const openingTimeMinutes = parseInt(todaysTimings.checkIn.split(':')[0]) * 60 + parseInt(todaysTimings.checkIn.split(':')[1]);
+        const closingTimeMinutes = parseInt(todaysTimings.checkOut.split(':')[0]) * 60 + (todaysTimings.checkOut.includes('PM') ? 720 : 0) + parseInt(todaysTimings.checkOut.split(':')[1]);
+        const adjustedOpeningTimeMinutes = openingTimeMinutes + 120;
+          
+          if (scheduledTimeMinutes < adjustedOpeningTimeMinutes || scheduledTimeMinutes > closingTimeMinutes) {
+            const adjustedOpeningTime = new Date(scheduledDate.getTime());
+            adjustedOpeningTime.setHours(Math.floor(adjustedOpeningTimeMinutes / 60), adjustedOpeningTimeMinutes % 60);
+
+            const closingTime = new Date(scheduledDate.getTime());
+            closingTime.setHours(Math.floor(closingTimeMinutes / 60), closingTimeMinutes % 60);
+
+            console.log("The selected time is outside of mart operating hours.");
+            setIsPopupOpen(false);
+            setCheckoutFailed(true);
+            setCheckoutError(`Please schedule the order between ${adjustedOpeningTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} and ${closingTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`);
+            return;
+          } else {
+              console.log("Scheduled time is within the adjusted mart operating hours.");
+          }
+      } else {
+          console.log("Mart is closed on the selected day.");
+          setIsPopupOpen(false);
+          setCheckoutFailed(true);
+          setCheckoutError("We're sorry, but our mart is closed on the selected day. Please choose another day.");
+          return;
+      }
+  }
+    const newErrors = {};
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+    if (!formData.phoneno.trim()) {
+      newErrors.phoneno = 'Phone number is required';
+    }
+    setFormErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      return;
     }
     console.log(subtotal);
     console.log(cartItems.carts);
@@ -359,6 +429,7 @@ const Checkout = () => {
         const response = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);
         console.log(response);
         const martData = response.data.data[0];
+        setMinAmountToOrder(response.data.data[0].minPriceToOrder);
         console.log(martData);
         setMartInfo(martData);
         setShowPromos(martData.promos);
@@ -400,6 +471,26 @@ const Checkout = () => {
         if (data.results && data.results.length > 0) {
           const address = data.results[0].formatted_address;
           setAddressLoc(address);
+          const martApiResponse = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);
+          const martData = martApiResponse.data.data[0];
+          const isMartInLocation = martData.address.some((address) => {
+            const distance = calculateDistance(
+              parseFloat(latitude),
+              parseFloat(longitude),
+              address.lat,
+              address.lng
+            );
+            return distance <= address.radius;
+          });
+
+          if (isMartInLocation) {
+            console.log('At least one address of the mart is within the user\'s current location.',address);
+            setMartExist(true);
+          } else {
+            console.log('No address of the mart is within the user\'s current location.',address);
+            setMartExist(false);
+          }
+
           return address;
         } else {
           throw new Error('No address found for the provided coordinates');
@@ -408,7 +499,18 @@ const Checkout = () => {
         throw error;
       }
     };
-
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+      return distance;
+    }
     const fetchData = async () => {
       try {
 
@@ -450,6 +552,7 @@ const Checkout = () => {
           console.log("Mart is currently closed.");
           // setShowOrderScheduale(true);
           // console.log('state is', showOrderScheduale);
+          setMartClose(true);
         }
       } else {
         console.log("Could not find timings for today.");
@@ -543,7 +646,7 @@ const Checkout = () => {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                   />
-
+                  {formErrors.name && <span className='required-errors'>{formErrors.name}</span>}
                   <input
                     placeholder='03xx xxxxxxx'
                     type='text'
@@ -554,6 +657,7 @@ const Checkout = () => {
                     onChange={(e) => setFormData({ ...formData, phoneno: e.target.value })}
                     required
                   />
+                  {formErrors.phoneno && <span className='required-errors'>{formErrors.phoneno}</span>}
 
                   <input
                     type='text'
@@ -583,7 +687,7 @@ const Checkout = () => {
                     value={formData.floor}
                     onChange={(e) => setFormData({ ...formData, floor: e.target.value })}
                   />
-                  <button className='popup-button' onClick={handleCheckout} type='submit'>PLACE MY ORDER</button>
+                  <button className='popup-button' onClick={handleCheckout} type='submit'>Submit</button>
                 </form>
               </div>
             </div>
@@ -731,7 +835,7 @@ const Checkout = () => {
                     <h5>Delivery Charges</h5>
                     <h5>Free Delivery</h5>
                   </div>
-                  {discountValue !=='' && (
+                  {discountValue !== '' && (
                     <div className='cart-subtotal'>
                       <h5>Discount</h5>
                       <h5>Rs {discountValue}</h5>
@@ -742,7 +846,9 @@ const Checkout = () => {
                     <h5>Rs {discountTotal || discountTotal === 0 ? discountTotal : subtotal}</h5>
                   </div>
                   <div className='button-Style'>
-                    <button onClick={() => setIsPopupOpen(true)} className='checkout-button'>CHECKOUT</button>
+                    <button onClick={() => setIsPopupOpen(true)} className='checkout-button'>
+                      {schedualeDate ? "Schedule Order" : "Place Order"}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -755,21 +861,29 @@ const Checkout = () => {
 }
 
 export default Checkout
+const libraries = ['places'];
 export const Location = () => {
   const navigate = useNavigate();
   const [currentPosition, setCurrentPosition] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [confirmationError, setConfirmationError] = useState('');
   const [open, setopen] = useState(false);
+  const [martData, setMartInfo] = useState('');
+  const [addressArray, setAddressArray] = useState('');
   const [searchLocation, setSearchLocation] = useState('');
   const [markerPosition, setMarkerPosition] = useState(null);
+  const storedMart = sessionStorage.getItem('mart_id');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [confirmedAddress, setConfirmedAddress] = useState('');
   const autocompleteInputRef = useRef(null);
-  const [libraries] = useState(['places']);
+  // const [libraries] = useState(['places']);
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: "AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU",
-    libraries: ['places'],
+    libraries,
+    // libraries: ['places'],
   });
+
   const handlePlaceSelect = (place) => {
     if (!place || !place.geometry || !place.geometry.location) {
       console.error('No location found for:', place);
@@ -781,36 +895,110 @@ export const Location = () => {
     setLatitude(lat.toFixed(6));
     setLongitude(lng.toFixed(6));
     setSearchLocation(place.formatted_address);
+
   };
   useEffect(() => {
     const getLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setCurrentPosition
-              ({
-                lat: latitude,
-                lng: longitude
-              });
-            setLatitude(latitude.toFixed(6));
-            setLongitude(longitude.toFixed(6))
-          },
-          (error) => {
-            console.error('Error getting user location:', error);
+      if (navigator.permissions) {
+        navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
+          if (permissionStatus.state === 'granted') {
+            getCurrentPosition();
+          } else {
+            setLoading(false);
+            setToMartLocation();
           }
-        );
+        });
       } else {
-        console.error('Geolocation is not supported by this browser.');
+        if (navigator.geolocation) {
+          getCurrentPosition();
+        } else {
+          console.error('Geolocation is not supported by this browser.');
+          setLoading(false);
+          setToMartLocation();
+        }
       }
     };
+
+
+    const getCurrentPosition = () => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentPosition({ lat: latitude, lng: longitude });
+          setLatitude(latitude.toFixed(6));
+          setLongitude(longitude.toFixed(6));
+          setLoading(false);
+        },
+        (error) => {
+          console.error('Error getting user location:', error);
+          setLoading(false);
+        }
+      );
+    };
+    const setToMartLocation = async () => {
+      try {
+        const response = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);
+        console.log('Fetching mart data for location:', response);
+        const martData = response.data.data[0];
+
+        if (martData && martData.latitude && martData.longitude) {
+          console.log(martData.latitude, martData.longitude);
+          setCurrentPosition({ lat: martData.latitude, lng: martData.longitude });
+          setLatitude(martData.latitude.toFixed(6));
+          setLongitude(martData.longitude.toFixed(6));
+        } else {
+          console.error('Mart location data is not available.');
+        }
+      } catch (error) {
+        console.error('Error fetching mart location:', error);
+      }
+      setLoading(false);
+    };
+    const fetchMartInfo = async () => {
+      try {
+        const response = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);
+        console.log(response);
+        const martData = response.data.data[0];
+        console.log(martData);
+        setMartInfo(martData);
+        // setLoading(false);
+        const martAddress = martData.address;
+        console.log(martAddress);
+        setAddressArray(martAddress);
+      } catch (error) {
+        // setError(error.message);
+        // setLoading(false);
+      }
+    };
+    fetchMartInfo();
     getLocation();
   }, []);
   const handleConfirmAddress = () => {
-    setConfirmedAddress(searchLocation);
-    console.log(confirmedAddress);
-    setSearchLocation(searchLocation);
-    navigate('/checkout', { state: { locationId: searchLocation, newlatitude: latitude, newlongitude: longitude, } });
+    const isWithinServiceArea = martData.address.some((address) => {
+      const distance = calculateDistance(
+        parseFloat(latitude),
+        parseFloat(longitude),
+        address.lat,
+        address.lng
+      );
+      return distance <= address.radius;
+    });
+
+    if (isWithinServiceArea) {
+      setConfirmedAddress(searchLocation);
+      console.log(confirmedAddress);
+      setSearchLocation(searchLocation);
+      navigate('/checkout', {
+        state: {
+          locationId: searchLocation,
+          newlatitude: latitude,
+          newlongitude: longitude,
+        },
+      });
+    } else {
+      setConfirmationError('Mart is not available for delivery at selected location ');
+      console.log('Selected address is outside the service area of the mart.');
+    }
   };
   const handleSearch = async () => {
     try {
@@ -836,6 +1024,21 @@ export const Location = () => {
       console.error('Error searching location:', error);
     }
   };
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance;
+  }
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
   const handleSelect = async (address) => {
     try {
       const results = await geocodeByAddress(address);
@@ -850,54 +1053,82 @@ export const Location = () => {
   };
   const apiKey = process.env.REACT_APP_API_KEY;
   const apiId = process.env.REACT_APP_API_URL;
+  const mapOptions = {
+    mapTypeControl: false,
+  };
   return (
     <div>
       <TNavbar />
       <div className='pt' >
-        <APIProvider apiKey='AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU' className='pt' >
-          <div style={{ height: '100vh', width: '100%' }}>
-            <Map zoom={14} center={currentPosition} mapId='f354a7d216f1686c'>
-              {currentPosition && (
-                <AdvancedMarker position={currentPosition} onClick={() => setopen(true)}>
-                  <Pin
-                    background={'grey'}
-                    borderColor={'green'}
-                    glyphColor={'purple'} />
-                </AdvancedMarker>
-              )}
-              <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1000 }}>
-                <Autocomplete
-                  onLoad={(autocomplete) => {
-                    autocomplete.addListener('place_changed', () => {
-                      const place = autocomplete.getPlace();
-                      handlePlaceSelect(place);
-                    });
-                  }}
-                >
-                  <input
-                    type="text"
-                    // value={searchLocation}
-                    // onChange={(e) => setSearchLocation(e.target.value)}
-                    placeholder="Enter location"
-                    className='map-search'
-                    ref={autocompleteInputRef}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSearch();
-                      }
-                    }}
-                  />
-                </Autocomplete>
-                <button onClick={handleSearch} className='map-search-button'>Search</button>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative', height: '74vh' }}>
-                <div style={{ alignSelf: 'flex-end', zIndex: 1001 }}>
-                  <button onClick={handleConfirmAddress} className='confirm-adress'>Confirm Address</button>
+        {confirmationError && (
+          <>
+            <div className='promo-container'>
+              <div className='promo-popup'>
+                <div className='promo-close'>
+                  <span className='promo-close-btn' onClick={() => setConfirmationError('')}>
+                    &times;
+                  </span>
                 </div>
+                <h3 className='promo-label'>Error</h3>
+                <h3 className='promo-label2'>{confirmationError}</h3>
+                <button onClick={() => setConfirmationError('')} className='continue'>Continue</button>
               </div>
-            </Map>
+            </div>
+          </>
+        )}
+        {loading ? (
+          <div className='loader-div'>
+            <div className="Order-loader"></div>
+            <>
+              <span className='loader-span'>Loading....</span>
+            </>
           </div>
-        </APIProvider>
+        ) : (
+          <APIProvider apiKey='AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU' className='pt' >
+            <div style={{ height: '100vh', width: '100%' }}>
+              <Map zoom={14} center={currentPosition} mapId='f354a7d216f1686c' options={mapOptions}>
+                {currentPosition && (
+                  <AdvancedMarker position={currentPosition} onClick={() => setopen(true)}>
+                    <Pin
+                      background={'grey'}
+                      borderColor={'green'}
+                      glyphColor={'purple'} />
+                  </AdvancedMarker>
+                )}
+                <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1000 }}>
+                  <Autocomplete
+                    onLoad={(autocomplete) => {
+                      autocomplete.addListener('place_changed', () => {
+                        const place = autocomplete.getPlace();
+                        handlePlaceSelect(place);
+                      });
+                    }}
+                  >
+                    <input
+                      type="text"
+                      // value={searchLocation}
+                      // onChange={(e) => setSearchLocation(e.target.value)}
+                      placeholder="Enter location"
+                      className='map-search'
+                      ref={autocompleteInputRef}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
+                    />
+                  </Autocomplete>
+                  {/* <button onClick={handleSearch} className='map-search-button'>Search</button> */}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative', height: '74vh' }}>
+                  <div style={{ alignSelf: 'flex-end', zIndex: 1001 }}>
+                    <button onClick={handleConfirmAddress} className='confirm-adress'>Confirm Address</button>
+                  </div>
+                </div>
+              </Map>
+            </div>
+          </APIProvider>
+        )}
       </div>
     </div>
   );

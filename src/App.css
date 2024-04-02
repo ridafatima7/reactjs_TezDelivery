@@ -5,7 +5,7 @@
  }
  @font-face {
   font-family:GilroyExtraBold ;
-  src:  url(./Components/font/Gilroy-Semibold.ttf) ;
+  src:  url(./Components/font/Gilroy-Extrabold.ttf) ;
   font-weight: bold;
  }
  @font-face {
@@ -53,11 +53,11 @@ body {
   /* display: flex;
   justify-content: space-between;
   align-items: center; */
-  letter-spacing: 1px;
+  /* letter-spacing: 1px;
   font-size: 1.2rem;
-  font-weight: 700;
+  font-weight: 700; */
   text-align: left;
-  font-family: GilroyBold;
+  font-family: GilroyRegular;
 }
 .pl{
   margin-left: .6rem;
@@ -87,5 +87,11 @@ body {
   transform: translate(-30%, -50%);
 }
 
-
+@media only screen and (max-width: 480px) {
+  .main_heading {
+   font-size: 18px;
+    text-align: left;
+    font-family: GilroyRegular;
+  }
+}
 

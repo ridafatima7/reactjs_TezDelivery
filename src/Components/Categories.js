@@ -20,7 +20,7 @@ const Categories = () => {
   const [limit, setLimit] = useState(15);
   const [skip, setSkip] = useState(0);
   const [SIDi, setSid] = useState(null); 
-
+  const [errorMessage, setErrorMessage] = useState("");
   const [effectiveSkip,setEffectiveSkip]=useState([]);
   // Get Mart Products
   const get_Products = async (cid, sid,skipValue) => {
@@ -101,14 +101,37 @@ const Categories = () => {
   //   };
   //   get_Products(cid,sid);
   // }
+  const handleErrorMessage = (message) => {
+    setErrorMessage(message);
+  };
   return (
     <>
        <TNavbar />
       <NavSection />
+       {/* <NavSection
+        search_Query={search_Query}
+        set_SearchQuery={set_SearchQuery}
+      /> */}
       {DataProduct ? (
         <section className="container">
           <div className="pt">
-            <h5 className="main_heading">{DataProduct.name}</h5>
+          {errorMessage && (
+            <>
+              <div className='promo-container'>
+                <div className='promo-popup'>
+                  <div className='promo-close'>
+                    <span className='promo-close-btn' onClick={() => setErrorMessage('')}>
+                      &times;
+                    </span>
+                  </div>
+                  <h3 className='promo-label'>Error</h3>
+                  <h3 className='promo-label2'>Max quantity reached</h3>
+                  <button onClick={() => setErrorMessage('')} className='continue'>Continue</button>
+                </div>
+              </div>
+            </>
+          )}
+            <h2 className="main_heading">{DataProduct.name}</h2>
             <div className="pt">
               {DataProduct.sub_categories.map((subcategory) => (
 
@@ -139,15 +162,17 @@ const Categories = () => {
             <div className="pt">
               <div className="exclusive_product">
                 {Products.length > 0 ? Products.map((item, i) => (
-                  <Link to={`/product_detail?martId=${mart_id}&productId=${item.id}`} className="linkstyle" key={i}>
+                  // <Link to={`/product_detail?martId=${mart_id}&productId=${item.id}`} className="linkstyle" key={i}>
                     <Items
                       id={item.id}
                       name={item.name}
                       image={item.image}
                       exclusivePrice={item.exclusivePrice}
                       price={item.price}
+                      onErrorMessage={handleErrorMessage}
+                      maxProductLimit={item.maxProductLimit}
                     />
-                  </Link>
+                  // </Link>
                 )) : <></>}
               </div>
             </div>

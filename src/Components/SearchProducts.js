@@ -17,6 +17,7 @@ const SearchProducts = () => {
   const [skip, setSkip] = useState(0);
   const params = new URLSearchParams(search);
   const mart_id = params.get("martId");
+  const [errorMessage, setErrorMessage] = useState("");
   const searched_products = async () => {
     try {
       let result;
@@ -60,6 +61,9 @@ const SearchProducts = () => {
   const loadMore = () => {
     searched_products();
   };
+  const handleErrorMessage = (message) => {
+    setErrorMessage(message);
+  };
   return (
     <>
       <TNavbar />
@@ -69,8 +73,24 @@ const SearchProducts = () => {
       />
       <>
         <section className="container pt">
+        {errorMessage && (
+            <>
+              <div className='promo-container'>
+                <div className='promo-popup'>
+                  <div className='promo-close'>
+                    <span className='promo-close-btn' onClick={() => setErrorMessage('')}>
+                      &times;
+                    </span>
+                  </div>
+                  <h3 className='promo-label'>Error</h3>
+                  <h3 className='promo-label2'>Max quantity reached</h3>
+                  <button onClick={() => setErrorMessage('')} className='continue'>Continue</button>
+                </div>
+              </div>
+            </>
+      )}
           <div className="pb heading-box">
-            <h5 className="main_heading">Products</h5>
+            <h2 className="main_heading">Products</h2>
           </div>
           <InfiniteScroll
               dataLength={filteredProducts.length}
@@ -92,6 +112,8 @@ const SearchProducts = () => {
                   image={item.images}
                   price={item.price}
                   exclusivePrice={item.exclusivePrice}
+                  onErrorMessage={handleErrorMessage}
+                  maxProductLimit={item.maxProductLimit}
                 />
               ))}
           </div>

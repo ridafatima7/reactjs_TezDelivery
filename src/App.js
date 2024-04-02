@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AboutUs from "./Components/AboutUs";
+import AboutUs, { Privacy_Policy } from "./Components/AboutUs";
 import Cart from "./Components/Cart";
 import Categories from "./Components/Categories";
 import Category from "./Components/Category";
@@ -49,6 +49,7 @@ function App() {
             <Route path="/order-placed" element={<OrderPlaced/>} />
             <Route path="/edit-location" element={<Location/>} />
             <Route path="/cart" element={<Cart/>} />
+            <Route path="/privacy-policy" element={<Privacy_Policy/>} />
             <Route path="/sidebar" element={<Sidebar/>} />
             <Route path="/maps" element={<Gmaps/>} />
             <Route path="/landing-page" element={<LandingPage/>} />

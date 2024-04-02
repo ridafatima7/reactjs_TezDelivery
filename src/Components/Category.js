@@ -6,13 +6,15 @@ import NavSection from "./NavSection";
 import TNavbar from "./TNavbar";
 import LazyLoad from 'react-lazy-load';
 import { ClipLoader } from 'react-spinners';
-import api from "./apis";
+import { Navigation, Pagination, Autoplay, Scrollbar, A11y, EffectCoverflow } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
 import { getMartCategories } from "../../../my-app/src/Server";
 const Category = () => {
   const [DataProduct, setData] = useState([]);
   const [imageLoading, setImageLoading] = useState(true);
   const [search_Query, set_SearchQuery] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState([]);
   const mart_id = sessionStorage.getItem('mart_id');
   const fetchData = async () => {
     try {
@@ -26,9 +28,9 @@ const Category = () => {
     } catch (error) {
       console.error('Error:', error.message);
     }
-    
-    };
-    useEffect(() => {
+
+  };
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -40,12 +42,66 @@ const Category = () => {
         search_Query={search_Query}
         set_SearchQuery={set_SearchQuery}
       /> */}
-      <section className="container pt">
-        {DataProduct.map(
+      <section className="container pt pb">
+        {DataProduct.map((category, index) => (
+          <div key={index}>
+            <div className="pb pt heading-box">
+              <h2 className="main_heading">{category.name}</h2>
+            </div>
+            <Swiper
+              modules={[Navigation]}
+              spaceBetween={50}
+              slidesPerView={4}
+              navigation
+              breakpoints={{
+                200: {
+                  slidesPerView: 2,
+                },
+                480: {
+                  slidesPerView: 2,
+                },
+                767: {
+                  slidesPerView: 3,
+                },
+                991: {
+                  slidesPerView: 3,
+                },
+                992: {
+                  slidesPerView: 4,
+                }
+              }}
+            >
+              {category.sub_categories.map((subCategory, subIndex) => (
+                <SwiperSlide key={subIndex}>
+                  <Link
+                    to={`/categories_page?martId=${mart_id}&categoryId=${category.cid}`}
+                    className="linkstyle"
+                  >
+                    <div className="products_grid_item">
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        {imageLoading && <ClipLoader color={'#F17E2A'} className="lazyload" loading={imageLoading} size={35} />}
+                      </div>
+                      <LazyLoad>
+                        <img
+                          src={subCategory.image}
+                          alt='img'
+                          onLoad={() => setImageLoading(false)}
+                          style={{ display: imageLoading ? 'none' : 'block' }}
+                        />
+                      </LazyLoad>
+                      <h6>{subCategory.name}</h6>
+                    </div>
+                  </Link>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        ))}
+        {/* {DataProduct.map(
           (category, index) => (
             <div key={index}>
               <div className="pb heading-box">
-                <h5 className="main_heading">{category.name}</h5>
+                <h2 className="main_heading">{category.name}</h2>
               </div>
               <div className="products_grid_Cat pb">
                 {category.sub_categories
@@ -68,14 +124,14 @@ const Category = () => {
                             style={{ display: imageLoading ? 'none' : 'block' }}
                           />
                         </LazyLoad>
-                        <span>{subCategory.name}</span>
+                        <h6>{subCategory.name}</h6>
                       </div>
                     </Link>
                   ))}
               </div>
             </div>
           )
-        )}
+        )} */}
       </section>
       <Footer />
     </div>
