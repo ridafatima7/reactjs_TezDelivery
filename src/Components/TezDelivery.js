@@ -138,8 +138,8 @@ const TezDelivery = () => {
                       &times;
                     </span>
                   </div>
-                  <h3 className='promo-label'>Error</h3>
-                  <h3 className='promo-label2'>Max quantity reached</h3>
+                  <h2 className='promo-label main_heading'>Error</h2>
+                  <h3 className='promo-label2'>Max product quantity reached</h3>
                   <button onClick={() => setErrorMessage('')} className='continue'>Continue</button>
                 </div>
               </div>

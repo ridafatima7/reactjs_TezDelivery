@@ -545,6 +545,10 @@
   width: 100%;
   margin-bottom: 1rem;
 }
+.feature-item video {
+  width: 105%;
+  margin-bottom: 1rem;
+}
 .feature-item h6 {
   margin-bottom: 0.5rem;
   font-size: 1.1rem;

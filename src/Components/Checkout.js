@@ -156,6 +156,7 @@ const Checkout = () => {
       setEditPopup(false);
       setSchedualeOrder('Now');
       setOrderScheduale(false);
+      setschedualeDate('');
     }
     else {
 
@@ -251,7 +252,7 @@ const Checkout = () => {
       if (martExist === false) {
         setIsPopupOpen(false);
         setCheckoutFailed(true);
-        setCheckoutError('Mart is not operating in your current Location.Please Select another location');
+        setCheckoutError('Mart is not operating in your current Location.Please Select another location.');
         console.log('Mart is not operating in your current Location.Please Select another location');
         return;
       }
@@ -259,8 +260,8 @@ const Checkout = () => {
     if (subtotal < minAmountToOrder) {
       setIsPopupOpen(false);
       setCheckoutFailed(true);
-      setCheckoutError(`Minimum Amount to place this order is ${minAmountToOrder} !`);
-      console.log(`Minimum Amount to place this order is ${minAmountToOrder} !`)
+      setCheckoutError(`Minimum Amount to place this order is Rs ${minAmountToOrder}.`);
+      console.log(`Minimum Amount to place this order is ${minAmountToOrder}.`)
       return;
     }
     if (!formattedDate || formattedDate.trim() === '') {
@@ -434,6 +435,17 @@ const Checkout = () => {
         setMartInfo(martData);
         setShowPromos(martData.promos);
         setLoading(false);
+        let charges = 0;
+        if (response.data.data[0].fixed > 0) {
+          charges = response.data.data[0].fixed;
+        }
+        if (response.data.data[0].perKM > 0) 
+        {
+        const firstRadius = response.data.data[0].address[0].radius;
+        const distance = calculateDistance(latitude, longitude,response.data.data[0].address[0].lat,  response.data.data[0].address[0].lng);   
+        charges +=response.data.data[0].perKm * distance;
+        }
+        
         const timingsArray = martData.timmings;
         console.log(timingsArray);
         setTimingsArray(timingsArray);
@@ -599,7 +611,7 @@ const Checkout = () => {
                       &times;
                     </span>
                   </div>
-                  <h3 className='promo-label'>Error</h3>
+                  <h2 className='promo-label main_heading'>Error</h2>
                   <h3 className='promo-label2'>{checkoutError}</h3>
                   <button onClick={() => setCheckoutFailed(false)} className='continue'>Continue</button>
                 </div>
@@ -633,7 +645,7 @@ const Checkout = () => {
                 <span className='close-btn' onClick={() => setIsPopupOpen(false)}>
                   &times;
                 </span>
-                <h2 className='popup-heading'>One last step!</h2>
+                <h2 className='popup-heading main_heading'>One last step!</h2>
                 <span className='popup-text'>Please Enter Contact details to place your order</span>
                 <form className='popup-form'>
                   <input
@@ -1069,8 +1081,8 @@ export const Location = () => {
                     &times;
                   </span>
                 </div>
-                <h3 className='promo-label'>Error</h3>
-                <h3 className='promo-label2'>{confirmationError}</h3>
+                <h2 className='promo-label main_heading'>Error</h2>
+                <h3 className='promo-label2'>{confirmationError}.</h3>
                 <button onClick={() => setConfirmationError('')} className='continue'>Continue</button>
               </div>
             </div>

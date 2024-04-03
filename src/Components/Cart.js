@@ -83,8 +83,8 @@ const Cart = (props) => {
                   <GoCheck style={{ paddingBottom: '10px' }} />
                 </span>
               </div>
-              <h3 className='promo-label'>Successful</h3>
-              <h3 className='promo-label2'>Cart Updated Successfully</h3>
+              <h2 className='promo-label main_heading'>Successful</h2>
+              <h3 className='promo-label2'>Cart Updated Successfully.</h3>
               <button onClick={handleAdditionalPopup} className='continue'>Continue</button>
               </div>
           </div>
@@ -93,9 +93,9 @@ const Cart = (props) => {
       {additionalDetails && (
         <>
           <div className='promo-container'>
-            <div className='promo-popup' style={{ maxWidth: '70%' }}>
+            <div className='promo-popup' >
               <div className='additional-close'>
-                <RxCross2 onClick={handleClick} size={20} />
+                <RxCross2 onClick={handleClick} size={23} />
               </div>
               <div className="popup-content" style={{ maxHeight: 'auto', overflowY: 'auto' }}>
 
@@ -104,18 +104,19 @@ const Cart = (props) => {
                   <div className='items-additional'>
                     <div className='cart-image'>
                       <div className='image-div'>
-                        <MdShoppingCartCheckout size={30} color='#F28637' />
+                        <MdShoppingCartCheckout size={30} color='#F28637'  />
                       </div>
                     </div>
                     <span>{item.name}</span>
                   </div>
                   <div>
                     <span>{item.qty}</span>
+                    {/* <RiDeleteBin6Line  size={25} color='#F28637' style={{marginLeft:'10px',marginTop:'6px'}} /> */}
                   </div>
                 </div>
               ))}
               </div>
-              <button onClick={handleUpdate} className='items-popup-button' style={{ width: '15%' }}>Update</button>
+              <button onClick={handleUpdate} className='items-popup-button'>Update</button>
             </div>
           </div>
         </>
@@ -139,8 +140,8 @@ const Cart = (props) => {
                       &times;
                     </span>
                   </div>
-                  <h3 className='promo-label'>Error</h3>
-                  <h3 className='promo-label2'>Max quantity reached</h3>
+                  <h3 className='promo-label main_heading'>Error</h3>
+                  <h3 className='promo-label2'>Max product quantity reached.</h3>
                   <button onClick={() => setErrorMessage('')} className='continue'>Continue</button>
                 </div>
               </div>
@@ -290,10 +291,14 @@ export const AdditionalProducts = () => {
 
   };
   const handleDeleteItem = (itemId) => {
-    if (inputItems.length > 1) {
-      setInputItems(inputItems.filter(item => item.id !== itemId));
-      setValidationMessages(validationMessages.filter(message => message.id !== itemId));
-    }
+    // if (inputItems.length > 1) {
+    //   setInputItems(inputItems.filter(item => item.id !== itemId));
+    //   setValidationMessages(validationMessages.filter(message => message.id !== itemId));
+    // }
+    const updatedItems = inputItems.filter(item => item.id !== itemId);
+    setInputItems(updatedItems);
+    const updatedMessages = validationMessages.filter(message => message.id !== itemId);
+    setValidationMessages(updatedMessages);
   };
   const handleInputChange = (itemId, field, value) => {
     setInputItems(inputItems.map(item =>
@@ -352,7 +357,7 @@ export const AdditionalProducts = () => {
           <div className='additional-inputs' >
             <div style={{ width: '65%' }}>
               <span>Items</span>
-              <input
+              {/* <input
                 type="text"
                 style={{ width: '100%' }}
                 placeholder="Brufen Tablet 500 mg"
@@ -360,11 +365,11 @@ export const AdditionalProducts = () => {
                 value={inputItems[0].name}
                 onChange={(e) => handleInputChange(inputItems[0].id, 'name', e.target.value)}
               />
-              {errors[inputItems[0].id]?.name && <div className='error-message'>{errors[inputItems[0].id].name}</div>}
+              {errors[inputItems[0].id]?.name && <div className='error-message'>{errors[inputItems[0].id].name}</div>} */}
             </div>
             <div style={{ width: '30%' }}>
               <span style={{ marginLeft: '20px' }} >Quantity</span>
-              <input
+              {/* <input
                 type="text"
                 placeholder="1 Pack"
                 className='additional-quantity'
@@ -372,14 +377,14 @@ export const AdditionalProducts = () => {
                 value={inputItems[0].quantity}
                 onChange={(e) => handleInputChange(inputItems[0].id, 'quantity', e.target.value)}
               />
-              {errors[inputItems[0].id]?.quantity && <div style={{ paddingLeft: '20px' }} className='error-message'>{errors[inputItems[0].id].quantity}</div>}
+              {errors[inputItems[0].id]?.quantity && <div style={{ paddingLeft: '20px' }} className='error-message'>{errors[inputItems[0].id].quantity}</div>} */}
             </div>
-            <div style={{ paddingTop: '27px', color: "#434F7B", paddingLeft: '15px' }}>
+            {/* <div style={{ paddingTop: '27px', color: "#434F7B", paddingLeft: '15px' }}>
               <MdDeleteOutline size={24} onClick={() => handleDeleteItem(inputItems[0].id)} />
-            </div>
+            </div> */}
           </div>
           {/* </div> */}
-          {inputItems.slice(1).map((item, index) => (
+          {inputItems.map((item, index) => (
             <div className='additional-inputs'>
               <div style={{ width: '65%' }}>
                 <input

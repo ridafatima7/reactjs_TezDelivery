@@ -437,7 +437,8 @@ const LandingPage = () => {
                                 <p>We actively provide rations and cooked food to the undeserved, as well as widows and orphans development organisations</p>
                             </div>
                             <div className="feature-item">
-                                <img src="/Images/TDimg3.jpeg" alt="" />
+                            <video  src='/Images/videoplayback.mp4' controls autoPlay />
+                                {/* <img src="/Images/TDimg3.jpeg" alt="" /> */}
                                 <h6>Competitive Prices</h6>
                                 <p>TD is an equal opportunity employer that encourages staff to upskill and elevate at work and society</p>
                             </div>

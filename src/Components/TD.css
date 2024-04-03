@@ -178,7 +178,7 @@
   margin: auto;
     display: flex;
     justify-content: center;
-    width: 80%;
+    width: 70%;
     flex-direction: column;
 }
 .Exclusive_item_p {
@@ -348,9 +348,17 @@
 }
 .swiper-button-next{
   color:#495178 !important;
+  opacity: 0.5;
 }
 .swiper-button-prev{
   color:#495178 !important;
+  opacity: 0.8;
+}
+.swiper-button-prev:after{
+  font-size: 25px !important;
+}
+.swiper-button-next:after {
+  font-size: 25px !important;
 }
 .loader-div{
   width: 100%;
@@ -737,12 +745,13 @@
   border-radius: 13px;
   outline: none;
   color: white;
+  font-family: 'GilroyRegular';
   border: none;
   padding-top: 18px;
   padding-bottom: 18px;
   padding-left: 10px;
   padding-right: 10px;
-  font-size: 15px;
+  font-size: 16px;
   width: 27rem;
   font-weight: bold;
   display: flex;
@@ -852,8 +861,9 @@
     background-color: #F17E2A;
     color: white;
     border-radius: 15px;
+    font-size: 14px;
     font-weight: bold;
-    font-size: 16px;
+    font-family: GilroyRegular;
     border: none;
     width: 220px;
     height: 60px;
@@ -1090,12 +1100,10 @@
   height: 40%;
   position: relative;
 }
-
 .payment-label {
-  font-size: 22px;
+  font-size: 1.1rem;
   cursor:pointer;
 }
-
 .line-after {
   width: 100%;
   margin: 10px auto;
@@ -1296,7 +1304,7 @@
 }
 
 .selected {
-  background: #03D1BE;
+  background: #F18637;
 }
 .react-calendar {
   border: none !important;
@@ -1410,15 +1418,17 @@
 
 .promo-label {
   font-size: 22px;
-  margin-top: 70px;
+  margin-top: 55px;
   font-weight: 600;
-  text-align: center;
+  text-align: center !important;
 }
 .promo-label2 {
-  font-size: 22px;
+  font-size: 1.1rem;
   font-weight: 600;
+  line-height: 34px;
   text-align: center;
   text-wrap: wrap;
+  /* margin-top: 3px; */
 }
 .promo-close {
   display: flex;
@@ -1435,8 +1445,8 @@
   line-height: 60px;
   position: absolute;
   z-index: 2000;
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   font-size: 60px;
   color: #FFFFFF;
@@ -1445,13 +1455,13 @@
 .promo-close-btn {
   text-align: center;
   vertical-align: middle;
-  line-height: 70px;
+  line-height: 50px;
   position: absolute;
   z-index: 2000;
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  font-size: 80px;
+  font-size: 60px;
   color: #FFFFFF;
   background-color: #F17E2A;
   border-radius: 50%;
@@ -1466,17 +1476,19 @@
   width: 100%;
 }
 .continue {
+  padding-top: 3px;
   cursor:pointer;
   margin-bottom: 20px;
   background-color: #F17E2A;
   color: white;
-  border-radius: 17px;
-  font-size: 18px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: GilroyRegular;
   font-weight: bold;
   border: none;
-  height: 58px;
-  margin-top: 20px;
-  width: 40%;
+  height: 40px;
+  margin-top: 10px;
+  width: 90px;
   align-self: center;
 }
 
@@ -1634,6 +1646,7 @@
   width: 100%;
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
 }
 
@@ -1715,9 +1728,10 @@
   align-items: center;
   padding-top: 20px;
   flex-direction: row;
+  width:100%;
 }
-
 .main-div {
+   width:80%;
   padding-left: 15px;
   color: #333333;
   line-height: 22px;
@@ -1901,7 +1915,7 @@
   right: 30px;
   padding-top: 10px;
   cursor: pointer;
-  font-size: 32px;
+  font-size: 36px;
   color: #F17E2A;
 }
 
@@ -1945,14 +1959,13 @@ label {
 }
 
 .popup-button {
+  font-family: 'GilroyRegular';
   background-color: #F17E2A;
   color: #fff;
   white-space: nowrap;
-  padding-top: 17px;
-  padding-bottom: 17px;
-  padding-left: 15px;
-  padding-right: 15px;
-  width: 180px;
+  width: 90px;
+    height: 40px;
+    padding: 13px;
   margin-top: 25px;
   border: none;
   border-radius: 14px;
@@ -1993,25 +2006,34 @@ label {
   width: 450px;
     border-radius: 10px;
     margin-left: 15px;
+    font-size:14px;
+  font-family:GillroyRegular;
   padding-left: 15px;
 }
-
+.map-search ::placeholder{
+   font-size:14px;
+  font-family:GillroyRegular;
+}
+.react-calendar__month-view__weekdays {
+    font-family:GillroyRegular !important;
+}
+.react-calendar *, .react-calendar *:before, .react-calendar *:after {
+    font-family: 'GilroyRegular' !important;
+}
 .map-search-button {
   height: 40px;
   width: 70px;
   margin-left: 3px;
   border-radius: 9px;
-  border: none;
+  border: none
 }
-
 .accordion-button {
   /* box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.1); */
   display: flex;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding-top: 17px;
+  padding-bottom: 17px;
   padding-left: 10px;
   padding-right: 10px;
-  /* border-radius: 20px; */
 }
 
 .accordion-button>div {
@@ -2037,6 +2059,7 @@ label {
   justify-content: space-between;
   display: flex;
   gap: auto;
+  line-height: 23px;
   width: 100%;
 }
 
@@ -2121,11 +2144,13 @@ label {
   font-size: 15px;
   border-radius: 15px;
   margin-left: -16px;
+  margin-bottom: 140px;
+  font-family: GilroyRegular;
 }
 
 .additional-inputs {
   width: 80%;
-  margin: 0.4rem 0 2rem 0;
+  margin: 10px 0;
   display: flex;
 }
 
@@ -2157,6 +2182,7 @@ label {
   padding-left: 5px;
   font-size: 13px;
   color: red;
+   padding-top: 5px;
 }
 
 .view-items {
@@ -2165,23 +2191,22 @@ label {
   width: 100%;
   align-items: center;
 }
-
 .view-items h4 {
   color: #434F7B;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: bold;
   padding-left: 5px;
   font-weight: bold;
 }
-
 .additional-close {
   right: 1%;
   top: 6%;
   position: absolute;
+  cursor:pointer;
   display: flex;
   width: 30px;
   height: 30px;
 }
-
 .items-additional {
   align-items: center;
   display: flex;
@@ -2210,6 +2235,7 @@ label {
 .items-popup-button {
   background-color: #F17E2A;
   outline: none;
+  font-family:GilroyRegular;
   border: none;
   padding: 18px 0px;
   color: white;
@@ -2227,6 +2253,8 @@ label {
   background-color: #F17E2A;
   outline: none;
   border: none;
+font-family: 'GilroyRegular';
+cursor:pointer;
   padding: 18px 0px;
   color: white;
   font-weight: bold;
@@ -2365,7 +2393,6 @@ justify-content: center;
   margin: 0 auto;
   padding: 20px;
   color: #333;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .privacy-policy h1 {
@@ -2378,17 +2405,18 @@ justify-content: center;
   line-height: 1.6;
   margin-top: 10px;
 }
-.privacy-policy h2 {
+.privacy-policy h3 {
   color: #333; 
   margin-top: 20px;
   margin-bottom: 10px;
 }
-.privacy-policy h3{
+.privacy-policy h4{
   margin-bottom: 8px;
   margin-top: 8px;
 }
-.privacy-policy h4{
-  margin-bottom: 8px;
+.privacy-policy h6{
+  margin-top:6px;
+  margin-bottom: 6px;
 }
 .privacy-policy ul {
   margin-top: 10px;
@@ -2450,7 +2478,7 @@ justify-content: center;
   }
 
   .cart-div2 {
-    padding-left: 10px;
+    /* padding-left: 10px; */
   }
 
   .cart-container-2 {
@@ -2515,22 +2543,22 @@ justify-content: center;
     padding-left: 10px;
     padding-right: 10px;
   }
-
   .popular-exclusive {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 15px;
   }
-
+  .image-div img {
+    width: auto;
+    height: 40px;
+  }
   .quantity-buttons {
     width: 160px;
     padding: 5px;
   }
-
   .Exclusive {
     /* width: 154px; */
     border-radius: 25px;
   }
-
   .Exclusive_item {
     padding-top: 20px;
     display: flex;
@@ -2578,15 +2606,16 @@ justify-content: center;
   .addtocard {
     margin-top: -37px;
   }
-
   .Exclusive_old {
     margin-left: 4px;
   }
-
   .Exclusive_price-new {
     margin-left: 1px;
   }
-
+ .cart-subtotal {
+    font-family: 'GilroyBold';
+    font-size: 18px;
+  }
   .swiper-pagination-bullet {
     background-color: #e3e3e3;
     width: 8px;
@@ -2764,24 +2793,19 @@ justify-content: center;
   .products_grid_item h6 {
     font-size: 16px;
   }
-
   .products_grid_item img {
     padding-bottom: 10px;
     max-width: 80px;
     height: 80px;
   }
-
   .cart-items {
-
     width: 83%;
-    padding-left: 10px;
+    padding-left: 5px;
   }
-
   /* .cart-image {
   width: 15%;
 } */
 }
-
 @media only screen and (min-width: 768px) and (max-width: 1024px) {
   .productDetail h3 {
     font-size: 28px;
