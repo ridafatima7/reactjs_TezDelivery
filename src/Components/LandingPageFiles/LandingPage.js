@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Footer from "../Footer";
 import TDSlider from "../TDSlider";
 import { FiMenu } from "react-icons/fi";
@@ -13,13 +13,22 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { BsShop } from "react-icons/bs";
+import ReactPlayer from 'react-player';
+import ModalVideo from 'react-modal-video';
 import { Button, Container, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import Exclusive from "../Exclusive";
+import { FaPlayCircle } from 'react-icons/fa';
 import { MdLocationPin } from "react-icons/md";
 import { getMartCategories, getExclusiveProducts, getMarts } from "../../Server";
 import LandingNavbar from './LandingNavbar';
 import './LandingPage.css';
 const LandingPage = () => {
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    const toggleModal = () => {
+        setModalIsOpen(!modalIsOpen);
+    };
+
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [DataProduct, setData] = useState([]);
     const [martData, setMartData] = useState(null);
@@ -180,44 +189,44 @@ const LandingPage = () => {
                 <nav className="navbar-n">
                     <img className='navbar-brand' src='/Images/Logo.png' alt="Logo" />
                     <div>
-                    <button className="navbar-toggler" onClick={toggleNavbar}>
-                        <span className="toggler-icon"><GiHamburgerMenu /></span>
-                    </button>
-                   
-                   
-                    <div className={`navbar-menu ${isCollapsed ? 'collapsed' : 'expanded display-class'}`}  >
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <div className="dropdown1" onClick={() => setShowDropdown(!showDropdown)}>
-                                <button className="dropbtn1">{selectedMartName}<span className="arrow">&#9660;</span></button>
-                                {showDropdown && (
-                                    <div className="dropdown-content1">
-                                        {martData && martData.map((mart, index) => (
-                                            <a key={index} onClick={(e) => handleSelectMart(e, mart.name, mart.inventory_id)}>
-                                                {mart.name}
-                                            </a>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <div>
-                                <Link to="https://play.google.com/store/apps/details?id=app.grocery.tezz">
-                                    <img src="/Images/image.png" alt="" className="img-navbar" />
-                                </Link>
+                        <button className="navbar-toggler" onClick={toggleNavbar}>
+                            <span className="toggler-icon"><GiHamburgerMenu /></span>
+                        </button>
+
+
+                        <div className={`navbar-menu ${isCollapsed ? 'collapsed' : 'expanded display-class'}`}  >
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <div className="dropdown1" onClick={() => setShowDropdown(!showDropdown)}>
+                                    <button className="dropbtn1">{selectedMartName}<span className="arrow">&#9660;</span></button>
+                                    {showDropdown && (
+                                        <div className="dropdown-content1">
+                                            {martData && martData.map((mart, index) => (
+                                                <a key={index} onClick={(e) => handleSelectMart(e, mart.name, mart.inventory_id)}>
+                                                    {mart.name}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <a href="#download-app-section">
+                                        <img src="/Images/image.png" alt="" className="img-navbar" />
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </nav>
                 <div className={`navbar-menu ${isCollapsed ? 'collapsed' : 'expanded'}`} >
-                        <div className="additional-links">
-                            <div className='expanded-container'>
-                                <Link to='' className="nav-link">All Categories</Link>
-                                <Link to='' className="nav-link">Tezz Discounts & Offers</Link>
-                                <Link to='' className="nav-link">Exclusive Offers</Link>
-                                <Link to='' className="nav-link">Breakfast & Diary</Link>
-                            </div>
+                    <div className="additional-links">
+                        <div className='expanded-container'>
+                            <a href='/categories' className='anchor-style'><h6>All Categories</h6></a>
+                            <a href='#why-choose-us' className='anchor-style'><h6 >Why Choose Us</h6></a>
+                            <a href='#exclusive-offers' className='anchor-style'><h6>Exclusive Offers</h6></a>
+                            <a href='#why-choose' className='anchor-style'><h6>Why Choose Us</h6></a>
                         </div>
-                    </div>   
+                    </div>
+                </div>
                 <section className='section1'>
                     <div className='mob-dropdown'>
                         <div className="dropdown" onClick={() => setShowDropdown(!showDropdown)}>
@@ -238,10 +247,10 @@ const LandingPage = () => {
             <Container style={{ backgroundColor: '#4D5882' }} fluid >
                 <section className='container'>
                     <div className='con-comp'>
-                        <h6>All Categories</h6>
-                        <h6>Tezz Discounts & Offers</h6>
-                        <h6>Exclusive Offers</h6>
-                        <h6>Breakfast & Diary</h6>
+                        <a href='/categories' className='anchor-style'><h6>All Categories</h6></a>
+                        <a href='#why-choose-us' className='anchor-style'><h6 >Why Choose Us</h6></a>
+                        <a href='#exclusive-offers' className='anchor-style'><h6>Exclusive Offers</h6></a>
+                        <a href='#why-choose' className='anchor-style'><h6>Why Choose Us</h6></a>
                     </div>
                 </section>
             </Container>
@@ -278,11 +287,10 @@ const LandingPage = () => {
                 </div>
             </section>
             {/* Exclusive Offers */}
-            <section className="container pt pb">
+            <section className="container pt pb" id='exclusive-offers'>
                 <div className="pb heading-box">
-                    <h5 className="main_heading">Exclusive Offers</h5>
-
-                    {/* <Link to="/Exclusive-offers"><Button className="see-all">See all</Button></Link> */}
+                    <h2 className="main_heading">Exclusive Offers</h2>
+                    <Link to="/Exclusive-offers"><Button className="see-all">See all</Button></Link>
                 </div>
                 {/* <div className="popular-exclusive"> */}
                 <Swiper
@@ -319,7 +327,7 @@ const LandingPage = () => {
             </section>
             {/* Why you Choose Us (images section ) */}
             <Container fluid className='ChooseUs-SectionImg'>
-                <section className="container " style={{ padding: '2rem 0' }} >
+                <section className="container " style={{ padding: '2rem 0' }} id='why-choose-us'>
                     <div className='chooseusImg'>
                         <div class="choose-us-heading">
                             <h2>Why Choose Us?</h2>
@@ -350,16 +358,16 @@ const LandingPage = () => {
             {/* Categories */}
             <section className="products_section container pt pb">
                 <div className="pb heading-box">
-                    <h5 className="main_heading ">Shop by Category</h5>
-                    {/* <Link to={`/categories?martId=${Martid}`}><Button className="see-all">See all</Button></Link> */}
+                    <h2 className="main_heading ">Shop by Category</h2>
+                    <Link to={`/categories?martId=${Martid}`}><Button className="see-all">See all</Button></Link>
                 </div>
                 <div className="products_grid">
                     {DataProduct.slice(0, 10).map((item, index) => (
                         <Link to={`https://tezzdelivery.com/#/categories_page?martId=${Martid}&categoryId=${item.cid}`} className="linkstyle" key={index}>
                             <div className={`products_grid_item ${item.index === 0 || item.index === 4 ? 'special_bg' : ''}`}>
                                 {/* <img src={item.image} alt="img" /> */}
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                {imageLoading && <ClipLoader className='rounded-loader' color={'#F17E2A'} loading={imageLoading} size={35} />}
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    {imageLoading && <ClipLoader className='rounded-loader' color={'#F17E2A'} loading={imageLoading} size={35} />}
                                 </div>
                                 <LazyLoad>
                                     <img
@@ -369,15 +377,15 @@ const LandingPage = () => {
                                         style={{ display: imageLoading ? 'none' : 'block' }}
                                     />
                                 </LazyLoad>
-                                <span>{item.name}</span>
+                                <h6>{item.name}</h6>
                             </div>
                         </Link>
                     ))}
                 </div>
             </section>
-             {/* Download app */}
-             <Container style={{ backgroundColor: '#858ca9' }} fluid >
-                <section className='container'>
+            {/* Download app */}
+            <Container style={{ backgroundColor: '#858ca9' }} fluid >
+                <section className='container' id="download-app-section">
                     <div className='download-comp'>
                         <h4>For Better Experience Download the App Now !</h4>
                         <div className='download-btns'>
@@ -388,8 +396,16 @@ const LandingPage = () => {
                 </section>
             </Container>
             {/* Why you Choose Us */}
+            {modalIsOpen && (
+                <div className="video-modal">
+                    <div className="video-modal-content">
+                        <span className="video-close" onClick={toggleModal}>&times;</span>
+                        <video style={{ width: '100%' }} src='/Images/videoplayback.mp4' controls autoPlay />
+                    </div>
+                </div>
+            )}
             <Container fluid className='ChooseUs-Section'>
-                <section className="container " style={{ padding: '2rem 0' }} >
+                <section className="container " style={{ padding: '2rem 0' }} id='why-choose'>
                     <div className='chooseus'>
                         <div class="choose-us-heading">
                             <h2>Why Choose Us?</h2>
@@ -398,18 +414,31 @@ const LandingPage = () => {
                             <p style={{ color: '#7c8081' }}>Thousands of healthy, fresh and delicious products delivered to your kitchen everyday</p>
                         </div>
                         <div className="features">
+
                             <div className="feature-item">
                                 <img src="/Images/TDimg1.jpeg" alt="" />
                                 <h6>Free Shipping</h6>
                                 <p>The happier you are, the more you order, the more we are able to give to the community</p>
                             </div>
                             <div className="feature-item">
-                                <img src="/Images/TDimg2.jpeg" alt="" />
-                                <h6>Simplify your Life </h6>
+                                <div className="video-thumbnail" onClick={toggleModal}>
+                                    <img src="/Images/TDimg2.jpeg" alt=""  style={{opacity:"0.8"}} />
+                                    <FaPlayCircle className="play-icon" style={{
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '50%',
+                                        transform: 'translate(-50%, -50%)',
+                                        color: 'white',
+                                        opacity:3,
+                                        fontSize: '3em' 
+                                    }} />
+                                </div>
+                                <h6>Simplify your Life</h6>
                                 <p>We actively provide rations and cooked food to the undeserved, as well as widows and orphans development organisations</p>
                             </div>
                             <div className="feature-item">
-                                <img src="/Images/TDimg3.jpeg" alt="" />
+                            <video  src='/Images/videoplayback.mp4' controls autoPlay />
+                                {/* <img src="/Images/TDimg3.jpeg" alt="" /> */}
                                 <h6>Competitive Prices</h6>
                                 <p>TD is an equal opportunity employer that encourages staff to upskill and elevate at work and society</p>
                             </div>
@@ -435,7 +464,7 @@ export const ExclusivePro = (props) => {
                     <div style={{ display: 'flex', justifyContent: 'center', width: '120px' }}>
                         <img src={props.image} alt='img' />
                     </div>
-                    <p className='Exclusive_itemp'>{props.name}</p>
+                    <h6 className='Exclusive_itemp'>{props.name}</h6>
                     {/* </Link> */}
                     {/* {showQuantityButtons ? (
             <div className='quantity-buttons'>

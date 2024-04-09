@@ -6,13 +6,17 @@ import api from "./apis";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Skeleton from "react-loading-skeleton";
 import Items from './Items';
+import { getExclusiveProducts } from '../Server';
 const ExclusiveScreen = (props) => {
   const [ExclusiveOffers, setExclusive] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [limit, setLimit] = useState(15);
+  const [errorMessage, setErrorMessage] = useState("");
   const [skip, setSkip] = useState(0);
   const storedMart = sessionStorage.getItem('mart_id');
-
+  const handleErrorMessage = (message) => {
+    setErrorMessage(message);
+  };
   // const fetchScrollData= async ()=>{
   //   setPageNo(page+10);
   //   const fetchData = async () => {
@@ -33,19 +37,21 @@ const ExclusiveScreen = (props) => {
   // }
   const fetchData = async () => {
     try {
-      const response = await fetch(`${api}/get_martProducts?mart_id=${storedMart}&exclusive=true&limit=${limit}&skip=${skip}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      const response = await getExclusiveProducts(storedMart, limit, skip);
+      if (response.status === 200) {
+        console.log("ExclusiveProducts=>", response.data);
+        if (response.data && response.data.length > 0) {
+          setExclusive([...ExclusiveOffers, ...response.data]);
+          setSkip(skip + limit);
+        } else {
+          setHasMore(false);
+        }
       }
-      const result = await response.json();
-      if (result.data && result.data.length > 0) {
-        setExclusive([...ExclusiveOffers, ...result.data]);
-        setSkip(skip + limit);
-      } else {
-        setHasMore(false);
+      else {
+        console.log('Error:', response.statusText);
       }
     } catch (error) {
-      console.log(error);
+      console.error('Error:', error.message);
     }
   };
   useEffect(() => {
@@ -66,76 +72,94 @@ const ExclusiveScreen = (props) => {
     <div>
       <TNavbar />
       <section className='container pt pb'>
-        <div className="pt">
-          <h5 className="main_heading">Exclusive Screen</h5>
-        </div>        
-        <InfiniteScroll
-              dataLength={ExclusiveOffers.length}
-              next={loadMore}
-              hasMore={hasMore}
-              loader={<ProductLoader />}
-              endMessage={
-                <div style={{ textAlign: "center", margin: "20px 10px 0px", color: "#999" }}>
-                <p style={{ fontSize: "1.2em" }}>No more products</p>
+        {errorMessage && (
+          <>
+            <div className='promo-container'>
+              <div className='promo-popup'>
+                <div className='promo-close'>
+                  <span className='promo-close-btn' onClick={() => setErrorMessage('')}>
+                    &times;
+                  </span>
+                </div>
+                <h3 className='promo-label'>Error</h3>
+                <h3 className='promo-label2'>Max quantity reached</h3>
+                <button onClick={() => setErrorMessage('')} className='continue'>Continue</button>
               </div>
-              }
-              style={{ overflow: "none" }}
-            >
-           <div className="pt">
+            </div>
+          </>
+        )}
+        <div className="pt">
+          <h2 className="main_heading">Exclusive Screen</h2>
+        </div>
+        <InfiniteScroll
+          dataLength={ExclusiveOffers.length}
+          next={loadMore}
+          hasMore={hasMore}
+          loader={<ProductLoader />}
+          endMessage={
+            <div style={{ textAlign: "center", margin: "20px 10px 0px", color: "#999" }}>
+              <p style={{ fontSize: "1.2em" }}>No more products</p>
+            </div>
+          }
+          style={{ overflow: "none" }}
+        >
+          <div className="pt">
             <div className="exclusive_product">
               {ExclusiveOffers.length > 0
                 ? ExclusiveOffers.map((item, i) => (
                   // <Link to={`/product_detail?martId=1&productId=${item.id}`} className="linkstyle" >
-                    <Items
-                      key={i}
-                      id={item.id}
-                      name={item.name}
-                      image={item.image}
-                      exclusivePrice={item.exclusivePrice}
-                      price={item.price}
-                    />
+                  <Items
+                    key={i}
+                    id={item.id}
+                    name={item.name}
+                    image={item.image}
+                    exclusivePrice={item.exclusivePrice}
+                    price={item.price}
+                    maxProductLimit={item.maxProductLimit}
+                    onErrorMessage={handleErrorMessage}
+                  />
                   // </Link>
                 ))
-                :<></>}
+                : <></>}
             </div>
           </div>
-          </InfiniteScroll>
+        </InfiniteScroll>
       </section>
       <Footer />
-    
-   </div> 
+
+    </div>
   )
 };
 const ProductLoader = () => {
   return (
     <>
       <div className="skeleton-row pt">
-      {[...Array(5)].map((_, i) => (
-        <Skeleton
-          key={i}
-          className="Exclusive_p"
-          style={{ height: "16em", marginRight: "1em",width:'14em' }}
-        />
-      ))}
-    </div>
-    <div className="skeleton-row">
-      {[...Array(5)].map((_, i) => (
-        <Skeleton
-          key={i}
-          className="Exclusive_p"
-          style={{ height: "16em", marginRight: "1em",width:'14em' }}
-        />
-      ))}
-    </div>
-    <div className="skeleton-row">
-      {[...Array(5)].map((_, i) => (
-        <Skeleton
-          key={i}
-          className="Exclusive_p"
-          style={{ height: "16em", marginRight: "1em",width:'14em' }}
-        />
-      ))}
-    </div>
+        {[...Array(5)].map((_, i) => (
+          <Skeleton
+            key={i}
+            className="Exclusive_p"
+            style={{ height: "16em", marginRight: "1em", width: '14em' }}
+          />
+        ))}
+      </div>
+      <div className="skeleton-row">
+        {[...Array(5)].map((_, i) => (
+          <Skeleton
+            key={i}
+            className="Exclusive_p"
+            style={{ height: "16em", marginRight: "1em", width: '14em' }}
+          />
+        ))}
+      </div>
+      <div className="skeleton-row">
+        {[...Array(5)].map((_, i) => (
+          <Skeleton
+            key={i}
+            className="Exclusive_p"
+            style={{ height: "16em", marginRight: "1em", width: '14em' }}
+          />
+        ))}
+      </div>
     </>
   );
 };

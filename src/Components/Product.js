@@ -13,6 +13,7 @@ const Product = ({ key = "" }) => {
   const martid = params.get("martId");
   const [Products, setProducts] = useState([]);
   const [ExclusiveOffers, setExclusive] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
   const [showQuantityButtons, setShowQuantityButtons] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
@@ -48,6 +49,22 @@ const Product = ({ key = "" }) => {
     setShowQuantityButtons(true);
     dispatch(addtoCart(item));
   };
+  const canIncreaseQuantity = (item) => {
+    console.log("Max Product Limit:", item.maxProductLimit);
+    console.log(quantity);
+      if (item.maxProductLimit === 0) {
+      console.log("No limit, can add product.");
+      return true;
+    }
+    if (quantity   < item.maxProductLimit) {
+      console.log("Can add product.",quantity);
+      return true;
+    } 
+    else {
+      console.log("Cannot add product. Quantity limit reached.");
+      return false;
+    }
+  };
   const decreaseQuantity = (item) => {
     if (quantity > 1) {
       setQuantity((prevQuantity) => prevQuantity - 1);
@@ -58,16 +75,39 @@ const Product = ({ key = "" }) => {
     }
   }; 
   const increaseQuantity = (item) => {
+    if (!canIncreaseQuantity(item)) {
+      const message = `You can only add up to ${item.maxProductLimit} of this item.`;
+      setErrorMessage(message);
+      return;
+    }
     setQuantity((prevQuantity) => prevQuantity + 1);
     setShowQuantityButtons(true);
     dispatch(addtoCart(item));
-
+    setErrorMessage(""); 
   };
-
+  const handleErrorMessage = (message) => {
+    setErrorMessage(message);
+  };
   return (
     <div>
       <TNavbar />
       <section className="container pt">
+      {errorMessage && (
+            <>
+              <div className='promo-container'>
+                <div className='promo-popup'>
+                  <div className='promo-close'>
+                    <span className='promo-close-btn' onClick={() => setErrorMessage('')}>
+                      &times;
+                    </span>
+                  </div>
+                  <h3 className='promo-label'>Error</h3>
+                  <h3 className='promo-label2'>Max quantity reached</h3>
+                  <button onClick={() => setErrorMessage('')} className='continue'>Continue</button>
+                </div>
+              </div>
+            </>
+      )}
         <div className="section6">
           {Products.length > 0
             ? Products.map((item, i) => (
@@ -79,7 +119,7 @@ const Product = ({ key = "" }) => {
                     <>
                     <div className="productDetail">
                         <p className="productDetailp">Rs.{item.price}</p>
-                        <h3>{item.name}</h3>
+                        <h2 className="main_heading">{item.name}</h2>
                         <p>{item.description}</p>
                       <div className="product-buttons">
                         <button className="button-1" onClick={(e) =>decreaseQuantity(item)} >
@@ -96,7 +136,7 @@ const Product = ({ key = "" }) => {
                   ) : (
                     <div className="productDetail">
                       <p className="productDetailp">Rs.{item.price}</p>
-                      <h3>{item.name}</h3>
+                      <h2 className="main_heading">{item.name}</h2>
                       <p>{item.description}</p>
                       <p className="cart" onClick={(e) => addToCart(item)}>
                         +
@@ -112,7 +152,7 @@ const Product = ({ key = "" }) => {
 
       <section className="container pt">
         <div className="pb heading-box">
-          <h5 className="main_heading">Recommendations</h5>
+          <h2 className="main_heading">Recommendations</h2>
         </div>
         <div className="popular-exclusive pb">
           {ExclusiveOffers.map((item, i) => (
@@ -123,6 +163,8 @@ const Product = ({ key = "" }) => {
               image={item.image}
               price={item.price}
               exclusivePrice={item.exclusivePrice}
+              onErrorMessage={handleErrorMessage}
+              maxProductLimit={item.maxProductLimit}
             />
           ))}
         </div>

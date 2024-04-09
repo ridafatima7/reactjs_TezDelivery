@@ -54,7 +54,8 @@ const NavSection = ({
   const [modal, setModal] = useState(false);
   const search = window.location.search;
   const params = new URLSearchParams(search);
-  const Martid = params.get("martId");
+  // const Martid = params.get("martId");
+  const Martid = sessionStorage.getItem('mart_id');
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedProducts, setSearchedProducts] = useState([]);
   const navigate = useNavigate();
@@ -452,7 +453,7 @@ const NavSection = ({
               </div>
               <hr />
               <div>
-                <Link to='/aboutus' className="nav-linkstyle">
+                <Link to='/privacy-policy' className="nav-linkstyle">
                   <MdOutlinePrivacyTip size={28} />
                   <span>Privacy Policy</span>
                 </Link>
@@ -475,7 +476,7 @@ const NavSection = ({
             <div className="over-flow">
               <GiHamburgerMenu
                 size={22}
-                color="#7E7E7E"
+                color="#495178"
                 onClick={() => setSidebar(true)}
               />
             </div>

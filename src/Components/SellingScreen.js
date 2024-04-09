@@ -6,6 +6,7 @@ import api from "./apis";
 import Items from './Items';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Skeleton from "react-loading-skeleton";
+import { getMostSellingProducts } from '../Server';
 const ProductLoader = () => {
   return (
     <>
@@ -44,23 +45,29 @@ const SellingScreen = () => {
   const [mostSellingOffers, setSelling] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [limit, setLimit] = useState(15);
+  const [errorMessage, setErrorMessage] = useState("");
   const [skip, setSkip] = useState(0);
   const storedMart = sessionStorage.getItem('mart_id');
+  const handleErrorMessage = (message) => {
+    setErrorMessage(message);
+  };
   const fetchData = async () => {
     try {
-      const response = await fetch(`${api}/get_martProducts?mart_id=${storedMart}&most_selling=true&limit=${limit}&skip=${skip}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      const response = await getMostSellingProducts(storedMart, limit, skip);
+      if (response.status === 200) {
+        console.log("most Selling Products=>", response.data);
+        if (response.data && response.data.length > 0) {
+          setSelling([...mostSellingOffers, ...response.data]);
+          setSkip(skip + limit);
+        } else {
+          setHasMore(false);
+        }
       }
-      const result = await response.json();
-      if (result.data && result.data.length > 0) {
-        setSelling([...mostSellingOffers, ...result.data]);
-        setSkip(skip + limit);
-      } else {
-        setHasMore(false);
+      else {
+        console.log('Error:', response.statusText);
       }
     } catch (error) {
-      console.log(error);
+      console.error('Error:', error.message);
     } finally {
     }
   };
@@ -75,8 +82,24 @@ const SellingScreen = () => {
     <>
       <TNavbar />
       <section className='container pt pb'>
+        {errorMessage && (
+          <>
+            <div className='promo-container'>
+              <div className='promo-popup'>
+                <div className='promo-close'>
+                  <span className='promo-close-btn' onClick={() => setErrorMessage('')}>
+                    &times;
+                  </span>
+                </div>
+                <h3 className='promo-label'>Error</h3>
+                <h3 className='promo-label2'>Max quantity reached</h3>
+                <button onClick={() => setErrorMessage('')} className='continue'>Continue</button>
+              </div>
+            </div>
+          </>
+        )}
         <div className="pt">
-          <h5 className="main_heading">Most Selling Screen</h5>
+          <h2 className="main_heading">Most Selling Screen</h2>
         </div>
         <div className="pt">
           <InfiniteScroll
@@ -95,13 +118,15 @@ const SellingScreen = () => {
               {mostSellingOffers.length > 0 ? (
                 mostSellingOffers.map((item, i) => (
                   // <Link to={`/product_detail?martId=1&productId=${item.id}`} className="linkstyle" key={i}>
-                    <Items
-                      id={item.id}
-                      name={item.name}
-                      image={item.image}
-                      exclusivePrice={item.exclusivePrice}
-                      price={item.price}
-                    />
+                  <Items
+                    id={item.id}
+                    name={item.name}
+                    image={item.image}
+                    exclusivePrice={item.exclusivePrice}
+                    price={item.price}
+                    maxProductLimit={item.maxProductLimit}
+                    onErrorMessage={handleErrorMessage}
+                  />
                   // </Link>
                 ))
               ) : (

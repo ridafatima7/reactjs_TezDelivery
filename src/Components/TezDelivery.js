@@ -36,7 +36,7 @@ const TezDelivery = () => {
   const params = new URLSearchParams(search);
   const Martid = params.get('martId');
   const [PromoExists, setPromoExists] = useState('');
-
+  const [errorMessage, setErrorMessage] = useState("");
   sessionStorage.setItem('mart_id', Martid);
   // if (location.state === true) {
   //   setAdditionalPopup(true);
@@ -124,12 +124,30 @@ const TezDelivery = () => {
       spaceBetween: 20,
     },
   };
-  
+  const handleErrorMessage = (message) => {
+    setErrorMessage(message);
+  };
   return (
     <>
 
       <TNavbar />
       <NavSection />
+      {errorMessage && (
+            <>
+              <div className='promo-container'>
+                <div className='promo-popup'>
+                  <div className='promo-close'>
+                    <span className='promo-close-btn' onClick={() => setErrorMessage('')}>
+                      &times;
+                    </span>
+                  </div>
+                  <h2 className='promo-label main_heading'>Error</h2>
+                  <h3 className='promo-label2'>Max product quantity reached</h3>
+                  <button onClick={() => setErrorMessage('')} className='continue'>Continue</button>
+                </div>
+              </div>
+            </>
+          )}
       {promoState && PromoExists.length > 0 && PromoExists.map((promo, index) => (
         <div className='promo-container' key={index}  style={{zIndex:'3000'}}>
           <div className='promo-popup' style={{ backgroundColor: '#f3f3f3',padding: '10px', maxWidth: '500px' }} >
@@ -143,7 +161,7 @@ const TezDelivery = () => {
               <h2>{promo.description}</h2>
               <div className="promo-details">
                 <div>
-                  <span>Use Code</span>
+                  <span>USE CODE-</span>
                   <span style={{ fontWeight: 'bold' }}>{promo.code}</span>
                 </div>
                 <div>
@@ -179,7 +197,7 @@ const TezDelivery = () => {
       {/* ======== products section started=========== */}
       <section className="products_section container pt pb">
         <div className="pb heading-box">
-          <h5 className="main_heading ">Shop by Category</h5>
+          <h2 className="main_heading ">Shop by Category</h2>
           <Link to={`/categories?martId=${Martid}`}><Button className="see-all">See all</Button></Link>
         </div>
         <div className="products_grid">
@@ -198,7 +216,7 @@ const TezDelivery = () => {
                     style={{ display: imageLoading ? 'none' : 'block' }}
                   />
                 </LazyLoad>
-                <span>{item.name}</span>
+                <h6>{item.name}</h6>
               </div>
             </Link>
           ))}
@@ -206,7 +224,7 @@ const TezDelivery = () => {
       </section>
       <section className="container pt pb">
         <div className="pb heading-box">
-          <h5 className="main_heading">Exclusive Offers</h5>
+          <h2 className="main_heading">Exclusive Offers</h2>
           <Link to="/Exclusive-offers"><Button className="see-all">See all</Button></Link>
         </div>
         {/* <div className="popular-exclusive"> */}
@@ -234,6 +252,8 @@ const TezDelivery = () => {
                 image={item.image}
                 exclusivePrice={item.exclusivePrice}
                 price={item.price}
+                maxProductLimit={item.maxProductLimit}
+                onErrorMessage={handleErrorMessage}
               />
               {/* </Link> */}
             </SwiperSlide>
@@ -243,7 +263,7 @@ const TezDelivery = () => {
       </section>
       <section className="container pt pb">
         <div className="pb heading-box">
-          <h5 className="main_heading ">Most Selling</h5>
+          <h2 className="main_heading ">Most Selling</h2>
           <Link to="/most-selling-offers"><Button className="see-all">See all</Button></Link>
         </div>
         {/* <div className="popular-exclusive"> */}
@@ -271,6 +291,8 @@ const TezDelivery = () => {
                 image={item.image}
                 exclusivePrice={item.exclusivePrice}
                 price={item.price}
+                maxProductLimit={item.maxProductLimit}
+                onErrorMessage={handleErrorMessage}
               />
               {/* </Link> */}
             </SwiperSlide>

@@ -8,6 +8,52 @@
   padding-top: 7px;
 
 }
+.video-thumbnail {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.video-modal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.video-modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.video-close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.video-close:hover,
+.video-close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
 .display-class{
   display:none;
 }
@@ -66,7 +112,13 @@
 .nav-link.disabled {
   color: #ccc;
 }
-
+.anchor-style{
+  font-family: 'GilroyBold';
+  font-weight: bold;
+  display: flex;
+  color: white;
+  text-decoration: none;
+}
  /* Mart CSS */
 .marts_grid {
   display: grid;
@@ -114,6 +166,7 @@
     font-size: 1.2rem;
     font-weight: 900;
     color:#4D5882;
+    margin-bottom: 2px;
   }
   .marts_grid_item span {
    color:#F9851C;
@@ -153,8 +206,8 @@
 }
 .mart-location{
    line-height: 20px;
-    margin-left: 15px;
-    margin-top: 5px;
+    margin-left: 17px;
+    margin-top: 2px;
     font-size: 13px;
     font-weight: 100;
 }
@@ -269,8 +322,8 @@
     display: flex;
 }
 .download-btns .img {
-    width: 110px;
-    height: 40px;
+    width: 140px;
+    height: auto;
     cursor: pointer;
     border-radius: 6px;
 }
@@ -280,7 +333,7 @@
     flex-wrap: wrap;
     color:white;
     gap:5rem;
-    padding:20px 0px;
+    padding:36px 0px;
     justify-content: space-between;
     font-size: 23px;
 }
@@ -354,6 +407,7 @@
     font-size: 11px;
     font-weight: bold;
   }
+
  /* Why you Choose Us */
 .chooseus{
   /* justify-content: center; */
@@ -378,11 +432,11 @@
 }
 .choose-us-heading h2 {
   margin-bottom: 20px;
-  font-family: GilroyExtraBold;
+  font-family: GilroyRegular;
   color:green;
 }
 .download-comp h4{
-  font-family: GilroyExtraBold;
+  font-family: GilroyRegular;
 }
 .choose-us-heading h4 {
   font-family: GilroyExtraBold;
@@ -491,13 +545,18 @@
   width: 100%;
   margin-bottom: 1rem;
 }
+.feature-item video {
+  width: 105%;
+  margin-bottom: 1rem;
+}
 .feature-item h6 {
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
   color:green;
 }
 .feature-item p {
-  font-size: 0.875rem;
+  font-size: 13px;
+  /* font-size: 0.875rem; */
   padding-left:5px;
   padding-right:5px;
 }

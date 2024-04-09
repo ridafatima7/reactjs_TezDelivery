@@ -285,9 +285,9 @@ const Order = () => {
                   <GoCheck />
                 </span>
               </div>
-              <h3 className='promo-label'>Success</h3>
-              <h3 className='promo-label2'>Products added to Cart</h3>
-              <button onClick={() => setReorderPopup(false)} className='continue'>OK</button>
+              <h2 className='promo-label main_heading'>Success</h2>
+              <h3 className='promo-label2'>Products added to Cart.</h3>
+              <button onClick={() => setReorderPopup(false)} className='continue'>Done</button>
             </div>
           </div>
         </>
@@ -301,9 +301,9 @@ const Order = () => {
                   <GoCheck />
                 </span>
               </div>
-              <h3 className='promo-label'>Alert</h3>
-              <h3 className='promo-label2' style={{ textWrap: 'wrap' }}>Different Mart Selected! To get the same products in your cart please select the same mart from where Order ${orderNo}  was placed</h3>
-              <button onClick={() => setopenInventoryMart(false)} className='continue'>OK</button>
+              <h2 className='promo-label main_heading'>Alert</h2>
+              <h3 className='promo-label2' style={{ textWrap: 'wrap' }}>Different Mart Selected! To get the same products in your cart please select the same mart from where Order {orderNo}  was placed.</h3>
+              <button onClick={() => setopenInventoryMart(false)} className='continue'>Done</button>
             </div>
           </div>
         </>
@@ -317,9 +317,9 @@ const Order = () => {
                   <ImCross />
                 </span>
               </div>
-              <h3 className='promo-label'>Alert</h3>
-              <h3 className='promo-label2' style={{ textWrap: 'wrap' }}>The products in this order are currently not available</h3>
-              <button onClick={() => setReOrderDetailsPopup(false)} className='continue'>OK</button>
+              <h2 className='promo-label main_heading'>Alert</h2>
+              <h3 className='promo-label2' style={{ textWrap: 'wrap' }}>The products in this order are currently not available.</h3>
+              <button onClick={() => setReOrderDetailsPopup(false)} className='continue'>Done</button>
             </div>
           </div>
         </>
