@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import './TD.css';
 import { useSelector, useDispatch } from 'react-redux';
+import {Link} from 'react-router-dom';
+
 import { removefromCart } from './CartSlice';
 import { addtoCart } from './CartSlice';
-import {Link} from 'react-router-dom';
+
+import './TD.css';
+
 const Exclusive = (props) => {
   const dispatch = useDispatch();
 
@@ -26,7 +29,7 @@ const Exclusive = (props) => {
       setShowQuantityButtons(false);
     }
   };
-  console.log(props);
+ // console.log(props);
   return (
     <>
       <div className='Exclusive'>

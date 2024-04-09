@@ -1,12 +1,16 @@
 import { useState,useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import AboutUs from "./Components/AboutUs";
 import Cart from "./Components/Cart";
+import {AdditionalProducts} from "./Components/Cart";
 import Categories from "./Components/Categories";
 import Category from "./Components/Category";
 import Checkout, { Location, OrderPlaced } from "./Components/Checkout";
+import { WalletandPromos} from "./Components/Checkout";
 import ExclusiveScreen from "./Components/ExclusiveScreen";
 import Gmaps from "./Components/Gmaps";
+import LandingPage from "./Components/LandingPageFiles/LandingPage";
 import Loader from "./Components/Loader";
 import Login, { OTPScreen } from "./Components/Login";
 import Maps from "./Components/Maps";
@@ -16,15 +20,14 @@ import SearchProducts from "./Components/SearchProducts";
 import SellingScreen from "./Components/SellingScreen";
 import Sidebar from "./Components/Sidebar";
 import TezDelivery from "./Components/TezDelivery";
-import "./App.css";
-import LandingPage from "./Components/LandingPageFiles/LandingPage";
-import { WalletandPromos} from "./Components/Checkout";
-import {AdditionalProducts} from "./Components/Cart";
 import Tracking from "./Components/Tracking";
+
+import "./App.css";
+
 function App() {
-  const [loading,setLoading]=useState(false);
+  const [loading,setLoading]=useState(true);
   useEffect(()=>{
-    setLoading(true);
+    //setLoading(true);
     setTimeout(()=>{
       setLoading(false);
     },1000)

@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
+import LazyLoad from 'react-lazy-load';
 import { Link } from "react-router-dom";
+import { ClipLoader } from 'react-spinners';
 import { Button } from "reactstrap";
+
 import Footer from "./Footer";
 import NavSection from "./NavSection";
 import TNavbar from "./TNavbar";
-import LazyLoad from 'react-lazy-load';
-import { ClipLoader } from 'react-spinners';
+import { getMartCategories } from "../Server";
+
 import api from "./apis";
-import { getMartCategories } from "../../../my-app/src/Server";
+
 const Category = () => {
   const [DataProduct, setData] = useState([]);
   const [imageLoading, setImageLoading] = useState(true);
