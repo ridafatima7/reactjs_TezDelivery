@@ -10,7 +10,6 @@ import { getAnalytics } from 'firebase/analytics';
 import { getMessaging, getToken } from 'firebase/messaging';
 import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
 import { LoginSocialFacebook, LoginSocialGoogle } from 'reactjs-social-login';
-import axios from 'axios';
 import { login } from '../Server';
 // import { GoogleLogin } from 'react-google-login';
 const firebaseConfig = {
@@ -100,7 +99,7 @@ const Login = () => {
           <Input className='LoginInput' type="text" placeholder="Your Name" name="name" value={userName} onChange={(e) => setUserName(e.target.value)} />
           <Input className='LoginInput' type="text" placeholder="03xx xxxxxxx" name="phoneno" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
           <span className='Login-span1'>Skip Login</span>
-          <Button onClick={handleLogin}>LOGIN</Button>
+          <Button onClick={handleLogin}>Login</Button>
           <span className='Login-span2'>Or Continue with </span>
           <LoginSocialFacebook appId='815948600574654' onResolve={(response) => {
             console.log(response);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GoCheck, GoChevronDown } from "react-icons/go";
 import { GoChevronUp } from "react-icons/go";
 import { FaRecycle } from "react-icons/fa";
+import Footer from "./Footer";
 import { MdPictureAsPdf } from "react-icons/md";
 import { FaRegFaceFrown } from "react-icons/fa6";
 import axios from 'axios';
@@ -12,7 +13,7 @@ import { addtoCart } from './CartSlice';
 import Collapsible from 'react-collapsible';
 import TNavbar from "./TNavbar";
 import { useDispatch } from 'react-redux';
-import { ReOrder, createOrder, getMyOrders } from '../Server';
+import { ReOrder, createOrder, getMarts, getMyOrders } from '../Server';
 import { ImCross } from "react-icons/im";
 const Order = () => {
   const storedMart = sessionStorage.getItem('mart_id');
@@ -33,40 +34,77 @@ const Order = () => {
   const [openInventoryMart, setopenInventoryMart] = useState(false);
   const [orderNo, setOrderNo] = useState('');
   const [cancelOrderNo, setCancelOrderNo] = useState('');
-
+  const [loginFirst, setloginFirst] = useState(false);
+  const LoginUserName = sessionStorage.getItem('userName');
   useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
+    if (LoginUserName === null) {
+      setIsLoading(false);
+      setloginFirst(true);
+      return;
+    }
+    try {
       setIsLoading(true);
-      try {
-        const response = await getMyOrders();
-        console.log(response.data);
-        setData(response.data);
+      const response = await getMyOrders();
+      console.log(response.data);
+      setData(response.data);
 
-      } catch (error) {
-        console.log(error);
-      }
+      const responseMart = await getMarts(storedMart);
+      console.log(responseMart);
+      const martData = responseMart.data[0];
+      console.log(martData);
+      setMartInfo(martData);
+      setLoading(false);
+      const timingsArray = martData.timmings;
+      console.log(timingsArray);
+      setTimingsArray(timingsArray);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+    finally{
+      setIsLoading(false);
+    }
+  };
 
-      try {
-        const response = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);
-        console.log(response);
-        const martData = response.data.data[0];
-        console.log(martData);
-        setMartInfo(martData);
-        setLoading(false);
-        const timingsArray = martData.timmings;
-        console.log(timingsArray);
-        setTimingsArray(timingsArray);
-      }
-      catch (error) {
-        setError(error.message);
-        setLoading(false);
-      }
-      finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  fetchData();
+}, []);
+  //   const fetchData = async () => {
+  //   if (LoginUserName === null) {
+  //     setloginFirst(true);
+  //     return;
+  //   }
+  //     setIsLoading(true);
+  //     try {
+  //       const response = await getMyOrders();
+  //       console.log(response.data);
+  //       setData(response.data);
+
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+
+  //     try {
+  //       const response = await getMarts(storedMart);
+  //       console.log(response);
+  //       const martData = response.data[0];
+  //       console.log(martData);
+  //       setMartInfo(martData);
+  //       setLoading(false);
+  //       const timingsArray = martData.timmings;
+  //       console.log(timingsArray);
+  //       setTimingsArray(timingsArray);
+  //     }
+  //     catch (error) {
+  //       setError(error.message);
+  //       setLoading(false);
+  //     }
+  //     finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
   var cancelOrderId = "";
   const handleCancelState = (orderId) => {
     setCancelOrderNo(orderId);
@@ -76,7 +114,7 @@ const Order = () => {
   }
   const OrderCancel = async (orderId) => {
     orderId = cancelOrderId;
-    const response = await ReOrder('3203');
+    const response = await ReOrder(cancelOrderNo);
     console.log(response.data[0]);
     const orderSummary = {
       orderId: cancelOrderNo,
@@ -88,7 +126,7 @@ const Order = () => {
       additionalComments: response.data[0].additionalComments,
       grandTotal: response.data[0].grandTotal,
       discount: response.data[0].discount,
-      status: "Cancel",
+      status: "Cancelled",
       cancelledBy: response.data[0].cancelledBy,
       cancelledReason: response.data[0].cancelledReason,
       // productId: pids,
@@ -180,8 +218,6 @@ const Order = () => {
             martdate = placedOnDate.replace(',', '');
           } else {
             console.log("Mart is currently closed.");
-            // setShowOrderScheduale(false);
-            // console.log('state is',showOrderScheduale);
           }
         } else {
           console.log("Could not find timings for today.");
@@ -337,6 +373,14 @@ const Order = () => {
           </div>
         </>
       )}
+      {/* {loginFirst && (
+        <>
+       <div className='no-items' style={{ textAlign: 'center', marginTop: '50px' }}>
+          <FaRegFaceFrown size={100} color='#F17E2A' />
+          <h3>Login Required</h3>
+        </div>
+        </>
+      )}
       {isLoading ? (
         <div className='loader-div'>
           <div className="Order-loader"></div>
@@ -417,10 +461,118 @@ const Order = () => {
           </div>
 
         </div>
-      )}
+      )} */}
+{
+  loginFirst ? (
+    <div className='no-items' style={{ textAlign: 'center', marginTop: '50px' }}>
+      <FaRegFaceFrown size={100} color='#F17E2A' />
+      <h6 style={{fontSize:'1.1rem',marginTop:'18px'}}>Login Required</h6>
+      <Link to='/login'><button className="order-placed-btn">Login</button></Link>
+    </div>
+  ) : (
+    <>
+      {isLoading ? (
+        <div className='loader-div'>
+          <div className="Order-loader"></div>
+          <span className='loader-span'>Loading....</span>
+        </div>
+      ) : data.length === 0 ? (
+        <div className='no-items' style={{ textAlign: 'center', marginTop: '50px' }}>
+          <FaRegFaceFrown size={100} color='#F17E2A' />
+          <h6 style={{fontSize:'1.1rem',marginTop:'18px'}}>Empty Order List</h6>
+        </div>
+      ) : (
+        <div style={{ marginTop: '60px' }}>
+          <div className='order-list'>
+            {data.map((order, index) => (
+              <div key={index} style={{ width: '80%', margin: '5px auto' }} className='pt accordion'>
+                <Collapsible
+                  trigger={
+                    <div className='accordion-button'>
+                      <span style={{ marginRight: 'auto', marginLeft: '10px',marginTop:'3px' }}><b>{order.orderNo}</b></span>
+                      <div>
+                        <span><b>{order.status.toUpperCase()}</b></span>
+                        {openIndex === index ? <GoChevronUp size={22} /> : <GoChevronDown size={22} />}
+                      </div>
+                    </div>
+                  }
+                  open={index === openIndex}
+                  onOpening={() => setOpenIndex(index)}
+                  onClosing={() => setOpenIndex(null)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: "20px", paddingRight: '20px', paddingBottom: '20px' }} >
+                    {order.details.map((item, i) => (
+                      <div className='panel-items' key={i}>
+                        <span>{item.name}</span>
+                        <span>{item.quantity}</span>
+                        <span>{item.price}</span>
+                      </div>
+                    ))}
+                    <div className='panel-div2'>
+                      <span>Total</span>
+                      <span>{order.grandTotal}</span>
+                    </div>
+                    <div className='panel-div2'>
+                      <span>Placed On</span>
+                      <span>{order.placedOn}</span>
+                    </div>
+                    <div className='order-icons' style={{ marginLeft: '4px' }}>
+                      <FaRecycle size={28} onClick={() => Re_Order(order.id)} />
+                      <Link style={{ color: '#4A5073' }} to={`https://admin.tezzdelivery.com/pages/phpFile/invoicePdf.php?orderNo=${order.orderNo}&id=${order.id}&type=1`}>
+                        <MdPictureAsPdf size={28} style={{ marginLeft: '10px' }} />
+                      </Link>
+                      {order.status === 'pending' && (
+                        <>
 
+                          <MdOutlineDelete
+                            size={28}
+                            style={{ marginLeft: '23px' }}
+                            onClick={() => handleCancelState(order.id)}
+                          />
+                        </>
+                      )}
+                    </div>
+                    <div className='order-icons' style={{ marginTop: '-1px' }}>
+                      <span style={{ fontSize: '11px' }}>Reorder</span>
+                      <span style={{ fontSize: '11px' }}>Invoice</span>
+                      {order.status === 'pending' && (
+                        <>
+                          <span style={{ fontSize: '11px' }} >Cancel Order</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </Collapsible>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
     </>
   )
 }
 
 export default Order
+export const ScheduleOrder = () => {
+  const storedMart = sessionStorage.getItem('mart_id');
+
+  return (
+    <>
+      <section className="container pt">
+        <div className='center-content'>
+          <div className='place-order'>
+            <img src="Images/Avatar.png" alt="Order Placed" className="order-image" />
+            <div className='image-div-order'>
+              <h2 className='main_heading'>Your Order has been Scheduled</h2>
+              <Link to={`/TezDelivery?martId=${storedMart}`} className="back-btn">Back To Home Page</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </>
+  )
+}

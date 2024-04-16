@@ -310,7 +310,7 @@ const LandingPage = () => {
                     {ExclusiveOffers && ExclusiveOffers.map((item, i) => (
                         <SwiperSlide key={i} className="swiperslide" >
                             {console.log(storedMart)}
-                            <Link to={`https://tezzdelivery.com/#/product_detail?martId=${Martid}&productId=${item.id}`} className='linkstyle'>
+                            <Link to={`/product_detail?martId=${Martid}&productId=${item.id}`} className='linkstyle'>
                                 <ExclusivePro
                                     key={i}
                                     id={item.id}
@@ -363,7 +363,7 @@ const LandingPage = () => {
                 </div>
                 <div className="products_grid">
                     {DataProduct.slice(0, 10).map((item, index) => (
-                        <Link to={`https://tezzdelivery.com/#/categories_page?martId=${Martid}&categoryId=${item.cid}`} className="linkstyle" key={index}>
+                        <Link to={`/categories_page?martId=${Martid}&categoryId=${item.cid}`} className="linkstyle" key={index}>
                             <div className={`products_grid_item ${item.index === 0 || item.index === 4 ? 'special_bg' : ''}`}>
                                 {/* <img src={item.image} alt="img" /> */}
                                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -437,8 +437,8 @@ const LandingPage = () => {
                                 <p>We actively provide rations and cooked food to the undeserved, as well as widows and orphans development organisations</p>
                             </div>
                             <div className="feature-item">
-                            <video  src='/Images/videoplayback.mp4' controls autoPlay />
-                                {/* <img src="/Images/TDimg3.jpeg" alt="" /> */}
+                            {/* <video  src='/Images/videoplayback.mp4' controls autoPlay /> */}
+                                <img src="/Images/TDimg3.jpeg" alt="" /> 
                                 <h6>Competitive Prices</h6>
                                 <p>TD is an equal opportunity employer that encourages staff to upskill and elevate at work and society</p>
                             </div>

@@ -7,9 +7,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import api from "./apis";
 import { useLoadScript, Autocomplete } from '@react-google-maps/api';
 import { FaRegFaceFrown } from "react-icons/fa6";
-import { removefromCart, removefromCross } from './CartSlice';
+import { removefromCart, removefromCross, deleteAdditionalProduct } from './CartSlice';
 import { Subtotal } from './CartSlice';
-import { addtoCart } from './CartSlice';
+import { addtoCart, clearCart } from './CartSlice';
 import axios from 'axios';
 import { Alert } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
@@ -35,16 +35,23 @@ import {
 } from '@vis.gl/react-google-maps';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import { createOrder, getMarts } from '../Server';
+import { createOrder, getMarts, login } from '../Server';
 const Checkout = () => {
   const location = useLocation();
-  const { locationId, newlatitude, newlongitude } = location.state || {};
-  console.log(locationId, newlatitude, newlongitude);
+  const { locationId, newlatitude, newlongitude, newdeliveryCharges } = location.state || {};
+  console.log(locationId, newlatitude, newlongitude, newdeliveryCharges);
+  if (newdeliveryCharges !== undefined) {
+
+  }
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [customerData, setCustomerData] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const [addressLoc, setAddressLoc] = useState('');
-  const [minAmountToOrder,setMinAmountToOrder]=useState("");
+  const [minAmountToOrder, setMinAmountToOrder] = useState("");
   const [showPromos, setShowPromos] = useState('');
+  const [deliveryCharges, setDeliveryCharges] = useState(0);
+  const [realDeliveryCharges, setRealDeliveryCharges] = useState('');
   const [checkoutError, setCheckoutError] = useState('');
   const [additionalComment, setAdditionalComment] = useState('');
   const [paymentMethodpopup, setPaymentMethodpopup] = useState(false);
@@ -69,6 +76,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [checkoutFailed, setCheckoutFailed] = useState(false);
   const [error, setError] = useState(null);
+  const [distanceinKM, setDistance] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [newLocation, setNewLocation] = useState('');
@@ -81,10 +89,28 @@ const Checkout = () => {
   const [discountTotal, setDiscountTotal] = useState('');
   const [discountValue, setDiscountValue] = useState('');
   const [martExist, setMartExist] = useState('');
-  const [martClose,setMartClose]=useState('');
+  const [martClose, setMartClose] = useState('');
   const cartItems = useSelector(state => state.cart);
+  const additionalItems = useSelector(state => state.cart.additionlItems);
+  console.log(useSelector(state => state.cart.additionalItems));
   const subtotal = useSelector(state => state.cart.subtotal);
-  console.log(subtotal);
+  const [isToggled, setIsToggled] = useState(false);
+  const [walletAmount, setWalletAmount] = useState('');
+  const [newWalletAmount, setNewWalletAmount] = useState('');
+  useEffect(() => {
+    if (isToggled) {
+      console.log("Old Wallet Amount:", walletAmount);
+      setNewWalletAmount(walletAmount);
+    }
+  }, [isToggled]);
+  const toggleButton = () => {
+    setIsToggled(!isToggled);
+    if (isToggled) {
+      setNewWalletAmount(walletAmount);
+      console.log(walletAmount);
+
+    }
+  };
   const handlePromoCodeChange = (event) => {
     setPromoCodeNumber(event.target.value);
     setPromoError('');
@@ -100,35 +126,36 @@ const Checkout = () => {
           code: promoCodeNumber,
         }),
       );
-      if (response.status === 200) {
+      if (Array.isArray(response.data.data) && response.data.data.length > 0) {
         const foundPromo = response.data.data[0];
-        console.log(response.data.data[0]);
+        console.log(foundPromo);
+
         let discountAmount = '';
         if (foundPromo.discountPercentage) {
           discountAmount = (foundPromo.discountPercentage / 100) * subtotal;
-        }
-        else if (foundPromo.flatAmount) {
+        } else if (foundPromo.flatAmount) {
           discountAmount = foundPromo.flatAmount;
         }
+
         let totalAfterDiscount = subtotal - discountAmount;
         if (totalAfterDiscount < 0) {
           totalAfterDiscount = 0;
         }
+
         console.log(totalAfterDiscount);
         setDiscountValue(discountAmount);
         setDiscountTotal(totalAfterDiscount);
         setPromoId(foundPromo.id);
         setPromoName(foundPromo.name);
       } else {
-        const errorResponse = response.data;
-        console.log('Promo code is invalid.')
-        console.log(response.data.message);
-        setPromoError(errorResponse.message || 'Promo code is invalid.');
+        const errorMessage = response.data.message || 'Promo code is invalid.';
+        console.log(errorMessage);
+        setPromoError(errorMessage);
         setPromoCode(true);
       }
     } catch (error) {
-      console.error('Error applying promo code:', error);
-      setPromoError(error.message);
+      console.error('Error applying promo code:', error.message);
+      setPromoError('Please Enter Promo Code');
       setPromoCode(true);
     }
   }
@@ -241,14 +268,15 @@ const Checkout = () => {
     const floor = formData.floor;
     setIsPopupOpen(false);
   };
-  var lat = 0;
-  var long = 0;
   let productIds;
   let productQuantities;
-
+  let additionalItemsNames;
+  let additionalItemsQuantities;
+  let walletAmountIs;
+  let walletActualAmount;
   const handleCheckout = async (e) => {
     e.preventDefault();
-    if(!locationId){
+    if (!locationId) {
       if (martExist === false) {
         setIsPopupOpen(false);
         setCheckoutFailed(true);
@@ -278,63 +306,44 @@ const Checkout = () => {
       setCheckoutError('Please provide a valid address before proceeding.');
       return;
     }
-
-    if (!schedualeDate && martClose===true) {
+    if (!schedualeDate && martClose === true) {
       setIsPopupOpen(false);
       setCheckoutFailed(true);
       setCheckoutError('Mart is currently closed. Please schedule the order.');
       console.log('Mart is currently closed. Please schedule the order.');
       return;
     }
-    // if (schedualeDate) {
-    //   const scheduled_Time = new Date(schedualeDate).getHours() + (new Date(schedualeDate).getMinutes() / 60);
-    //   console.log(scheduled_Time)
-    //   if (scheduled_Time >= 12 && scheduled_Time <= 23.5) {
-    //     console.log("Selected time is within the valid range.");
-    //   } else {
-    //     console.log("Please select a time strictly between 12:00 PM and 11:30 PM.");
-    //     setIsPopupOpen(false);
-    //     setCheckoutFailed(true);
-    //     setCheckoutError('Order can only be Scheduled  between 12:00 PM - 11:30 PM.');
-    //     return;
-    //   }
-    // }
     if (schedualeDate) {
       const scheduledDate = new Date(schedualeDate);
       const scheduledDayOfWeek = scheduledDate.getDay();
       const scheduledTimeMinutes = scheduledDate.getHours() * 60 + scheduledDate.getMinutes();
-  
       const apiDayOfWeek = scheduledDayOfWeek === 0 ? 7 : scheduledDayOfWeek;
       const todaysTimings = martTimings.find(timing => timing.day === apiDayOfWeek);
-      
       if (todaysTimings) {
         const openingTimeMinutes = parseInt(todaysTimings.checkIn.split(':')[0]) * 60 + parseInt(todaysTimings.checkIn.split(':')[1]);
         const closingTimeMinutes = parseInt(todaysTimings.checkOut.split(':')[0]) * 60 + (todaysTimings.checkOut.includes('PM') ? 720 : 0) + parseInt(todaysTimings.checkOut.split(':')[1]);
         const adjustedOpeningTimeMinutes = openingTimeMinutes + 120;
-          
-          if (scheduledTimeMinutes < adjustedOpeningTimeMinutes || scheduledTimeMinutes > closingTimeMinutes) {
-            const adjustedOpeningTime = new Date(scheduledDate.getTime());
-            adjustedOpeningTime.setHours(Math.floor(adjustedOpeningTimeMinutes / 60), adjustedOpeningTimeMinutes % 60);
-
-            const closingTime = new Date(scheduledDate.getTime());
-            closingTime.setHours(Math.floor(closingTimeMinutes / 60), closingTimeMinutes % 60);
-
-            console.log("The selected time is outside of mart operating hours.");
-            setIsPopupOpen(false);
-            setCheckoutFailed(true);
-            setCheckoutError(`Please schedule the order between ${adjustedOpeningTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} and ${closingTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`);
-            return;
-          } else {
-              console.log("Scheduled time is within the adjusted mart operating hours.");
-          }
-      } else {
-          console.log("Mart is closed on the selected day.");
+        if (scheduledTimeMinutes < adjustedOpeningTimeMinutes || scheduledTimeMinutes > closingTimeMinutes) {
+          const adjustedOpeningTime = new Date(scheduledDate.getTime());
+          adjustedOpeningTime.setHours(Math.floor(adjustedOpeningTimeMinutes / 60), adjustedOpeningTimeMinutes % 60);
+          const closingTime = new Date(scheduledDate.getTime());
+          closingTime.setHours(Math.floor(closingTimeMinutes / 60), closingTimeMinutes % 60);
+          console.log("The selected time is outside of mart operating hours.");
           setIsPopupOpen(false);
           setCheckoutFailed(true);
-          setCheckoutError("We're sorry, but our mart is closed on the selected day. Please choose another day.");
+          setCheckoutError(`Please schedule the order between ${adjustedOpeningTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} and ${closingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
           return;
+        } else {
+          console.log("Scheduled time is within the adjusted mart operating hours.");
+        }
+      } else {
+        console.log("Mart is closed on the selected day.");
+        setIsPopupOpen(false);
+        setCheckoutFailed(true);
+        setCheckoutError("We're sorry, but our mart is closed on the selected day. Please choose another day.");
+        return;
       }
-  }
+    }
     const newErrors = {};
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
@@ -357,7 +366,46 @@ const Checkout = () => {
     else {
       console.error("cartItems is not an array or is undefined");
     }
-    console.log(addressLoc);
+    if (Array.isArray(cartItems.additionalItems)) {
+      additionalItemsNames = cartItems.additionalItems.map((product) => product.name).join("|");
+      additionalItemsQuantities = cartItems.additionalItems.map((product) => product.qty).join("|");
+      console.log(additionalItemsNames);
+      console.log(additionalItemsQuantities);
+    }
+    else {
+      console.error("No Additioanl Items Exists");
+    }
+    let newdiscount = '';
+    // if (newWalletAmount > 0) {     
+    //   let newDelivery = '';
+    //   if (discountTotal !== "" && discountTotal >= 0) {
+    //     walletActualAmount = newWalletAmount; // wallet amount
+    //     newdiscount = discountTotal;
+    //     newdiscount -= newWalletAmount;
+    //     newdiscount = Math.max(0, newdiscount + realDeliveryCharges);
+    //     walletAmountIs = newdiscount;
+    //     setDiscountTotal(newdiscount); // subtotal 
+    //   }
+
+    //   else {
+    //     newdiscount=subtotal+realDeliveryCharges;
+    //     walletActualAmount = newWalletAmount;
+    //     newdiscount-=newWalletAmount
+    //     walletAmountIs=newdiscount;
+    //   }
+    // }
+    // else{
+    //    if (discountTotal !== "" && discountTotal >= 0) {
+    //     newdiscount = discountTotal;
+    //     newdiscount = Math.max(0, newdiscount + realDeliveryCharges);
+    //     walletAmountIs = newdiscount;
+    //     // setDiscountTotal(newdiscount);
+    //   }
+    //   else{
+    //      newdiscount=subtotal+realDeliveryCharges;
+    //      walletAmountIs=newdiscount;
+    //   }
+    // }
     const data = {
       placedOn: formattedDate,
       scheduledFor: schedualeDate,
@@ -366,14 +414,15 @@ const Checkout = () => {
       address: locationId !== undefined ? locationId : addressLoc,
       latitude: newlatitude !== undefined ? newlatitude : latitude,
       longitude: newlongitude !== undefined ? newlongitude : longitude,
-      feedback: "Test feedback",
-      feedback_type: "Normal",
+      feedback: "",
+      feedback_type: "",
       inventory_id: storedMart,
       rating: "0",
       collectedAmount: 0,
-      deliveryCharges: 0,
-      walletDiscount: 0,
-      grandTotal: discountTotal !== "" && discountTotal >= 0 ? discountTotal : subtotal,
+      deliveryCharges: Math.floor(realDeliveryCharges),
+      walletDiscount: "",
+      // grandTotal:walletAmountIs,
+      grandTotal: discountTotal !== "" && discountTotal >= 0 ? discountTotal + realDeliveryCharges : subtotal + realDeliveryCharges,
       discount: discountValue,
       source: "web Order",
       status: "pending",
@@ -385,9 +434,9 @@ const Checkout = () => {
       customerEmail: storedEmail,
       customerPhone: formData.phoneno,
       customerId: storedFirebaseId,
-      customerAddress: addressLoc,
-      additionalProducts: "",
-      additionalQuantity: "",
+      customerAddress: locationId !== undefined ? locationId : addressLoc,
+      additionalProducts: additionalItemsNames,
+      additionalQuantity: additionalItemsQuantities,
       riderToken: "",
       customerToken: "",
       distanceInMeters: 0,
@@ -407,7 +456,12 @@ const Checkout = () => {
       if (response.status === 200) {
         console.log('Checkout successful!', response.data);
         setIsPopupOpen(false);
-        navigate('/order-placed');
+        dispatch(clearCart());
+        if (schedualeDate) {
+          navigate('/order-scheduled');
+        } else {
+          navigate('/order-placed');
+        }
       } else {
         console.error('Checkout failed.', response.data);
         setIsPopupOpen(false);
@@ -427,25 +481,15 @@ const Checkout = () => {
     // Fetching Mart info for timings
     const fetchMartInfo = async () => {
       try {
-        const response = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);
+        const response = await getMarts(storedMart);
         console.log(response);
-        const martData = response.data.data[0];
-        setMinAmountToOrder(response.data.data[0].minPriceToOrder);
+        const martData = response.data[0];
+        setMinAmountToOrder(response.data[0].minPriceToOrder);
         console.log(martData);
+        console.log(response.data[0].promos);
         setMartInfo(martData);
-        setShowPromos(martData.promos);
+        setShowPromos(response.data[0].promos);
         setLoading(false);
-        let charges = 0;
-        if (response.data.data[0].fixed > 0) {
-          charges = response.data.data[0].fixed;
-        }
-        if (response.data.data[0].perKM > 0) 
-        {
-        const firstRadius = response.data.data[0].address[0].radius;
-        const distance = calculateDistance(latitude, longitude,response.data.data[0].address[0].lat,  response.data.data[0].address[0].lng);   
-        charges +=response.data.data[0].perKm * distance;
-        }
-        
         const timingsArray = martData.timmings;
         console.log(timingsArray);
         setTimingsArray(timingsArray);
@@ -454,6 +498,25 @@ const Checkout = () => {
         setLoading(false);
       }
     };
+    const fetchCustomerData = async () => {
+      const data = {
+        firebase_id: '101338101135977459288',
+      };
+      try {
+        const response = await login(data);
+        console.log('Response Status:', response.status);
+        if (response.status === 200) {
+          console.log('Customer Retrieved successful!', response.data[0]);
+          setCustomerData(response.data[0]);
+          setWalletAmount(response.data[0].wallet);
+        } else {
+          console.error('Customer Retrieval failed.', response.data);
+        }
+      } catch (error) {
+        console.error('Error during login:', error);
+      }
+    };
+
     const getCurrentPosition = () => {
       return new Promise((resolve, reject) => {
         if (navigator.geolocation) {
@@ -483,8 +546,117 @@ const Checkout = () => {
         if (data.results && data.results.length > 0) {
           const address = data.results[0].formatted_address;
           setAddressLoc(address);
-          const martApiResponse = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);
-          const martData = martApiResponse.data.data[0];
+          const martApiResponse = await getMarts(storedMart);
+          console.log('Fixed price for delivery is ', martApiResponse.data[0].fixed);
+          console.log('PerKm price of delivery is ', martApiResponse.data[0].perKm);
+          console.log(martApiResponse.data[0]);
+          const martData = martApiResponse.data[0];
+          const directionsService = new window.google.maps.DirectionsService();
+          if (martApiResponse.data[0].perKm > 0) {
+            let newCharges = martApiResponse.data[0].fixed > 0 ? Math.round(martApiResponse.data[0].fixed) : 0;
+            var newMartDistance = 0;
+            directionsService.route(
+              {
+                origin: new window.google.maps.LatLng(martApiResponse.data[0].address[0].lat, martApiResponse.data[0].address[0].lng),
+                destination: new window.google.maps.LatLng(latitude, longitude),
+                travelMode: window.google.maps.TravelMode.DRIVING,
+              },
+              (result, status) => {
+                if (status === window.google.maps.DirectionsStatus.OK) {
+                  const routeDistance = result.routes[0].legs[0].distance.value;
+                  setDistance(routeDistance / 1000);
+                  newMartDistance = routeDistance / 1000;
+                  newCharges += Math.round(martApiResponse.data[0].perKm * newMartDistance);
+                  console.log('charges are ', newCharges);
+                  console.log('km are ', newMartDistance);
+                  setDeliveryCharges(Math.round(newCharges));
+                  if (martApiResponse.data[0].minimumAmount > 0) {
+                    if (subtotal >= martApiResponse.data[0].minimumAmount) {
+                      if (newdeliveryCharges !== undefined) {
+                        setRealDeliveryCharges(0);
+                        console.log('deliverycharges are', realDeliveryCharges);
+                      }
+                      else {
+                        setRealDeliveryCharges(0);
+                      }
+                    }
+                    else if (subtotal < martApiResponse.data[0].minimumAmount) {
+                      if (newdeliveryCharges !== undefined) {
+                        setRealDeliveryCharges(newdeliveryCharges);
+                        console.log(newdeliveryCharges);
+                      }
+                      else {
+                        setRealDeliveryCharges(newCharges);
+                        console.log(newCharges);
+                      }
+                    }
+                  }
+                } else {
+                  console.error(`Error fetching directions ${result}`);
+                }
+              }
+            );
+            // const distance = calculateDistance(latitude, longitude, martApiResponse.data[0].address[0].lat, martApiResponse.data[0].address[0].lng);
+          }
+          let charges = 0;
+          if (martApiResponse.data[0].perKm === 0) {
+            if (martApiResponse.data[0].fixed > 0) {
+              charges = Math.round(martApiResponse.data[0].fixed);
+              console.log(charges);
+              setDeliveryCharges(charges);
+              if (martApiResponse.data[0].minimumAmount === 0) {
+                setRealDeliveryCharges(0);
+              }
+              if (martApiResponse.data[0].minimumAmount > 0) {
+                if (subtotal >= martApiResponse.data[0].minimumAmount) {
+                  if (newdeliveryCharges !== undefined) {
+                    setRealDeliveryCharges(0);
+                    console.log('deliverycharges are', realDeliveryCharges);
+                  }
+                  else {
+                    setRealDeliveryCharges(0);
+                  }
+                }
+                else if (subtotal < martApiResponse.data[0].minimumAmount) {
+                  if (newdeliveryCharges !== undefined) {
+                    setRealDeliveryCharges(newdeliveryCharges);
+                    console.log(newdeliveryCharges);
+                  }
+                  else {
+                    setRealDeliveryCharges(charges);
+                    console.log(charges);
+                  }
+                }
+              }
+            } else {
+              setDeliveryCharges(0);
+              if (martApiResponse.data[0].minimumAmount === 0) {
+                setRealDeliveryCharges(0);
+                if (martApiResponse.data[0].minimumAmount > 0) {
+                  if (subtotal >= martApiResponse.data[0].minimumAmount) {
+                    if (newdeliveryCharges !== undefined) {
+                      setRealDeliveryCharges(0);
+                      console.log('deliverycharges are', realDeliveryCharges);
+                    }
+                    else {
+                      setRealDeliveryCharges(0);
+                    }
+                  }
+                  else if (subtotal < martApiResponse.data[0].minimumAmount) {
+                    if (newdeliveryCharges !== undefined) {
+                      setRealDeliveryCharges(newdeliveryCharges);
+                      console.log(newdeliveryCharges);
+                    }
+                    else {
+                      setRealDeliveryCharges(charges);
+                      console.log(charges);
+                    }
+                  }
+                }
+              }
+
+            }
+          }
           const isMartInLocation = martData.address.some((address) => {
             const distance = calculateDistance(
               parseFloat(latitude),
@@ -496,10 +668,10 @@ const Checkout = () => {
           });
 
           if (isMartInLocation) {
-            console.log('At least one address of the mart is within the user\'s current location.',address);
+            console.log('At least one address of the mart is within the user\'s current location.', address);
             setMartExist(true);
           } else {
-            console.log('No address of the mart is within the user\'s current location.',address);
+            console.log('No address of the mart is within the user\'s current location.', address);
             setMartExist(false);
           }
 
@@ -535,6 +707,7 @@ const Checkout = () => {
       }
     };
     fetchData();
+    fetchCustomerData();
     fetchMartInfo();
   }, []);
   useEffect(() => {
@@ -579,7 +752,7 @@ const Checkout = () => {
         <div className='container pt'>
           <div className='no-items'>
             <FaRegFaceFrown size={100} color='#F17E2A' />
-            <h3>No Items Added Yet!</h3>
+            <h6 style={{ fontSize: '1.1rem', marginTop: '18px' }}>No Items Added Yet!</h6>
           </div>
         </div>
       ) : (
@@ -716,7 +889,7 @@ const Checkout = () => {
                     </div>
                     <h3 className='payment-label' onClick={() => handleScheduale('N')}>Now</h3>
                     <hr className='line-after' />
-                    <h3 className='payment-label' onClick={() => handleScheduale('S')}>Scheduale Order</h3>
+                    <h3 className='payment-label' onClick={() => handleScheduale('S')}>Schedule Order</h3>
                     <hr className='line-after' />
                   </>
                 )}
@@ -767,6 +940,15 @@ const Checkout = () => {
                 </div>
               </div>
             </div>
+            {/* ------------------Code for Wallet ---------------------- */}
+            {/* <div className='cart-container'>
+              <div className='checkout-items'>
+                <div className='toggle-container'>
+                  <div className={`toggle-button ${isToggled ? 'active' : ''}`} onClick={toggleButton}></div>
+                  <span style={{ width: '75%', color: 'black' }}>Adjust Wallet Amount: Rs {walletAmount}</span>
+                </div>
+              </div>
+            </div> */}
             {showPromos.length > 0 && LoginUserName && (
               <div className='cart-container'>
                 <div className='checkout-items'>
@@ -845,7 +1027,7 @@ const Checkout = () => {
                 <div>
                   <div className='cart-subtotal'>
                     <h5>Delivery Charges</h5>
-                    <h5>Free Delivery</h5>
+                    <h5>{realDeliveryCharges === 0 ? 'Free Delivery' : `Rs ${realDeliveryCharges}`}</h5>
                   </div>
                   {discountValue !== '' && (
                     <div className='cart-subtotal'>
@@ -853,9 +1035,15 @@ const Checkout = () => {
                       <h5>Rs {discountValue}</h5>
                     </div>
                   )}
+                  {isToggled && (
+                    <div className='cart-subtotal'>
+                      <h5>Wallet</h5>
+                      <h5>Rs {walletAmount}</h5>
+                    </div>
+                  )}
                   <div className='cart-subtotal'>
                     <h5>Total</h5>
-                    <h5>Rs {discountTotal || discountTotal === 0 ? discountTotal : subtotal}</h5>
+                    <h5>Rs {discountTotal || discountTotal === 0 ? discountTotal + realDeliveryCharges : subtotal + realDeliveryCharges}</h5>
                   </div>
                   <div className='button-Style'>
                     <button onClick={() => setIsPopupOpen(true)} className='checkout-button'>
@@ -880,6 +1068,7 @@ export const Location = () => {
   const [loading, setLoading] = useState(true);
   const [confirmationError, setConfirmationError] = useState('');
   const [open, setopen] = useState(false);
+  const [newdeliveryCharges, setDeliveryCharges] = useState(0);
   const [martData, setMartInfo] = useState('');
   const [addressArray, setAddressArray] = useState('');
   const [searchLocation, setSearchLocation] = useState('');
@@ -952,7 +1141,6 @@ export const Location = () => {
         const response = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);
         console.log('Fetching mart data for location:', response);
         const martData = response.data.data[0];
-
         if (martData && martData.latitude && martData.longitude) {
           console.log(martData.latitude, martData.longitude);
           setCurrentPosition({ lat: martData.latitude, lng: martData.longitude });
@@ -968,9 +1156,9 @@ export const Location = () => {
     };
     const fetchMartInfo = async () => {
       try {
-        const response = await axios.get(`${api}/get_marts?mart_id=${storedMart}`);
+        const response = await getMarts(storedMart);
         console.log(response);
-        const martData = response.data.data[0];
+        const martData = response.data[0];
         console.log(martData);
         setMartInfo(martData);
         // setLoading(false);
@@ -987,31 +1175,136 @@ export const Location = () => {
   }, []);
   const handleConfirmAddress = () => {
     const isWithinServiceArea = martData.address.some((address) => {
-      const distance = calculateDistance(
-        parseFloat(latitude),
-        parseFloat(longitude),
-        address.lat,
-        address.lng
+      const origin = new window.google.maps.LatLng(address.lat, address.lng);
+      const destination = new window.google.maps.LatLng(latitude, longitude);
+      const directionsService = new window.google.maps.DirectionsService();
+      directionsService.route(
+        {
+          origin: origin,
+          destination: destination,
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          if (status === window.google.maps.DirectionsStatus.OK) {
+            const routeDistance = result.routes[0].legs[0].distance.value / 1000;
+            console.log('route distance is', routeDistance);
+            if (routeDistance <= address.radius) {
+              let charges = 0;
+              if (martData.fixed > 0) {
+                charges = Math.round(martData.fixed);
+              }
+              if (martData.fixed === 0) {
+                charges = Math.round(martData.fixed);
+              }
+              if (martData.perKm > 0) {
+                charges += Math.round(martData.perKm * routeDistance);
+              }
+              setDeliveryCharges(charges);
+              console.log(charges);
+              setConfirmedAddress(searchLocation);
+              setSearchLocation(searchLocation);
+              navigate('/checkout', {
+                state: {
+                  locationId: searchLocation,
+                  newlatitude: latitude,
+                  newlongitude: longitude,
+                  newdeliveryCharges: charges,
+                },
+              });
+            } else {
+              setConfirmationError('Mart is not available for delivery at selected location');
+              console.log('Selected address is outside the service area of the mart.');
+            }
+          } else {
+            console.error(`Error fetching directions: ${status}`);
+          }
+        }
       );
-      return distance <= address.radius;
     });
 
-    if (isWithinServiceArea) {
-      setConfirmedAddress(searchLocation);
-      console.log(confirmedAddress);
-      setSearchLocation(searchLocation);
-      navigate('/checkout', {
-        state: {
-          locationId: searchLocation,
-          newlatitude: latitude,
-          newlongitude: longitude,
-        },
-      });
-    } else {
-      setConfirmationError('Mart is not available for delivery at selected location ');
-      console.log('Selected address is outside the service area of the mart.');
-    }
+    // if (!isWithinServiceArea) {
+    //   setConfirmationError('Mart is not available for delivery at selected location');
+    //   console.log('Selected address is outside the service area of the mart.');
+    // }
   };
+
+  // const handleConfirmAddress = () => {
+  //   const isWithinServiceArea = martData.address.some((address) => {
+  //     const distance = calculateDistance(
+  //       parseFloat(latitude),
+  //       parseFloat(longitude),
+  //       address.lat,
+  //       address.lng
+  //     );
+  //     return distance <= address.radius;
+  //   });
+
+  //   if (isWithinServiceArea) {
+  //     // let charges = 0;
+  //     // console.log(martData);
+  //     // console.log(martData.perKm);
+  //     // if (martData.fixed > 0) {
+  //     //   charges = Math.round(martData.fixed);
+  //     //   console.log(charges);
+  //     //   setDeliveryCharges(charges);
+  //     // }
+  //     // if (martData.perKm > 0) {
+  //     //   console.log(martData.perKm)
+  //     //   const firstRadius = martData.address[0].radius;
+  //     //   const distance = calculateDistance(latitude, longitude, martData.address[0].lat, martData.address[0].lng);
+  //     //   charges += Math.round(martData.perKm * distance);
+  //     //   console.log(distance);
+  //     //   console.log(charges);
+  //     //   setDeliveryCharges(Math.round(charges));
+  //     // }
+  //     // setConfirmedAddress(searchLocation);
+  //     // console.log(confirmedAddress);
+  //     // setSearchLocation(searchLocation);
+  //     let charges = martData.fixed > 0 ? Math.round(martData.fixed) : 0;
+  //     setDeliveryCharges(charges);
+  //     console.log('Fixed Charges are',charges);
+  //     const directionsService = new window.google.maps.DirectionsService();
+  //     if (martData.perKm > 0) {
+  //       const origin = new window.google.maps.LatLng(martData.address[0].lat, martData.address[0].lng);
+  //       const destination = new window.google.maps.LatLng(latitude, longitude);
+  //       directionsService.route({
+  //         origin: origin,
+  //         destination: destination,
+  //         travelMode: window.google.maps.TravelMode.DRIVING,
+  //       }, (result, status) => {
+  //         if (status === window.google.maps.DirectionsStatus.OK) {
+  //           const routeDistance = result.routes[0].legs[0].distance.value / 1000;
+  //           charges += Math.round(martData.perKm * routeDistance);
+  //           setDeliveryCharges(Math.round(charges));
+  //           console.log(`Distance: ${routeDistance} km, and new Charges with KM : ${charges}`);
+  //           navigate('/checkout', {
+  //             state: {
+  //               locationId: searchLocation,
+  //               newlatitude: latitude,
+  //               newlongitude: longitude,
+  //               newdeliveryCharges: newdeliveryCharges,
+  //             },
+  //           });
+  //         } else {
+  //           console.error('Failed to fetch directions:', result);
+  //         }
+  //       });
+  //     } else {
+  //       navigate('/checkout', {
+  //         state: {
+  //           locationId: searchLocation,
+  //           newlatitude: latitude,
+  //           newlongitude: longitude,
+  //           newdeliveryCharges: charges,
+  //         },
+  //       });
+  //     }
+  //   } 
+  //   else {
+  //     setConfirmationError('Mart is not available for delivery at selected location ');
+  //     console.log('Selected address is outside the service area of the mart.');
+  //   }
+  // };
   const handleSearch = async () => {
     try {
       let api = 'AIzaSyBtfAc1LiY2l6QWixvsD9jn9SZiaH-f3sU';
@@ -1148,6 +1441,7 @@ export const Location = () => {
 export const WalletandPromos = () => {
   const storedMart = sessionStorage.getItem('mart_id');
   const [PromoExists, setPromoExists] = useState('');
+  const [customerData, setCustomerData] = useState('');
   const [EditPopup, setEditPopup] = useState(false);
   const [paymentMethodpopup, setPaymentMethodpopup] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
@@ -1168,14 +1462,30 @@ export const WalletandPromos = () => {
       } catch (error) {
         console.error('Error:', error.message);
       }
+      const data = {
+        firebase_id: '101338101135977459288',
+      };
+      // Getting Customer data based on FirebaseId
+      try {
+        const response = await login(data);
+        console.log('Response Status:', response.status);
+        if (response.status === 200) {
+          console.log('Customer Retrieved successful!', response.data[0]);
+          setCustomerData(response.data[0]);
+        } else {
+          console.error('Customer Retrievel failed.', response.data);
+        }
+      } catch (error) {
+        console.error('Error during login:', error);
+      }
     };
 
     fetchData();
   }, []);
   const breakpoints = {
     300: {
-      spaceBetween: 20,
-      slidesPerView: 1.5
+      // spaceBetween: 20,
+      slidesPerView: 1
     },
     480: {
       // spaceBetween: 20,
@@ -1183,15 +1493,15 @@ export const WalletandPromos = () => {
     },
     768: {
       spaceBetween: 30,
-      // slidesPerView: 1
+      slidesPerView: 2
     },
     1024: {
       spaceBetween: 20,
-      // slidesPerView: 1
+      slidesPerView: 2
     },
     1200: {
-      slidesPerView: 1,
-      // spaceBetween: 20,
+      slidesPerView: 2,
+      spaceBetween: 20,
     },
   };
   const handleClick = (input) => {
@@ -1203,7 +1513,6 @@ export const WalletandPromos = () => {
     else if (input == 'COD') {
       setPaymentMethodpopup(true);
       setEditPopup(true);
-      // setPaymentMethod("Cash on Delivery");
     }
     else {
 
@@ -1240,22 +1549,20 @@ export const WalletandPromos = () => {
               <img src='Images/promo.png' alt='' />
             </div>
             <div className='main-div'>
-              <p style={{ marginTop: '9px' }}>Rs 0</p>
+              <p style={{ marginTop: '-1px' }}>Rs {customerData.wallet}</p>
             </div>
           </div>
         </div>
         <div className='cart-container'>
           <div className='checkout-items'>
             <h5>Points Available</h5>
-            {/* <span >Applicable</span> */}
           </div>
           <div className='main'>
             <div>
               <img src='Images/promo.png' alt='' />
             </div>
             <div className='promo'>
-              <p style={{ marginTop: '9px' }}>0</p>
-              {/* <h5 onClick={() => setPromoCode(true)}>Apply</h5> */}
+              <p style={{ marginTop: '-1px' }}>{customerData.pointsAvailable}</p>
             </div>
           </div>
         </div>
@@ -1269,56 +1576,38 @@ export const WalletandPromos = () => {
               <img src='/Images/card.png' size={20} />
             </div>
             <div className='main-div'>
-              <p style={{ marginTop: '5px' }}>{paymentMethod}</p>
+              <p style={{ marginTop: '-5px' }}>{paymentMethod}</p>
             </div>
           </div>
 
         </div>
         <div className='cart-container' style={{ fontSize: '17px', borderBottom: '0px' }}>
-          {/* <br /><h5>Promo Code</h5>
-          <h5>Promo Code not Available.Please come back later</h5> */}
           {PromoExists.length > 0 ? (
             <Swiper
-              modules={[Navigation, Pagination, A11y]}
-              // spaceBetween={30}
-              // slidesPerView={1.5}
-              grabCursor={true}
+              modules={[Navigation]}
               breakpoints={breakpoints}
-              // centeredSlides={true}
-              // loop={true}
-              navigation={false}
-              pagination={{ clickable: true }}
-              // className='swiper-container'
+              navigation={true}
               onSwiper={(swiper) => console.log(swiper)}
-              // onSlideChange={() => console.log('slide change')}
-              slideClass="custom-swiper-slide"
-
             >
               {PromoExists.map((promo, index) => (
-                <SwiperSlide key={index} style={{ backgroundColor: 'white' }}>
-                  <img className='promoImg' src={promo.image} alt={`Promo ${index + 1}`} />
-                  <div className="content-p">
-                    <h2>{promo.description}</h2>
-                    <div className="description-line"></div>
-                    <div className="promo-details">
-                      <div>
-                        <span>Code</span>
-                        <span style={{ fontWeight: 'bold' }}>{promo.code}</span>
-                      </div>
-                      <div>
-                        <span>Valid till</span>
-                        <span style={{ fontWeight: 'bold' }}>{promo.validTill}</span>
+                <SwiperSlide key={index}>
+                  <div className="promo-card">
+                    <img src={promo.image} alt={`Promo ${index + 1}`} className="promo-image" />
+                    <div className="promo-content">
+                      <h6 className="promo-description">{promo.description}</h6>
+                      <div className="promo-details">
+                        <span>Code: {promo.code}</span>
+                        <span>Valid till: {promo.validTill}</span>
                       </div>
                     </div>
-                    {/* </div> */}
                   </div>
                 </SwiperSlide>
               ))}
             </Swiper>
           ) : (
             <>
-              <br /><h5>Promo Code</h5>
-              <h5>Promo Code not Available. Please come back later</h5>
+              {/* <br /><h2 className='main_heading'>Promo Code</h2> */}
+              <h5 className='main_heading'>No Discount Available. Please Come back later</h5>
             </>
           )}
         </div>
@@ -1338,10 +1627,10 @@ export const OrderPlaced = () => {
           <div className='place-order'>
             <img src="Images/Avatar.png" alt="Order Placed" className="order-image" />
             <div className='image-div-order'>
-              <h2>Your Order has been Placed</h2>
+              <h2 className='main_heading'>Your Order has been Placed</h2>
               <span className="order-text">Your order has been placed and its on the way to being processed!</span>
-              <button className="order-placed-btn">TRACK ORDER</button>
-              <Link to={`/TezDelivery?martId=${storedMart}`} className="back-btn">BACK TO HOME PAGE</Link>
+              <button className="order-placed-btn">Track Order</button>
+              <Link to={`/TezDelivery?martId=${storedMart}`} className="back-btn">Back To Home Page</Link>
             </div>
           </div>
         </div>

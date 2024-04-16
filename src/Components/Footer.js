@@ -17,20 +17,20 @@ const Footer = () => {
         <section className='container'>
           <div className='row'>
             <div className='footer-col itemStyle'>
-              <div className='text-left'>CALL US NOW</div>
+              <h6 className='text-left'>Call Us Now</h6>
               <div className='divStyle'>
                 <div className='icon-style'>
                   <FiPhoneCall />
                 </div>
-                <span>(0333) 487 8399</span>
+                <h6 className='text-left'>(0333) 487 8399</h6>
               </div>
             </div>
 
             <div className='footer-col itemStyle'>
-              <div >
+              <h6 className='text-left'>
                 <Link to='aboutus' className="div-links">About Us</Link>
-              </div>
-              <div style={{ marginTop: '7px' }}><a href='#' className="div-links">Privacy Policy</a></div>
+              </h6>
+              <h6 className='text-left' style={{ marginTop: '7px' }}><a href='#' className="div-links">Privacy Policy</a></h6>
               <div className='icons-div'>
                 <div className='icons-circle'>
                   <a href='https://www.instagram.com/tezzdelivery/' style={{display:'flex'}}><TiSocialFacebook className=" icons" size={12} color='#15489D'/></a>
@@ -41,7 +41,7 @@ const Footer = () => {
               </div>
             </div>
             <div className='footer-col itemStyle apps third-div ml'>
-              <span className='download-mobile-apps'>Download Mobile Apps</span>
+              <h6 className='download-mobile-apps text-left'>Download Mobile Apps</h6>
               <div className='play-div'>
                 <div className='icons-circle'>
                   <a href='https://apps.apple.com/eg/app/tezz-delivery/id1632938996' style={{display:'flex'}}><FaApple className=" icons" color='black' size={12} /></a>

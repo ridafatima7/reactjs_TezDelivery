@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removefromCart, removefromCross, addAdditionalProductToCart } from './CartSlice';
-import { Subtotal } from './CartSlice';
+import { Subtotal,deleteAdditionalProduct } from './CartSlice';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Footer from './Footer';
 import { MdDeleteOutline } from "react-icons/md";
@@ -125,7 +125,7 @@ const Cart = (props) => {
         <div className='container pt'>
           <div className='no-items'>
             <FaRegFaceFrown size={100} color='#F17E2A' />
-            <h3>No Items Added Yet!</h3>
+            <h6 style={{fontSize:'1.1rem',marginTop:'18px'}}>No Items Added Yet!</h6>
           </div>
         </div>
       ) : (
@@ -221,10 +221,10 @@ const Cart = (props) => {
                   <h5>{subtotal.subtotal}</h5>
                 </div>
                 <div>
-                  <div className='cart-subtotal'>
+                  {/* <div className='cart-subtotal'>
                     <h5>Delivery Charges</h5>
                     <h5>Free Delivery</h5>
-                  </div>
+                  </div> */}
                   <div className='cart-subtotal'>
                     <h5>Total</h5>
                     <h5>{subtotal.subtotal}</h5>
@@ -299,6 +299,7 @@ export const AdditionalProducts = () => {
     setInputItems(updatedItems);
     const updatedMessages = validationMessages.filter(message => message.id !== itemId);
     setValidationMessages(updatedMessages);
+    dispatch(deleteAdditionalProduct({ id: itemId }));
   };
   const handleInputChange = (itemId, field, value) => {
     setInputItems(inputItems.map(item =>

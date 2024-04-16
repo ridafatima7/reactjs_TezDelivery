@@ -110,7 +110,7 @@ export async function getMartProducts(Martid, cid, sid, limit, skip,pid) {
 // Fetch My-Orders
 export async function getMyOrders() {
   try {
-    const url = `${API_BASE_URL}/get_ordersList?customer_id=0xZxbVCWCjSiY2Q3CInBv4Cv6Kb2`;
+    const url = `${API_BASE_URL}/get_ordersList?customer_id=101338101135977459288`;
     const response = await axios.get(url);
     return response.data;
   } catch (error) {

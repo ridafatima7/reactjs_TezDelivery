@@ -10,7 +10,7 @@ import Gmaps from "./Components/Gmaps";
 import Loader from "./Components/Loader";
 import Login, { OTPScreen } from "./Components/Login";
 import Maps from "./Components/Maps";
-import Order from "./Components/Order";
+import Order, { ScheduleOrder } from "./Components/Order";
 import Product from "./Components/Product";
 import SearchProducts from "./Components/SearchProducts";
 import SellingScreen from "./Components/SellingScreen";
@@ -37,7 +37,7 @@ function App() {
           <>
          <BrowserRouter>
           <Routes>
-          <Route path="/" element={<LandingPage/>} />
+          <Route path="/" element={<LandingPage />} />
             <Route path="/TezDelivery" element={<TezDelivery />} />
             <Route path="/order" element={<Order />} />
             <Route path="/tracking" element={<Tracking />} />
@@ -47,6 +47,7 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/home" element={<Sidebar/>} />
             <Route path="/order-placed" element={<OrderPlaced/>} />
+            <Route path="/order-scheduled" element={<ScheduleOrder/>} />
             <Route path="/edit-location" element={<Location/>} />
             <Route path="/cart" element={<Cart/>} />
             <Route path="/privacy-policy" element={<Privacy_Policy/>} />
