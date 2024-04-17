@@ -1,27 +1,30 @@
 import React, { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { FcCheckmark } from "react-icons/fc";
+import { RxCross2 } from "react-icons/rx";
 import LazyLoad from 'react-lazy-load';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 import { Button } from "reactstrap";
-import { RxCross2 } from "react-icons/rx";
 import 'swiper/css';
-import { FcCheckmark } from "react-icons/fc";
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { getMartCategories, getExclusiveProducts, getMostSellingProducts, getMarts } from "../../../my-app/src/Server";
 import 'swiper/css/scrollbar';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navigation, Pagination, Autoplay, Scrollbar, A11y, EffectCoverflow } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+
 import Exclusive from "./Exclusive";
 import Footer from "./Footer";
-import TNavbar from './TNavbar'
 import NavSection from "./NavSection";
 import TDSlider from "./TDSlider";
+import TNavbar from './TNavbar'
+import { getMartCategories, getExclusiveProducts, getMostSellingProducts, getMarts } from "../Server";
+
 import "./TD.css";
 import 'swiper/swiper-bundle.css';
+
 const TezDelivery = () => {
   const [DataProduct, setData] = useState([]);
   const [imageLoading, setImageLoading] = useState(true);
@@ -46,7 +49,7 @@ const TezDelivery = () => {
       try {
         const response = await getMartCategories(Martid);
         if (response.status === 200) {
-          console.log("Categories=>", response.data);
+          //console.log("Categories=>", response.data);
           setData(response.data);
         } else {
           console.log('Error:', response.statusText);
@@ -58,7 +61,7 @@ const TezDelivery = () => {
       try {
         const response = await getExclusiveProducts(Martid);
         if (response.status === 200) {
-          console.log("ExclusiveProducts=>", response.data);
+          //console.log("ExclusiveProducts=>", response.data);
           setExclusive(response.data);
         }
         else {
@@ -71,7 +74,7 @@ const TezDelivery = () => {
       try {
         const response = await getMostSellingProducts(Martid);
         if (response.status === 200) {
-          console.log("most Selling Products=>", response.data);
+          //console.log("most Selling Products=>", response.data);
           setSelling(response.data);
         }
         else {
@@ -84,10 +87,10 @@ const TezDelivery = () => {
       try {
         const response = await getMarts(Martid);
         if (response.status === 200) {
-          console.log("Mart Data=>", response.data);
+          //console.log("Mart Data=>", response.data);
           setTicker(response.data[0]);
           setPromoExists(response.data[0].promos);
-          console.log(response.data[0].promos);
+          //console.log(response.data[0].promos);
         }
         else {
           console.log('Error:', response.statusText);
