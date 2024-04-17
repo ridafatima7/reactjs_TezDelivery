@@ -612,9 +612,42 @@
   color: #F28638;
   text-align: center;
     margin-bottom: 7px;
+
     margin-top: 7px;
 }
+.lightbox-overlay {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+  cursor: pointer;
+}
+.lightbox {
+  position: relative;
+  max-width: 52%;
+  max-height: 52%;
+  cursor: default;
+}
+.lightbox img {
+  width: 100%;
+  height: 100%;
+}
 
+.close-icon {
+  position: absolute;
+  top: 40px;
+  right: 10px;
+  font-size: 44px;
+  line-height: 1;
+  cursor: pointer;
+  color: #000;
+}
 .promo-details span {
   display: block;
   margin-top: 5px;

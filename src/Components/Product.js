@@ -7,6 +7,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { removefromCart } from './CartSlice';
 import { addtoCart } from './CartSlice';
 const Product = ({ key = "" }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState('');
+  const handleImageClick = (image) => {
+    setCurrentImage(image);
+    setIsOpen(true);
+  };
   const [activeTitle, setActiveTitle] = useState('');
   // const handleVariationClick = (title) => {
   //   setActiveTitle(title);
@@ -124,9 +130,17 @@ const Product = ({ key = "" }) => {
           {Products.length > 0
             ? Products.map((item, i) => (
               <div key={i} className="product">
-                <div className="productdiv">
+                <div className="productdiv"  onClick={() => handleImageClick(item.image)}>
                   <img src={item.image} alt="image" />
                 </div>
+                {isOpen && (
+        <div className="lightbox-overlay" onClick={() => setIsOpen(false)}>
+          <div className="lightbox" onClick={e => e.stopPropagation()}>
+            <img src={currentImage} alt="Preview" />
+            <span className="close-icon" onClick={() => setIsOpen(false)}>×</span>
+          </div>
+        </div>
+      )}
                 {showQuantityButtons ? (
                   <>
                     <div className="productDetail">
