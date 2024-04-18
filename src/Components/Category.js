@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import LazyLoad from 'react-lazy-load';
 import { Link } from "react-router-dom";
-import { ClipLoader } from 'react-spinners';
 import { Button } from "reactstrap";
 
 import Footer from "./Footer";
 import NavSection from "./NavSection";
 import TNavbar from "./TNavbar";
-import LazyLoad from 'react-lazy-load';
 import { ClipLoader } from 'react-spinners';
 import { Navigation, Pagination, Autoplay, Scrollbar, A11y, EffectCoverflow } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';

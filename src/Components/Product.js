@@ -18,9 +18,17 @@ const Product = ({ key = "" }) => {
   //   setActiveTitle(title);
   // };
   const [activeIndex, setActiveIndex] = useState(null);
-
-  const handleVariationClick = (index) => {
+  const [variationTitle,setVariationTitle]=useState("");
+  const [variationPrice,setVariationPrice]=useState("");
+  const [variationExPrice,setVariationExPrice]=useState("");
+  const handleVariationClick = (index,title,price,ExPrice) => {
+    console.log(ExPrice);
+    console.log(price);
+    console.log(title);
     setActiveIndex(index);
+    setVariationTitle(title);
+    setVariationExPrice(ExPrice);
+    setVariationPrice(price);
   };
   useEffect(() => {
     setActiveIndex(0);
@@ -48,6 +56,18 @@ const Product = ({ key = "" }) => {
       // const resultProducts = await products.json();
       console.log(resultProducts.data);
       setProducts(resultProducts.data ? resultProducts.data : []);
+      if (resultProducts.data[0].variationTitle && resultProducts.data[0].variationTitle.length > 0) {
+        setVariationTitle(resultProducts.data[0].variationTitle[0]);
+        console.log(resultProducts.data[0].variationTitle[0])
+      }
+      if (resultProducts.data[0].variationPrice && resultProducts.data[0].variationPrice.length > 0) {
+        setVariationPrice(resultProducts.data[0].variationPrice[0]);
+        console.log(resultProducts.data[0].variationPrice[0]);
+      }
+      if (resultProducts.data[0].variationExPrice && resultProducts.data[0].variationExPrice.length > 0) {
+        setVariationExPrice(resultProducts.data[0].variationExPrice[0]);
+        console.log(resultProducts.data[0].variationExPrice[0]);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -64,8 +84,22 @@ const Product = ({ key = "" }) => {
     get_Products();
   }, []);
   const addToCart = (item) => {
-    setShowQuantityButtons(true);
-    dispatch(addtoCart(item));
+    if(item.variationTitle===null && item.variationExPrice ===null && item.variationPrice===null){
+      setShowQuantityButtons(true);
+      console.log(item);
+      dispatch(addtoCart(item));    
+    }
+    else
+    {
+      const updatedItem = { ...item };
+      updatedItem.name = `${item.name} ${variationTitle}`;
+      updatedItem.price = variationPrice;
+      updatedItem.exclusivePrice=variationExPrice;
+      updatedItem.productTitle = variationTitle;
+      setShowQuantityButtons(true);
+      console.log(updatedItem)
+      dispatch(addtoCart(updatedItem));
+    }
   };
   const canIncreaseQuantity = (item) => {
     console.log("Max Product Limit:", item.maxProductLimit);
@@ -130,47 +164,47 @@ const Product = ({ key = "" }) => {
           {Products.length > 0
             ? Products.map((item, i) => (
               <div key={i} className="product">
-                <div className="productdiv"  onClick={() => handleImageClick(item.image)}>
+                <div className="productdiv" onClick={() => handleImageClick(item.image)}>
                   <img src={item.image} alt="image" />
                 </div>
                 {isOpen && (
-        <div className="lightbox-overlay" onClick={() => setIsOpen(false)}>
-          <div className="lightbox" onClick={e => e.stopPropagation()}>
-            <img src={currentImage} alt="Preview" />
-            <span className="close-icon" onClick={() => setIsOpen(false)}>×</span>
-          </div>
-        </div>
-      )}
+                  <div className="lightbox-overlay" onClick={() => setIsOpen(false)}>
+                    <div className="lightbox" onClick={e => e.stopPropagation()}>
+                      <img src={currentImage} alt="Preview" />
+                      <span className="close-icon" onClick={() => setIsOpen(false)}>×</span>
+                    </div>
+                  </div>
+                )}
                 {showQuantityButtons ? (
                   <>
                     <div className="productDetail">
                       {/* <p className="productDetailp">Rs.{item.price}</p> */}
                       {item.variationTitle && item.variationTitle.map((title, index) => (
-                      <button
-                        key={index}
-                        className={`variationTitle ${activeIndex === index ? 'active' : ''}`}
-                        onClick={() => handleVariationClick(index)}
-                      >
-                        {title}
-                      </button>
-                    ))}
-                    {item.variationExPrice && item.variationExPrice[activeIndex] !== 0 ? (
-                      <>
-                        <p className="productDetailp variationPriceLineThrough">
-                          Rs.{item.variationPrice[activeIndex]}
-                        </p>
-                        <p className="productDetailp"> Rs.{item.variationExPrice[activeIndex]}</p>
-                      </>
-                    ) : (
-                      item.exclusivePrice !== null && item.exclusivePrice > 0 ? (
+                        <button
+                          key={index}
+                          className={`variationTitle ${activeIndex === index ? 'active' : ''}`}
+                          onClick={() => handleVariationClick(index,item.variationTitle[index],item.variationPrice[index],item.variationExPrice[index])}
+                        >
+                          {title}
+                        </button>
+                      ))}
+                      {item.variationExPrice && item.variationExPrice[activeIndex] !== 0 ? (
                         <>
-                                                <p className="productDetailp variationPriceLineThrough">Rs.{item.price}</p>
-                        <p className="productDetailp ">Rs.{item.exclusivePrice}</p>
-                        </>                   
+                          <p className="productDetailp variationPriceLineThrough">
+                            Rs.{item.variationPrice[activeIndex]}
+                          </p>
+                          <p className="productDetailp"> Rs.{item.variationExPrice[activeIndex]}</p>
+                        </>
                       ) : (
-                        <p className="productDetailp ">Rs.{item.price}</p>
-                      )
-                    )}
+                        item.exclusivePrice !== null && item.exclusivePrice > 0 ? (
+                          <>
+                            <p className="productDetailp variationPriceLineThrough">Rs.{item.price}</p>
+                            <p className="productDetailp ">Rs.{item.exclusivePrice}</p>
+                          </>
+                        ) : (
+                          <p className="productDetailp ">Rs.{item.price}</p>
+                        )
+                      )}
                       <h2 className="main_heading">{item.name}</h2>
                       <p>{item.description}</p>
                       <div className="product-buttons">
@@ -192,7 +226,7 @@ const Product = ({ key = "" }) => {
                       <button
                         key={index}
                         className={`variationTitle ${activeIndex === index ? 'active' : ''}`}
-                        onClick={() => handleVariationClick(index)}
+                        onClick={() => handleVariationClick(index,item.variationTitle[index],item.variationPrice[index],item.variationExPrice[index])}
                       >
                         {title}
                       </button>
@@ -207,9 +241,9 @@ const Product = ({ key = "" }) => {
                     ) : (
                       item.exclusivePrice !== null && item.exclusivePrice > 0 ? (
                         <>
-                        <p className="productDetailp variationPriceLineThrough">Rs.{item.price}</p>
-                        <p className="productDetailp ">Rs.{item.exclusivePrice}</p>
-                        </> 
+                          <p className="productDetailp variationPriceLineThrough">Rs.{item.price}</p>
+                          <p className="productDetailp ">Rs.{item.exclusivePrice}</p>
+                        </>
                       ) : (
                         <p className="productDetailp ">Rs.{item.price}</p>
                       )

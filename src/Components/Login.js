@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaFacebook } from "react-icons/fa";
 import { GoChevronLeft } from "react-icons/go";
-<<<<<<< HEAD
 import { initializeApp } from 'firebase/app';
 import 'firebase/messaging';
 import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
@@ -24,9 +23,7 @@ export const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);
 export const messaging = getMessaging();
-=======
 import { Button, Input } from "reactstrap";
-
 import {
   auth,
   signInWithGoogle,
@@ -37,7 +34,6 @@ import {
   sendToken,
 } from "../firebaseConfig";
 import { login } from "../Server";
->>>>>>> d5071cd8d34c0ba8aa89d6eee4f4ee8927b1bf4d
 
 const Login = () => {
   const [userName, setUserName] = useState("");
@@ -192,9 +188,9 @@ const Login = () => {
     }
   };
 
+
   return (
     <div>
-<<<<<<< HEAD
       <section className='container pt'>
         <div className='Login'>
           <img src='/Images/LogoImage.png' className=' pb' alt='loginimage' style={{ marginTop: '15px' }} />
@@ -213,7 +209,6 @@ const Login = () => {
           >
             <div className='Logindiv'>
               <FaFacebook className='login-icon' size={26} />
-=======
       {isOtpSend ? (
         <OTPScreen  setIsOtpSend={setIsOtpSend} />
       ) : (
@@ -250,7 +245,6 @@ const Login = () => {
 
             <div className="Logindiv" onClick={handleFacebookClick}>
               <FaFacebook className="login-icon" size={26} />
->>>>>>> d5071cd8d34c0ba8aa89d6eee4f4ee8927b1bf4d
               <h6>Facebook</h6>
             </div>
 

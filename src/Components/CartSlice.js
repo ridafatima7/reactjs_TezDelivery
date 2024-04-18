@@ -13,12 +13,28 @@ const CartSlice = createSlice({
   reducers: {
     addtoCart: (state, action) => {
       const existingProductIndex = state.carts.findIndex(
-        (product) => product.id === action.payload.id
+        (product) => product.id === action.payload.id && 
+        (!action.payload.variationTitle)
       );
-      if (existingProductIndex !== -1) {
+      const existingVariationIndex = state.carts.findIndex(
+        (product) => {
+          console.log('Comparing product.variationPrice:', product.productTitle, 'with action.payload.variationPrice:', action.payload.productTitle);
+          return product.id === action.payload.id && 
+          product.productTitle === action.payload.productTitle;
+        }
+      );
+      if (existingProductIndex !== -1  ) {
         state.carts[existingProductIndex].qty += 1;
-        // }
-      } else {
+      } 
+     
+      else if (existingVariationIndex !== -1  ) {
+        state.carts[existingVariationIndex].qty += 1;
+        console.log('here');
+      } 
+      else 
+      {
+
+        console.log(existingVariationIndex)
         const product = { ...action.payload, qty: action.payload.qty || 1 };
         state.carts.push(product);
       }
@@ -37,7 +53,7 @@ const CartSlice = createSlice({
 
       if (existingIndex !== -1) {
         state.additionalItems[existingIndex] = {
-          ...state.additionalItems[existingIndex],// Spread operator to copy existing properties like id
+          ...state.additionalItems[existingIndex],    // Spread operator to copy existing properties like id
           name: action.payload.name,
           qty: action.payload.qty
         };
