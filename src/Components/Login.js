@@ -1,29 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FaFacebook } from "react-icons/fa";
 import { GoChevronLeft } from "react-icons/go";
-import { initializeApp } from 'firebase/app';
-import 'firebase/messaging';
-import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
-import { getAnalytics } from 'firebase/analytics';
-import { getMessaging, getToken } from 'firebase/messaging';
-import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
-import { LoginSocialFacebook, LoginSocialGoogle } from 'reactjs-social-login';
-import { login } from '../Server';
-// import { GoogleLogin } from 'react-google-login';
-const firebaseConfig = {
-  apiKey: "AIzaSyAxANdP0jWz27EOJvZt11_-kB_y4ebposU",
-  authDomain: "tezdelivery-1ac08.firebaseapp.com",
-  projectId: "tezdelivery-1ac08",
-  storageBucket: "tezdelivery-1ac08.appspot.com",
-  messagingSenderId: "1054262826197",
-  appId: "1:1054262826197:web:5de8514698561b5f3a7e5c",
-  measurementId: "G-SB18KSB5RD"
-};
-export const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const analytics = getAnalytics(app);
-export const messaging = getMessaging();
+import { useNavigate } from 'react-router-dom';
 import { Button, Input } from "reactstrap";
+import { Link } from "react-router-dom";
 import {
   auth,
   signInWithGoogle,
@@ -32,6 +12,7 @@ import {
   updateCustomerData,
   signInWithFacebook,
   sendToken,
+  confirmToken
 } from "../firebaseConfig";
 import { login } from "../Server";
 
@@ -40,6 +21,9 @@ const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [deviceToken, setDeviceToken] = useState("");
   const [isOtpSend, setIsOtpSend] = useState(false);
+  const [UserToken,setUserToken]= useState("");
+  const storedMart = sessionStorage.getItem('mart_id');
+  const navigate = useNavigate(); 
 
   const getDeviceToken = async () => {
     var token = await requestPermission();
@@ -50,12 +34,30 @@ const Login = () => {
     getDeviceToken();
   }, []);
 
+  // const handleLogin = async () => {
+  //   if (phoneNumber) {
+  //     var code = await sendToken(phoneNumber);
+  //     setUserToken(code);
+  //     console.log(code);
+  //     setIsOtpSend(true);
+  //   }
   const handleLogin = async () => {
     if (phoneNumber) {
-      var code = await sendToken(phoneNumber);
-      console.log(code);
-      setIsOtpSend(true);
+      try {
+        const { success, error } = await sendToken(phoneNumber);
+        if (success) {
+          setIsOtpSend(true);
+          console.log("Token sent successfully.");
+        } else {
+          setIsOtpSend(false);
+          console.error("Failed to send token:", error);
+        }
+      } catch (error) {
+        setIsOtpSend(false);
+        console.error("Unexpected error during token sending:", error);
+      }
     }
+  // };  
 
     // const data = {
     //   name: userName,
@@ -99,9 +101,9 @@ const Login = () => {
       customerData["deviceToken"] = deviceToken;
     } else {
       var data = {
-        name: "",
+        name: result.displayName || "",
         mobile: "",
-        image: "",
+        image: result.photoURL || "",
         wallet: 0,
         code: "",
         house: "",
@@ -127,8 +129,10 @@ const Login = () => {
       console.log("Response Status:", response.status);
       if (response.status === 200) {
         console.log("Login successful!", response.data);
-
         sessionStorage.setItem("firebase_id", firebase_id);
+        sessionStorage.setItem("userName", result.displayName);
+        sessionStorage.setItem("Email", result.email);
+        navigate(`/TezDelivery?martId=${storedMart}`);
       } else {
         console.error("Login failed.", response.data);
         sessionStorage.setItem("firebase_id", "");
@@ -148,9 +152,9 @@ const Login = () => {
       customerData["deviceToken"] = deviceToken;
     } else {
       var data = {
-        name: "",
+        name: result.displayName || "",
         mobile: "",
-        image: "",
+        image: result.photoURL || "",
         wallet: 0,
         code: "",
         house: "",
@@ -176,8 +180,10 @@ const Login = () => {
       console.log("Response Status:", response.status);
       if (response.status === 200) {
         console.log("Login successful!", response.data);
-
         sessionStorage.setItem("firebase_id", firebase_id);
+        sessionStorage.setItem("userName", result.displayName);
+        sessionStorage.setItem("Email", result.email);
+        navigate(`/TezDelivery?martId=${storedMart}`);
       } else {
         console.error("Login failed.", response.data);
         sessionStorage.setItem("firebase_id", "");
@@ -188,29 +194,10 @@ const Login = () => {
     }
   };
 
-
   return (
     <div>
-      <section className='container pt'>
-        <div className='Login'>
-          <img src='/Images/LogoImage.png' className=' pb' alt='loginimage' style={{ marginTop: '15px' }} />
-          <p>Enter Account Credientials</p>
-          <Input className='LoginInput' type="text" placeholder="Your Name" name="name" value={userName} onChange={(e) => setUserName(e.target.value)} />
-          <Input className='LoginInput' type="text" placeholder="03xx xxxxxxx" name="phoneno" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-          <span className='Login-span1'>Skip Login</span>
-          <Button onClick={handleLogin}>Login</Button>
-          <span className='Login-span2'>Or Continue with </span>
-          <LoginSocialFacebook appId='815948600574654' onResolve={(response) => {
-            console.log(response);
-          }}
-            onReject={(error) => {
-              console.log(error);
-            }}
-          >
-            <div className='Logindiv'>
-              <FaFacebook className='login-icon' size={26} />
       {isOtpSend ? (
-        <OTPScreen  setIsOtpSend={setIsOtpSend} />
+        <OTPScreen setIsOtpSend={setIsOtpSend} phoneNumber={phoneNumber}/>
       ) : (
         <section className="container pt">
           <div className="Login">
@@ -237,7 +224,7 @@ const Login = () => {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
-            <span className="Login-span1">Skip Login</span>
+            <Link className="linkstyle" to={`/TezDelivery?martId=${storedMart}`}><span className="Login-span1">Skip Login</span></Link>
             <Button onClick={handleLogin} id="recaptcha">
               LOGIN
             </Button>
@@ -262,34 +249,141 @@ const Login = () => {
     </div>
   );
 };
+export default Login;
+export const OTPScreen = ({ setIsOtpSend, phoneNumber }) => {
+  const [otpCode, setOtpCode] = useState(Array(6).fill(""));
+  const [errorMessage, setErrorMessage] = useState("");
+  const storedMart = sessionStorage.getItem('mart_id');
+  const navigate = useNavigate(); 
+  const [timer, setTimer] = useState(120); 
+  const [UserToken,setUserToken]= useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError(null);
+    console.log("OTP Code Array:", otpCode);
+    const otpString = otpCode.join(''); 
+    console.log(otpString);
+    try {
+      const result = await confirmToken(otpString);
+      console.log(result);
+      if (result.success) {
+        console.log("Signed in user:", result.user);
+        sessionStorage.setItem("phoneNumber", result.user.phoneNumber);
+        sessionStorage.setItem("firebase_id", result.user.uid);
+        navigate(`/TezDelivery?martId=${storedMart}`);
+      } else {
+        setErrorMessage(result.error);
+        throw new Error(result.error);   
+      }
+    } catch (error) {
+      console.error("Error during OTP verification:", error);
+      setErrorMessage("Failed to verify OTP. Please try again.");
+      setError("Failed to verify OTP. Please try again.");
 
-export const OTPScreen = ({setIsOtpSend}) => {
+    }
+    setLoading(false);
+  };
+  const handleChange = (index, value) => {
+    let newOtpCode = [...otpCode];
+    newOtpCode[index] = value;
+    setOtpCode(newOtpCode);
+  
+    // Focus management
+    if (value.length === 1 && index < newOtpCode.length - 1) {
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      if (nextInput) {
+        nextInput.focus();
+      }
+    }
+  };
+  const handleContinue=()=>{
+    setErrorMessage('');
+   setIsOtpSend(false);
+  }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer(prevTimer => {
+        if (prevTimer > 0) {
+          return prevTimer - 1;
+        } else {
+          clearInterval(interval);
+          // navigate('/login');
+          return 0;
+        }
+      });
+    }, 1000); 
+    return () => clearInterval(interval);
+  }, []);
+  const formattedTime = `${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, '0')}`;
+  const ResendOtp = async () => {
+    console.log(phoneNumber)
+    if (phoneNumber) {
+      var code = await sendToken(phoneNumber);
+      setUserToken(code);
+      console.log(code);
+      setIsOtpSend(true);
+    }
+  }
   return (
     <>
+    
       <section className="container">
+      {errorMessage && (
+            <>
+              <div className='promo-container'>
+                <div className='promo-popup'>
+                  <div className='promo-close'>
+                    <span className='promo-close-btn' onClick={() => setErrorMessage('')}>
+                      &times;
+                    </span>
+                  </div>
+                  <h2 className='promo-label main_heading'>Error</h2>
+                  <h3 className='promo-label2'>{errorMessage}</h3>
+                  <button onClick={handleContinue} className='continue'>Continue</button>
+                </div>
+              </div>
+            </>
+          )}
         <div className="otp-screen">
-          <div className="back-arrow" onClick={()=>setIsOtpSend(false)}>
-            <GoChevronLeft size={24} color="#F17E2A" />{" "}
-          </div>
-          <h1>Enter 6-digit Verification code</h1>
-          <span>Code sent to 03087656554. This will expire in 2 minutes.</span>
+          <Link to="/login">
+            <div className="back-arrow" onClick={() => setIsOtpSend(false)}>
+              <GoChevronLeft size={24} color="#F17E2A" />
+            </div>
+          </Link>
+          {timer > 0 ? (
+          <span>Code sent to {phoneNumber}. This will expire in {formattedTime}.</span>
+         ) : (
+          <span>
+          Code expired.
+           {/* <span onClick={ResendOtp} style={{ textDecoration: "underline", cursor: 'pointer' }} className="resend-link">Resend</span> */}
+        </span>
+        )}
+          {error && <p className="error-message">{error}</p>}
           <div className="otp-inputs">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <input
-                key={index}
-                maxLength="1"
-                type="text"
-                className="otp-input"
-                pattern="\d*"
-              />
-            ))}
+            <div className="otp-inputs">
+              {otpCode.map((digit, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  pattern="\d*"
+                  maxLength="1"
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  className="otp-input"
+                  id={`otp-input-${index}`} 
+                />
+              ))}
+            </div>
           </div>
         </div>
         <div className="otp-button">
-          <button className="submit-btn">Submit</button>
+          <button className="submit-btn" onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Submitting...' : 'Submit'}
+          </button>
         </div>
       </section>
     </>
   );
 };
-export default Login;

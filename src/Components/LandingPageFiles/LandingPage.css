@@ -113,10 +113,11 @@
   color: #ccc;
 }
 .anchor-style{
-  font-family: 'GilroyBold';
-  font-weight: bold;
+  font-family: 'GilroyLight';
+  /* font-weight: bold; */
+  color:#434F7B;
   display: flex;
-  color: white;
+  /* color: white; */
   text-decoration: none;
 }
  /* Mart CSS */
@@ -644,6 +645,7 @@
 
 .navbar-menu.expanded .additional-links {
     display: block; /* Show when expanded on small screens */
+    padding-bottom: 20px;
     /* Add any necessary styling here */
 }
 

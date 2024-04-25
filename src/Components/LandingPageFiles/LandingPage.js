@@ -220,10 +220,10 @@ const LandingPage = () => {
                 <div className={`navbar-menu ${isCollapsed ? 'collapsed' : 'expanded'}`} >
                     <div className="additional-links">
                         <div className='expanded-container'>
-                            <a href='/categories' className='anchor-style'><h6>All Categories</h6></a>
-                            <a href='#why-choose-us' className='anchor-style'><h6 >Why Choose Us</h6></a>
-                            <a href='#exclusive-offers' className='anchor-style'><h6>Exclusive Offers</h6></a>
-                            <a href='#why-choose' className='anchor-style'><h6>Why Choose Us</h6></a>
+                            <a href='/categories' className='anchor-style'><h6 style={{fontSize:'15px'}}>All Categories</h6></a>
+                            <a href='#why-choose-us' className='anchor-style'><h6 style={{fontSize:'15px'}} >Why Choose Us</h6></a>
+                            <a href='#exclusive-offers' className='anchor-style'><h6 style={{fontSize:'15px'}}>Exclusive Offers</h6></a>
+                            <a href='#why-choose' className='anchor-style'><h6 style={{fontSize:'15px'}}>Who We Are</h6></a>
                         </div>
                     </div>
                 </div>
@@ -247,10 +247,10 @@ const LandingPage = () => {
             <Container style={{ backgroundColor: '#4D5882' }} fluid >
                 <section className='container'>
                     <div className='con-comp'>
-                        <a href='/categories' className='anchor-style'><h6>All Categories</h6></a>
-                        <a href='#why-choose-us' className='anchor-style'><h6 >Why Choose Us</h6></a>
-                        <a href='#exclusive-offers' className='anchor-style'><h6>Exclusive Offers</h6></a>
-                        <a href='#why-choose' className='anchor-style'><h6>Why Choose Us</h6></a>
+                        <a href='/categories' className='anchor-style'><h6  style={{color:'#fafafa'}}>All Categories</h6></a>
+                        <a href='#why-choose-us' className='anchor-style'><h6  style={{color:'#fafafa'}}>Why Choose Us</h6></a>
+                        <a href='#exclusive-offers' className='anchor-style'><h6  style={{color:'#fafafa'}}>Exclusive Offers</h6></a>
+                        <a href='#why-choose' className='anchor-style'><h6  style={{color:'#fafafa'}}>Who We Are</h6></a>
                     </div>
                 </section>
             </Container>
@@ -408,10 +408,10 @@ const LandingPage = () => {
                 <section className="container " style={{ padding: '2rem 0' }} id='why-choose'>
                     <div className='chooseus'>
                         <div class="choose-us-heading">
-                            <h2>Why Choose Us?</h2>
+                            <h2>Who We Are?</h2>
                         </div>
                         <div class="choose-us-tagline pb">
-                            <p style={{ color: '#7c8081' }}>Thousands of healthy, fresh and delicious products delivered to your kitchen everyday</p>
+                            <p style={{ color: '#7c8081' }}>Tezz delivery is your one stop shop whether you are a housewife, a chef, run your own business, or need corporate orders, we are here for you</p>
                         </div>
                         <div className="features">
 

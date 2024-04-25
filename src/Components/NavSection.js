@@ -29,8 +29,10 @@ const NavSection = ({
   search_Query = null,
   set_SearchQuery = null,
 }) => {
-  const storedUserName = sessionStorage.getItem('userName');
-  const storedPhoneNumber = sessionStorage.getItem('phoneNumber');
+  const storedEmail = sessionStorage.getItem('Email') || '';
+  const storedUserName = sessionStorage.getItem('userName') || '';
+  const storedPhoneNumber = sessionStorage.getItem('phoneNumber') || '';
+  const storedFirebase_id = sessionStorage.getItem('firebase_id');
   const [phoneNumber, setPhoneNumber] = useState(storedPhoneNumber);
   const [editUserName, setEditUserName] = useState(storedUserName);
   const handleChange = (event) => {
@@ -42,7 +44,7 @@ const NavSection = ({
   const [sidebar, setSidebar] = useState(false);
   const [logedIn, setLogedIn] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
-  const [showLoginPromo,setShowLoginPromo]=useState(false);
+  const [showLoginPromo, setShowLoginPromo] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [profilePhoto, setProfilePhoto] = useState('/Images/Avatar.png');
   const [error, setError] = useState(false);
@@ -70,12 +72,11 @@ const NavSection = ({
     console.log(tempSearchQuery);
   };
   const handleSearchSubmit = () => {
-    set_SearchQuery(tempSearchQuery); 
+    set_SearchQuery(tempSearchQuery);
   };
   const EditInformation = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("form is submitted.");
     const formData = new FormData();
     const staticData = {
       "myCode": "E707",
@@ -85,7 +86,7 @@ const NavSection = ({
       "customerNotes": "Rida Notes",
       "deviceToken": "dhvgbelejhe",
       "points": 20,
-      "firebase_id": "250e47a3c949d3f0960f9d3e40ed14",
+      "firebase_id": storedFirebase_id,
       "mobile": "03008304930",
       "address": "H9, Islamabad",
       // "name": "Dashbaord Tester",
@@ -208,16 +209,25 @@ const NavSection = ({
     setProfilePhoto(imageUrl);
   };
   const handleWalletLogin = () => {
-     setShowLoginPromo(false);
-     navigate('/login');
+    setShowLoginPromo(false);
+    navigate('/login');
   }
   const handleLinkClick = (e) => {
     if (!logedIn) {
-      e.preventDefault(); 
+      e.preventDefault();
       setSidebar(false);
-      setShowLoginPromo(true);   
+      setShowLoginPromo(true);
     }
   };
+  const handleLaogout = () => {
+    console.log('here to logout');
+    localStorage.clear(); 
+    sessionStorage.removeItem('Email');
+    sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('phoneNumber');
+    sessionStorage.removeItem('firebase_id');
+    navigate('/login');
+    };
   return (
     <>
       {showLoginPromo && (
@@ -394,12 +404,14 @@ const NavSection = ({
                   alt="Avatar Image"
                   onError={(e) => console.error("Image Error", e)}
                 />
-                {storedUserName ? (
-                  <div className="user_name">{storedUserName}</div>
-                ) : (
+                {!storedFirebase_id && (
                   <Link to='/login'><Button>Login to Earn Rewards</Button></Link>
                 )}
-                {storedUserName ? (
+
+                {storedFirebase_id && (
+                  <div className="user_name">{storedUserName}</div>
+                )}
+                {storedFirebase_id ? (
                   <>
                     <div onClick={edittoggle1} style={{ display: 'flex', alignItems: "center" }}>
                       <MdModeEditOutline
@@ -459,10 +471,8 @@ const NavSection = ({
                 </Link>
               </div>
               <hr />
-              {storedUserName ? (
-                // <Link to='/login' >
-                <Button className="logout-btn"><GoSignOut size={25} style={{ marginRight: '5px' }} /> Logout</Button>
-                // </Link>
+              {storedFirebase_id ? (
+                <Button className="logout-btn" onClick={handleLaogout}><GoSignOut size={25}  style={{ marginRight: '5px' }} /> Logout</Button>
               ) : (
                 <div ></div>
               )}
@@ -495,10 +505,17 @@ const NavSection = ({
                   }
                 }}
               ></Input>
-              <FaSearch className="icon" aria-hidden="true" onClick={handleSearchSubmit}/>
-              <Link to="/login">
-                <Button className="dbtn">Login</Button>
-              </Link>
+              <FaSearch className="icon" aria-hidden="true" onClick={handleSearchSubmit} />
+              {!storedFirebase_id && (
+                <Link to="/login">
+                  <Button className="dbtn">Login</Button>
+                </Link>
+              )}
+              {storedFirebase_id && (
+                // <Link to="/login">
+                  <Button className="dbtn" onClick={handleLaogout}>Logout</Button>
+                // </Link>
+              )}
             </div>
           </div>
         </section>

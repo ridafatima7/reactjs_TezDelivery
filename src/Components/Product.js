@@ -18,10 +18,10 @@ const Product = ({ key = "" }) => {
   //   setActiveTitle(title);
   // };
   const [activeIndex, setActiveIndex] = useState(null);
-  const [variationTitle,setVariationTitle]=useState("");
-  const [variationPrice,setVariationPrice]=useState("");
-  const [variationExPrice,setVariationExPrice]=useState("");
-  const handleVariationClick = (index,title,price,ExPrice) => {
+  const [variationTitle, setVariationTitle] = useState("");
+  const [variationPrice, setVariationPrice] = useState("");
+  const [variationExPrice, setVariationExPrice] = useState("");
+  const handleVariationClick = (index, title, price, ExPrice) => {
     console.log(ExPrice);
     console.log(price);
     console.log(title);
@@ -84,17 +84,16 @@ const Product = ({ key = "" }) => {
     get_Products();
   }, []);
   const addToCart = (item) => {
-    if(item.variationTitle===null && item.variationExPrice ===null && item.variationPrice===null){
+    if (item.variationTitle === null && item.variationExPrice === null && item.variationPrice === null) {
       setShowQuantityButtons(true);
       console.log(item);
-      dispatch(addtoCart(item));    
+      dispatch(addtoCart(item));
     }
-    else
-    {
+    else {
       const updatedItem = { ...item };
       updatedItem.name = `${item.name} ${variationTitle}`;
       updatedItem.price = variationPrice;
-      updatedItem.exclusivePrice=variationExPrice;
+      updatedItem.exclusivePrice = variationExPrice;
       updatedItem.productTitle = variationTitle;
       setShowQuantityButtons(true);
       console.log(updatedItem)
@@ -116,8 +115,10 @@ const Product = ({ key = "" }) => {
       console.log("Cannot add product. Quantity limit reached.");
       return false;
     }
+
   };
   const decreaseQuantity = (item) => {
+    if (item.variationTitle === null && item.variationExPrice === null && item.variationPrice === null) {
     if (quantity > 1) {
       setQuantity((prevQuantity) => prevQuantity - 1);
       dispatch(removefromCart(item));
@@ -125,6 +126,19 @@ const Product = ({ key = "" }) => {
       setShowQuantityButtons(false);
       dispatch(removefromCart(item));
     }
+  }
+  else{
+    const updatedItem = { ...item };
+    updatedItem.name = `${item.name} ${variationTitle}`;
+      updatedItem.productTitle = variationTitle;
+      if (quantity > 1) {
+        setQuantity((prevQuantity) => prevQuantity - 1);
+        dispatch(removefromCart(updatedItem));
+      } else {
+        setShowQuantityButtons(false);
+        dispatch(removefromCart(updatedItem));
+      }
+  }
   };
   const increaseQuantity = (item) => {
     if (!canIncreaseQuantity(item)) {
@@ -132,10 +146,25 @@ const Product = ({ key = "" }) => {
       setErrorMessage(message);
       return;
     }
-    setQuantity((prevQuantity) => prevQuantity + 1);
-    setShowQuantityButtons(true);
-    dispatch(addtoCart(item));
-    setErrorMessage("");
+    if (item.variationTitle === null && item.variationExPrice === null && item.variationPrice === null) {
+
+      setQuantity((prevQuantity) => prevQuantity + 1);
+      setShowQuantityButtons(true);
+      dispatch(addtoCart(item));
+      setErrorMessage("");
+    }
+    else {
+      const updatedItem = { ...item };
+      updatedItem.name = `${item.name} ${variationTitle}`;
+      updatedItem.price = variationPrice;
+      updatedItem.exclusivePrice = variationExPrice;
+      updatedItem.productTitle = variationTitle;
+      setQuantity((prevQuantity) => prevQuantity + 1);
+      setShowQuantityButtons(true);
+      console.log(updatedItem)
+      dispatch(addtoCart(updatedItem));
+      setErrorMessage("");
+    }
   };
   const handleErrorMessage = (message) => {
     setErrorMessage(message);
@@ -183,18 +212,22 @@ const Product = ({ key = "" }) => {
                         <button
                           key={index}
                           className={`variationTitle ${activeIndex === index ? 'active' : ''}`}
-                          onClick={() => handleVariationClick(index,item.variationTitle[index],item.variationPrice[index],item.variationExPrice[index])}
+                          onClick={() => handleVariationClick(index, item.variationTitle[index], item.variationPrice[index], item.variationExPrice[index])}
                         >
                           {title}
                         </button>
                       ))}
-                      {item.variationExPrice && item.variationExPrice[activeIndex] !== 0 ? (
-                        <>
-                          <p className="productDetailp variationPriceLineThrough">
-                            Rs.{item.variationPrice[activeIndex]}
-                          </p>
-                          <p className="productDetailp"> Rs.{item.variationExPrice[activeIndex]}</p>
-                        </>
+                      {item.variationExPrice && item.variationExPrice.length > 0 ? (
+                          item.variationExPrice[activeIndex] !== 0 ? (
+                          <>
+                            <p className="productDetailp variationPriceLineThrough">
+                              Rs.{item.variationPrice[activeIndex]}
+                            </p>
+                            <p className="productDetailp"> Rs.{item.variationExPrice[activeIndex]}</p>
+                          </>
+                          ) : (
+                          <p className="productDetailp">Rs.{item.variationPrice[activeIndex]}</p>
+                          )
                       ) : (
                         item.exclusivePrice !== null && item.exclusivePrice > 0 ? (
                           <>
@@ -226,20 +259,24 @@ const Product = ({ key = "" }) => {
                       <button
                         key={index}
                         className={`variationTitle ${activeIndex === index ? 'active' : ''}`}
-                        onClick={() => handleVariationClick(index,item.variationTitle[index],item.variationPrice[index],item.variationExPrice[index])}
+                        onClick={() => handleVariationClick(index, item.variationTitle[index], item.variationPrice[index], item.variationExPrice[index])}
                       >
                         {title}
                       </button>
                     ))}
-                    {item.variationExPrice && item.variationExPrice[activeIndex] !== 0 ? (
-                      <>
-                        <p className="productDetailp variationPriceLineThrough">
-                          Rs.{item.variationPrice[activeIndex]}
-                        </p>
-                        <p className="productDetailp"> Rs.{item.variationExPrice[activeIndex]}</p>
-                      </>
+                    {item.variationExPrice && item.variationExPrice.length > 0 ? (
+                          item.variationExPrice[activeIndex] !== 0 ? (
+                          <>
+                            <p className="productDetailp variationPriceLineThrough">
+                              Rs.{item.variationPrice[activeIndex]}
+                            </p>
+                            <p className="productDetailp"> Rs.{item.variationExPrice[activeIndex]}</p>
+                          </>
+                          ) : (
+                          <p className="productDetailp">Rs.{item.variationPrice[activeIndex]}</p>
+                          )
                     ) : (
-                      item.exclusivePrice !== null && item.exclusivePrice > 0 ? (
+                      item.variationPrice !== null && item.exclusivePrice > 0 ? (
                         <>
                           <p className="productDetailp variationPriceLineThrough">Rs.{item.price}</p>
                           <p className="productDetailp ">Rs.{item.exclusivePrice}</p>

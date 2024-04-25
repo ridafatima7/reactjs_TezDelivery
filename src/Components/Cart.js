@@ -18,6 +18,7 @@ const Cart = (props) => {
   const [additionalDetails, setAdditionalDetails] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const cartItems = useSelector(state => state.cart);
+  console.log(cartItems);
   const subtotal = useSelector(state => state.cart);
   const additionalItems = useSelector((state) => state.cart.additionalItems);
   console.log(subtotal);
@@ -146,7 +147,7 @@ const Cart = (props) => {
                 </div>
               </div>
             </>
-      )}
+          )}
             {
               cartItems.carts.map(item => {
                 return (
@@ -162,18 +163,18 @@ const Cart = (props) => {
                           <div className='Item-info'>
                             <h5>{item.name}</h5>
                             <div className='cross'>
-                              <RxCross2 size={24} onClick={() => dispatch(removefromCross({ id: item.id }))} />
+                              <RxCross2 size={24} onClick={() => dispatch(removefromCross(item))} />
                             </div>
                           </div>
                           <div className='cart-quantity'>
                             <div style={{ width: '80%' }}>
                               <div className='cart-buttons'>
                                 {item.qty > 1 ? (
-                                  <button onClick={() => dispatch(removefromCart({ id: item.id }))} className='cart-button-3'>
+                                  <button onClick={() => dispatch(removefromCart(item))} className='cart-button-3'>
                                     -
                                   </button>
                                  ) : (
-                                  <button onClick={() => dispatch(removefromCart({ id: item.id }))} className='cart-button-1'>
+                                  <button onClick={() => dispatch(removefromCart(item))} className='cart-button-1'>
                                     <RiDeleteBin6Line />
                                   </button>
                                 )}
@@ -182,7 +183,7 @@ const Cart = (props) => {
                               </div>
                             </div>
                             <div className='cart-price'>
-                              <h5>Rs {item.price * item.qty}</h5>
+                              <h5>Rs  {item.exclusivePrice > 0 ? item.exclusivePrice * item.qty : item.price * item.qty}</h5>
                             </div>
                           </div>
                         </div>

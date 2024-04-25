@@ -109,9 +109,9 @@ export async function getMartProducts(Martid, cid, sid, limit, skip,pid) {
   }
 }
 // Fetch My-Orders
-export async function getMyOrders() {
+export async function getMyOrders(firebase_id) {
   try {
-    const url = `${API_BASE_URL}/get_ordersList?customer_id=101338101135977459288`;
+    const url =  `${API_BASE_URL}/get_ordersList?customer_id=${firebase_id}`;
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
@@ -149,6 +149,16 @@ export async function login(data) {
 export async function Update_customer(data) {
   try {
     const url = API_BASE_URL + "/update_customers";
+    const response = await axios.post(url, JSON.stringify(data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+// Update Order
+export async function Update_Order(data) {
+  try {
+    const url = API_BASE_URL + "/update_order";
     const response = await axios.post(url, JSON.stringify(data));
     return response.data;
   } catch (error) {

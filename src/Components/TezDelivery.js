@@ -14,17 +14,14 @@ import 'swiper/css/scrollbar';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navigation, Pagination, Autoplay, Scrollbar, A11y, EffectCoverflow } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-
 import Exclusive from "./Exclusive";
 import Footer from "./Footer";
 import NavSection from "./NavSection";
 import TDSlider from "./TDSlider";
 import TNavbar from './TNavbar'
 import { getMartCategories, getExclusiveProducts, getMostSellingProducts, getMarts } from "../Server";
-
 import "./TD.css";
 import 'swiper/swiper-bundle.css';
-
 const TezDelivery = () => {
   const [DataProduct, setData] = useState([]);
   const [imageLoading, setImageLoading] = useState(true);

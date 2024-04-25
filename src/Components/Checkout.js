@@ -61,10 +61,10 @@ const Checkout = () => {
   const [OrderScheduale, setOrderScheduale] = useState(false);
   const LoginUserName = sessionStorage.getItem('userName');
   const storedUserName = sessionStorage.getItem('userName') || 'Guest User';
-  const storedFirebaseId = sessionStorage.getItem('fire_baseid') || '';
+  const storedFirebaseId = sessionStorage.getItem('firebase_id') || '';
   const storedPhoneNo = sessionStorage.getItem('phoneNumber') || '';
   const storedEmail = sessionStorage.getItem('Email') || '';
-  const storedMart = sessionStorage.getItem('mart_id');
+  const storedMart = sessionStorage.getItem('mart_id') ;
   const [showCalendar, setShowCalendar] = useState(false);
   const [scheduledTime, setScheduledTime] = useState('Now');
   const [schedualeOrder, setSchedualeOrder] = useState('Now');
@@ -91,16 +91,26 @@ const Checkout = () => {
   const [martExist, setMartExist] = useState('');
   const [martClose, setMartClose] = useState('');
   const cartItems = useSelector(state => state.cart);
+  console.log(cartItems);
   const additionalItems = useSelector(state => state.cart.additionlItems);
   console.log(useSelector(state => state.cart.additionalItems));
-  const subtotal = useSelector(state => state.cart.subtotal);
+  useEffect(() => {
+    dispatch(Subtotal());
+  }, [dispatch, cartItems]);
+
+  var subtotal = useSelector(state => state.cart.subtotal);
+  console.log(subtotal);
   const [isToggled, setIsToggled] = useState(false);
-  const [walletAmount, setWalletAmount] = useState('');
-  const [newWalletAmount, setNewWalletAmount] = useState('');
+  const [walletAmount, setWalletAmount] = useState(0);
+  const [newWalletAmount, setNewWalletAmount] = useState(0);
   useEffect(() => {
     if (isToggled) {
       console.log("Old Wallet Amount:", walletAmount);
       setNewWalletAmount(walletAmount);
+    }
+    else{
+      setNewWalletAmount(0);
+      console.log(newWalletAmount);
     }
   }, [isToggled]);
   const toggleButton = () => {
@@ -109,6 +119,10 @@ const Checkout = () => {
       setNewWalletAmount(walletAmount);
       console.log(walletAmount);
 
+    }
+    else{
+      setNewWalletAmount(0);
+      console.log(newWalletAmount);
     }
   };
   const handlePromoCodeChange = (event) => {
@@ -375,37 +389,6 @@ const Checkout = () => {
     else {
       console.error("No Additioanl Items Exists");
     }
-    let newdiscount = '';
-    // if (newWalletAmount > 0) {     
-    //   let newDelivery = '';
-    //   if (discountTotal !== "" && discountTotal >= 0) {
-    //     walletActualAmount = newWalletAmount; // wallet amount
-    //     newdiscount = discountTotal;
-    //     newdiscount -= newWalletAmount;
-    //     newdiscount = Math.max(0, newdiscount + realDeliveryCharges);
-    //     walletAmountIs = newdiscount;
-    //     setDiscountTotal(newdiscount); // subtotal 
-    //   }
-
-    //   else {
-    //     newdiscount=subtotal+realDeliveryCharges;
-    //     walletActualAmount = newWalletAmount;
-    //     newdiscount-=newWalletAmount
-    //     walletAmountIs=newdiscount;
-    //   }
-    // }
-    // else{
-    //    if (discountTotal !== "" && discountTotal >= 0) {
-    //     newdiscount = discountTotal;
-    //     newdiscount = Math.max(0, newdiscount + realDeliveryCharges);
-    //     walletAmountIs = newdiscount;
-    //     // setDiscountTotal(newdiscount);
-    //   }
-    //   else{
-    //      newdiscount=subtotal+realDeliveryCharges;
-    //      walletAmountIs=newdiscount;
-    //   }
-    // }
     const data = {
       placedOn: formattedDate,
       scheduledFor: schedualeDate,
@@ -420,9 +403,9 @@ const Checkout = () => {
       rating: "0",
       collectedAmount: 0,
       deliveryCharges: Math.floor(realDeliveryCharges),
-      walletDiscount: "",
+      walletDiscount: newWalletAmount,
       // grandTotal:walletAmountIs,
-      grandTotal: discountTotal !== "" && discountTotal >= 0 ? discountTotal + realDeliveryCharges : subtotal + realDeliveryCharges,
+      grandTotal: discountTotal !== "" && discountTotal >= 0 ? discountTotal + realDeliveryCharges-newWalletAmount : subtotal + realDeliveryCharges-newWalletAmount,
       discount: discountValue,
       source: "web Order",
       status: "pending",
@@ -448,10 +431,7 @@ const Checkout = () => {
     };
     console.log(data);
     try {
-      const response = await axios.post(
-        `${api}/create_order`,
-        JSON.stringify(data),
-      );
+      const response = await createOrder(data);
       console.log('Response Status:', response.status);
       if (response.status === 200) {
         console.log('Checkout successful!', response.data);
@@ -500,7 +480,7 @@ const Checkout = () => {
     };
     const fetchCustomerData = async () => {
       const data = {
-        firebase_id: '101338101135977459288',
+        firebase_id: storedFirebaseId,
       };
       try {
         const response = await login(data);
@@ -900,11 +880,6 @@ const Checkout = () => {
           <section className='container'>
 
             <div className='cart-container'>
-              {/* {checkoutError && (
-                <Alert color="danger" className="alert alert-warning" role="alert" isOpen={checkoutError !== ''} toggle={() => setCheckoutError('')} style={{ marginBottom: '10px' }}>
-                  {checkoutError}
-                </Alert>
-              )} */}
               <div className='checkout-items'>
                 <h5>Deliver to</h5>
                 <Link to={{
@@ -941,15 +916,19 @@ const Checkout = () => {
               </div>
             </div>
             {/* ------------------Code for Wallet ---------------------- */}
-            {/* <div className='cart-container'>
+            {
+             storedFirebaseId && (
+            <div className='cart-container'>
               <div className='checkout-items'>
                 <div className='toggle-container'>
                   <div className={`toggle-button ${isToggled ? 'active' : ''}`} onClick={toggleButton}></div>
                   <span style={{ width: '75%', color: 'black' }}>Adjust Wallet Amount: Rs {walletAmount}</span>
                 </div>
               </div>
-            </div> */}
-            {showPromos.length > 0 && LoginUserName && (
+            </div>
+            )
+          }
+            {showPromos.length > 0 && storedFirebaseId  && (
               <div className='cart-container'>
                 <div className='checkout-items'>
                   <h5>Promo Code</h5>
@@ -1043,7 +1022,7 @@ const Checkout = () => {
                   )}
                   <div className='cart-subtotal'>
                     <h5>Total</h5>
-                    <h5>Rs {discountTotal || discountTotal === 0 ? discountTotal + realDeliveryCharges : subtotal + realDeliveryCharges}</h5>
+                    <h5>Rs {discountTotal || discountTotal === 0 ? discountTotal + realDeliveryCharges -newWalletAmount : subtotal + realDeliveryCharges-newWalletAmount}</h5>
                   </div>
                   <div className='button-Style'>
                     <button onClick={() => setIsPopupOpen(true)} className='checkout-button'>

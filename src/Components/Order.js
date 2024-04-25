@@ -5,15 +5,13 @@ import { FaRecycle } from "react-icons/fa";
 import Footer from "./Footer";
 import { MdPictureAsPdf } from "react-icons/md";
 import { FaRegFaceFrown } from "react-icons/fa6";
-import axios from 'axios';
-import api from "./apis";
 import { MdOutlineDelete } from "react-icons/md";
 import { Link } from 'react-router-dom';
 import { addtoCart } from './CartSlice';
 import Collapsible from 'react-collapsible';
 import TNavbar from "./TNavbar";
 import { useDispatch } from 'react-redux';
-import { ReOrder, createOrder, getMarts, getMyOrders } from '../Server';
+import { ReOrder, Update_Order, createOrder, getMarts, getMyOrders } from '../Server';
 import { ImCross } from "react-icons/im";
 const Order = () => {
   const storedMart = sessionStorage.getItem('mart_id');
@@ -36,19 +34,30 @@ const Order = () => {
   const [cancelOrderNo, setCancelOrderNo] = useState('');
   const [loginFirst, setloginFirst] = useState(false);
   const LoginUserName = sessionStorage.getItem('userName');
+  const storedFirebaseId= sessionStorage.getItem('firebase_id');
   useEffect(() => {
   const fetchData = async () => {
-    if (LoginUserName === null) {
+    if (storedFirebaseId === null) {
       setIsLoading(false);
       setloginFirst(true);
       return;
     }
     try {
-      setIsLoading(true);
-      const response = await getMyOrders();
-      console.log(response.data);
-      setData(response.data);
-
+      setIsLoading(true); 
+    try {
+        const response = await getMyOrders(storedFirebaseId); 
+        console.log(response); 
+        if (response.status === 200) {
+            console.log(response.data);
+            setData(response.data); 
+        } else {
+            console.error("Failed to fetch orders, status code:", response.status);
+        }
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+    } finally {
+         setIsLoading(false);
+    } 
       const responseMart = await getMarts(storedMart);
       console.log(responseMart);
       const martData = responseMart.data[0];
@@ -129,23 +138,18 @@ const Order = () => {
       status: "Cancelled",
       cancelledBy: response.data[0].cancelledBy,
       cancelledReason: response.data[0].cancelledReason,
-      // productId: pids,
-      // productQuantity: quantities,
       additionalProducts: response.data[0].additionalProducts,
       additionalQuantity: response.data[0].additionalQuantity,
       riderToken: response.data[0].riderToken,
       customerToken: response.data[0].customerToken,
     };
-    const createorder = await axios.post(
-      `${api}/update_order`,
-      JSON.stringify(orderSummary),
-    );
+    const createorder = await Update_Order(orderSummary);
     console.log('Response Status:', createorder.status);
     if (createorder.status === 200) {
       console.log(" order deleted> ", createorder.data);
       setCancelOrder(!cancelOrder);
       try {
-        const response = await getMyOrders();
+        const response = await getMyOrders(storedFirebaseId);
         console.log(response.data);
         setData(response.data);
       } catch (error) {
@@ -476,7 +480,7 @@ const Order = () => {
           <div className="Order-loader"></div>
           <span className='loader-span'>Loading....</span>
         </div>
-      ) : data.length === 0 ? (
+      ) : data.length === 0  || data===undefined ? (
         <div className='no-items' style={{ textAlign: 'center', marginTop: '50px' }}>
           <FaRegFaceFrown size={100} color='#F17E2A' />
           <h6 style={{fontSize:'1.1rem',marginTop:'18px'}}>Empty Order List</h6>

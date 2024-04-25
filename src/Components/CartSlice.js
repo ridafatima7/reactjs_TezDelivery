@@ -29,11 +29,9 @@ const CartSlice = createSlice({
      
       else if (existingVariationIndex !== -1  ) {
         state.carts[existingVariationIndex].qty += 1;
-        console.log('here');
       } 
       else 
       {
-
         console.log(existingVariationIndex)
         const product = { ...action.payload, qty: action.payload.qty || 1 };
         state.carts.push(product);
@@ -64,23 +62,28 @@ const CartSlice = createSlice({
       localStorage.setItem('cart', JSON.stringify({ items: state.carts, additionalItems: state.additionalItems }));
     },
     removefromCart: (state, action) => {
-      const productIndex = state.carts.findIndex((x) => x.id === action.payload.id);
+      const productIndex = state.carts.findIndex((x) => x.id === action.payload.id && x.name === action.payload.name);
       if (productIndex !== -1) {
         const currentQty = state.carts[productIndex].qty;
         if (currentQty > 1) {
           state.carts[productIndex].qty -= 1;
         }
         else {
-          state.carts = state.carts.filter((x) => x.id !== action.payload.id);
+          console.log(action.payload.name)
+          state.carts = state.carts.filter((x) => x.id !== action.payload.id || x.name !== action.payload.name );
+          if (state.carts.length > 0) {
+            localStorage.setItem('cart', JSON.stringify(state.carts));
+          } else {
+            state.additionalItems = [];
+            localStorage.removeItem('cart');
+          }
         }
       }
-      // state.subtotal = state.carts.reduce((total, product) => {
-      //   return total + product.qty * product.price;
-      // }, 0);
+   
 
     },
     removefromCross: (state, action) => {
-      state.carts = state.carts.filter((x) => x.id !== action.payload.id);
+      state.carts = state.carts.filter((x) => x.id !== action.payload.id ||  x.name !== action.payload.name );
       if (state.carts.length === 0) {
         state.additionalItems = [];
       }
@@ -90,15 +93,20 @@ const CartSlice = createSlice({
         state.additionalItems = [];
         localStorage.removeItem('cart');
       }
+      
     },
     deleteAdditionalProduct: (state, action) => {
       state.additionalItems = state.additionalItems.filter(item => item.id !== action.payload.id);
       localStorage.setItem('cart', JSON.stringify({ items: state.carts, additionalItems: state.additionalItems }));
     },
     Subtotal: (state, action) => {
+      console.log(state.carts);
       state.subtotal = state.carts.reduce((total, product) => {
-        return total + product.qty * product.price;
+        return total + product.qty * (product.exclusivePrice > 0 ? product.exclusivePrice : product.price);
       }, 0);
+
+      console.log(state.subtotal);
+      localStorage.setItem('subtotal', JSON.stringify(state.subtotal));
     },
     clearCart: (state) => {
       state.carts = [];

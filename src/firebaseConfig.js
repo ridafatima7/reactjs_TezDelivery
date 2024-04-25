@@ -6,7 +6,7 @@ import {
   FacebookAuthProvider,
   signInWithPhoneNumber ,
   RecaptchaVerifier
-} from "firebase/auth"; // If you're using Authentication
+} from "firebase/auth"; 
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore"; // If you're using Firestore
 import { getMessaging, getToken } from "firebase/messaging";
 
@@ -22,7 +22,7 @@ const firebaseConfig = {
   appId: "1:330028742587:web:600b41611de0a60316769e",
   measurementId: "G-M2NEQN0X71",
 };
-
+const TIMEOUT_DURATION = 120000;
 const firebaseApp = initializeApp(firebaseConfig);
 // Export Firebase services you plan to use
 const db = getFirestore(firebaseApp);
@@ -33,6 +33,7 @@ const signInWithGoogle = async () => {
   var result = await signInWithPopup(auth, provider);
   const credential = GoogleAuthProvider.credentialFromResult(result);
   const token = credential.accessToken;
+  console.log(result.user);
   return result.user;
 };
 const signInWithFacebook = async () => {
@@ -44,23 +45,104 @@ const signInWithFacebook = async () => {
 };
 
 
-const sendToken = async (phoneNumber) => {
-
-  console.log(phoneNumber);
-  var recaptcha="";
-  try{
-    recaptcha = new RecaptchaVerifier(auth, "recaptcha", {
-      size: "invisible",
-    });
-   const confirmationResult= await signInWithPhoneNumber(auth, phoneNumber, recaptcha);
-   return confirmationResult;
-  }catch(e){
-    recaptcha="";
-    return e;
-  }
+// const sendToken = async (phoneNumber) => {
+//   console.log(phoneNumber);
+//   var recaptcha="";
+//   try{
+//     recaptcha = new RecaptchaVerifier(auth, "recaptcha", {
+//       size: "invisible",
+//     });
+//    const confirmationResult= await signInWithPhoneNumber(auth, phoneNumber, recaptcha);
+//    window.confirmationResult = confirmationResult;
+//    window.recaptcha = recaptcha;
+//    console.log(confirmationResult);
+//    return confirmationResult;
+//   }catch(e){
+//     recaptcha="";
+//     console.log(e)
+//     return e;
+//   }
  
+// };
+// const confirmToken = async (otpCode) => {
+//   try {
+//     const result = await window.confirmationResult.confirm(otpCode);
+//     console.log("Signed in user:", result.user);
+//     console.log(window.recaptcha)
+//     if (window.recaptcha) {
+//       window.recaptcha.clear();
+//     }
+//     return { success: true, user: result.user }; 
+//   } catch (error) {
+//     console.error("Error during OTP verification:", error);
+//     return { success: false, error: "Failed to verify OTP" };
+//   } 
+ 
+// };
+// const sendToken = async (phoneNumber) => {
+//   console.log(phoneNumber);
+//   let recaptcha = "";
+//   try {
+//     recaptcha = new RecaptchaVerifier(auth, "recaptcha", { size: "invisible" });
+//     const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptcha);
+//     window.confirmationResult = confirmationResult;
+//     window.recaptcha = recaptcha;
+//     console.log(confirmationResult);
+
+//     // Set a timeout to clear the confirmation result after 2 minutes
+//     window.confirmationTimeout = setTimeout(() => {
+//       window.confirmationResult = null;
+//       console.log("OTP has expired");
+//     }, TIMEOUT_DURATION);
+
+//     return confirmationResult;
+//   } catch (e) {
+//     recaptcha = "";
+//     console.log(e);
+//     return e;
+//   }
+// };
+const sendToken = async (phoneNumber) => {
+  console.log(phoneNumber);
+  try {
+    let recaptcha = new RecaptchaVerifier(auth, "recaptcha", { size: "invisible" });
+    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptcha);
+    window.confirmationResult = confirmationResult;
+    window.recaptcha = recaptcha;
+    console.log(confirmationResult);
+    window.confirmationTimeout = setTimeout(() => {
+      window.confirmationResult = null;
+      console.log("OTP has expired");
+    }, TIMEOUT_DURATION);
+
+    return { success: true, confirmationResult }; 
+  } catch (error) {
+    console.log("Error during OTP send:", error);
+    return { success: false, error }; 
+  }
 };
 
+const confirmToken = async (otpCode) => {
+  try {
+    if (!window.confirmationResult) {
+      throw new Error("OTP has expired or was not sent.");
+    }
+
+    const result = await window.confirmationResult.confirm(otpCode);
+    console.log("Signed in user:", result.user);
+
+    // Clear the timeout and recaptcha if verification is successful
+    clearTimeout(window.confirmationTimeout);
+    if (window.recaptcha) {
+      window.recaptcha.clear();
+    }
+
+    return { success: true, user: result.user };
+  } catch (error) {
+    console.error("Error during OTP verification:", error);
+    return { success: false, error: "Failed to verify OTP" };
+  }
+};
 async function requestPermission() {
   const messaging = getMessaging();
   const permission = await Notification.requestPermission();
@@ -102,5 +184,6 @@ export {
   requestPermission,
   updateCustomerData,
   signInWithFacebook,
-  sendToken
+  sendToken,
+  confirmToken
 };

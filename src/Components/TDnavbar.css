@@ -163,6 +163,7 @@
     font-family: GilroyRegular;
     color:#f8f9fa;
     cursor: pointer;
+    padding: 0 20px;
   }
   .dbtn:hover{
     background-color: #495178;
@@ -237,7 +238,7 @@
     color:#F28F47; 
     position: absolute;
     cursor: pointer;
-    /* right:0; */
+    right:0;
     width:15px;
     /* height:10%; */
     border-radius:50%;
@@ -246,7 +247,7 @@
     /* margin-right: 210px;
     margin-top: -10px; */
     font-size: 15px;
-    right: 48%; 
+    right: 46%; 
     top: 50%;
     transform: translateY(-50%); 
   }
@@ -310,6 +311,7 @@
     text-align: center;
   }
   .logout-btn{
+    cursor:pointer;
     background-color: #F17E2A;
     color: white;
     border-radius: 15px;
@@ -452,6 +454,7 @@
     margin-top: 0px;
     border: 0 solid lightgray;
     width: 90px;
+    padding: 0 20px;
     height: 40px;
     font-size: 16px;
     font-weight: 400;
@@ -478,7 +481,6 @@
     margin-top: 70px; */
     font-size: 18px;
     /* left: 190px; */
-    top: 21px;
   }
   
   }
@@ -542,6 +544,7 @@
     .control {
       width: 150%;
       height: 39px;
+      max-width: 150%;
       padding: 13px;
       position: relative;
       justify-content: center;
@@ -634,7 +637,7 @@
       color:#F28F47; 
       position: absolute;
       cursor: pointer;
-      /* right:0; */
+      right: 245%;
       width:15px;
       /* height:10%; */
       border-radius:50%;
@@ -643,7 +646,7 @@
       /* margin-right: 210px;
       margin-top: -10px; */
       font-size: 15px;
-      right: 247%; 
+      /* right: 247%;  */
       top: 56%;
       transform: translateY(-50%); 
     }

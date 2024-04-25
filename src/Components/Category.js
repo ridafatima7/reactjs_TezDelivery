@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import LazyLoad from 'react-lazy-load';
 import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
-
 import Footer from "./Footer";
 import NavSection from "./NavSection";
 import TNavbar from "./TNavbar";
